@@ -1,0 +1,592 @@
+--------------------
+./configure --help
+Sun Oct 29 09:24:17 CET 2023
+usage:
+  configure [--const] [--zprefix] [--prefix=PREFIX]  [--eprefix=EXPREFIX]
+    [--static] [--64] [--libdir=LIBDIR] [--sharedlibdir=LIBDIR]
+    [--includedir=INCLUDEDIR] [--archs="-arch i386 -arch x86_64"]
+--------------------
+./configure --prefix=./ --static
+Sun Oct 29 09:25:26 CET 2023
+Checking for gcc...
+=== ztest30992.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+gcc -c ztest30992.c
+... using gcc
+
+Checking for obsessive-compulsive compiler options...
+=== ztest30992.c ===
+int foo() { return 0; }
+===
+gcc -c -O3 ztest30992.c
+
+Building static library libz.a version 1.2.8 with gcc.
+
+=== ztest30992.c ===
+#include <stdio.h>
+#include <stdlib.h>
+size_t dummy = 0;
+===
+gcc -c -O3 ztest30992.c
+Checking for size_t... Yes.
+
+=== ztest30992.c ===
+#include <sys/types.h>
+ssize_t dummy = 0;
+===
+gcc -c -O3 ztest30992.c
+Checking for ssize_t... Yes.
+
+
+=== ztest30992.c ===
+#include <sys/types.h>
+off64_t dummy = 0;
+===
+gcc -c -O3 -D_LARGEFILE64_SOURCE=1 ztest30992.c
+ztest30992.c:2:1: error: unknown type name 'off64_t'; did you mean 'off_t'?
+off64_t dummy = 0;
+^~~~~~~
+off_t
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_off_t.h:31:33: note: 'off_t' declared here
+typedef __darwin_off_t          off_t;
+                                ^
+1 error generated.
+(exit code 1)
+Checking for off64_t... No.
+
+=== ztest30992.c ===
+#include <stdio.h>
+int main(void) {
+  fseeko(NULL, 0, 0);
+  return 0;
+}
+===
+gcc -O3 -o ztest30992 ztest30992.c
+Checking for fseeko... Yes.
+
+=== ztest30992.c ===
+#include <string.h>
+#include <errno.h>
+int main() { return strlen(strerror(errno)); }
+===
+gcc -O3 -o ztest30992 ztest30992.c
+Checking for strerror... Yes.
+
+=== ztest30992.c ===
+#include <unistd.h>
+int main() { return 0; }
+===
+gcc -c -O3 ztest30992.c
+Checking for unistd.h... Yes.
+
+=== ztest30992.c ===
+#include <stdarg.h>
+int main() { return 0; }
+===
+gcc -c -O3 ztest30992.c
+Checking for stdarg.h... Yes.
+
+=== ztest30992.c ===
+#include <stdio.h>
+#include <stdarg.h>
+#include "zconf.h"
+int main()
+{
+#ifndef STDC
+  choke me
+#endif
+  return 0;
+}
+===
+gcc -c -O3 ztest30992.c
+Checking whether to use vs[n]printf() or s[n]printf()... using vs[n]printf().
+
+=== ztest30992.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return 0;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+gcc -O3 -o ztest30992 ztest30992.c
+Checking for vsnprintf() in stdio.h... Yes.
+
+=== ztest30992.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  int n;
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  n = vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return n;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+gcc -c -O3 ztest30992.c
+Checking for return value of vsnprintf()... Yes.
+
+=== ztest30992.c ===
+#define ZLIB_INTERNAL __attribute__((visibility ("hidden")))
+int ZLIB_INTERNAL foo;
+int main()
+{
+  return 0;
+}
+===
+gcc -c -O3 ztest30992.c
+Checking for attribute(visibility) support... Yes.
+
+ALL = static
+AR = /usr/bin/libtool
+ARFLAGS = -o
+CC = gcc
+CFLAGS = -O3 -DHAVE_HIDDEN
+CPP = gcc -E
+EXE =
+LDCONFIG = ldconfig
+LDFLAGS =
+LDSHARED = gcc
+LDSHAREDLIBC = -lc
+OBJC = $(OBJZ) $(OBJG)
+PIC_OBJC = $(PIC_OBJZ) $(PIC_OBJG)
+RANLIB = ranlib
+SFLAGS = -O3 -fPIC -DHAVE_HIDDEN
+SHAREDLIB =
+SHAREDLIBM =
+SHAREDLIBV =
+STATICLIB = libz.a
+TEST = all teststatic
+VER = 1.2.8
+Z_U4 =
+exec_prefix = ${prefix}
+includedir = ${prefix}/include
+libdir = ${exec_prefix}/lib
+mandir = ${prefix}/share/man
+prefix = ./
+sharedlibdir = ${libdir}
+uname = Darwin
+--------------------
+
+
+--------------------
+./configure --prefix=./ --static
+Fri Nov 10 13:42:16 CET 2023
+Checking for gcc...
+=== ztest92216.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+gcc -c ztest92216.c
+... using gcc
+
+Checking for obsessive-compulsive compiler options...
+=== ztest92216.c ===
+int foo() { return 0; }
+===
+gcc -c -O3 ztest92216.c
+
+Building static library libz.a version 1.2.8 with gcc.
+
+=== ztest92216.c ===
+#include <stdio.h>
+#include <stdlib.h>
+size_t dummy = 0;
+===
+gcc -c -O3 ztest92216.c
+Checking for size_t... Yes.
+
+=== ztest92216.c ===
+#include <sys/types.h>
+ssize_t dummy = 0;
+===
+gcc -c -O3 ztest92216.c
+Checking for ssize_t... Yes.
+
+
+=== ztest92216.c ===
+#include <sys/types.h>
+off64_t dummy = 0;
+===
+gcc -c -O3 -D_LARGEFILE64_SOURCE=1 ztest92216.c
+ztest92216.c:2:1: error: unknown type name 'off64_t'; did you mean 'off_t'?
+off64_t dummy = 0;
+^~~~~~~
+off_t
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_off_t.h:31:33: note: 'off_t' declared here
+typedef __darwin_off_t          off_t;
+                                ^
+1 error generated.
+(exit code 1)
+Checking for off64_t... No.
+
+=== ztest92216.c ===
+#include <stdio.h>
+int main(void) {
+  fseeko(NULL, 0, 0);
+  return 0;
+}
+===
+gcc -O3 -o ztest92216 ztest92216.c
+Checking for fseeko... Yes.
+
+=== ztest92216.c ===
+#include <string.h>
+#include <errno.h>
+int main() { return strlen(strerror(errno)); }
+===
+gcc -O3 -o ztest92216 ztest92216.c
+Checking for strerror... Yes.
+
+=== ztest92216.c ===
+#include <unistd.h>
+int main() { return 0; }
+===
+gcc -c -O3 ztest92216.c
+Checking for unistd.h... Yes.
+
+=== ztest92216.c ===
+#include <stdarg.h>
+int main() { return 0; }
+===
+gcc -c -O3 ztest92216.c
+Checking for stdarg.h... Yes.
+
+=== ztest92216.c ===
+#include <stdio.h>
+#include <stdarg.h>
+#include "zconf.h"
+int main()
+{
+#ifndef STDC
+  choke me
+#endif
+  return 0;
+}
+===
+gcc -c -O3 ztest92216.c
+Checking whether to use vs[n]printf() or s[n]printf()... using vs[n]printf().
+
+=== ztest92216.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return 0;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+gcc -O3 -o ztest92216 ztest92216.c
+Checking for vsnprintf() in stdio.h... Yes.
+
+=== ztest92216.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  int n;
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  n = vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return n;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+gcc -c -O3 ztest92216.c
+Checking for return value of vsnprintf()... Yes.
+
+=== ztest92216.c ===
+#define ZLIB_INTERNAL __attribute__((visibility ("hidden")))
+int ZLIB_INTERNAL foo;
+int main()
+{
+  return 0;
+}
+===
+gcc -c -O3 ztest92216.c
+Checking for attribute(visibility) support... Yes.
+
+ALL = static
+AR = /usr/bin/libtool
+ARFLAGS = -o
+CC = gcc
+CFLAGS = -O3 -DHAVE_HIDDEN
+CPP = gcc -E
+EXE =
+LDCONFIG = ldconfig
+LDFLAGS =
+LDSHARED = gcc
+LDSHAREDLIBC = -lc
+OBJC = $(OBJZ) $(OBJG)
+PIC_OBJC = $(PIC_OBJZ) $(PIC_OBJG)
+RANLIB = ranlib
+SFLAGS = -O3 -fPIC -DHAVE_HIDDEN
+SHAREDLIB =
+SHAREDLIBM =
+SHAREDLIBV =
+STATICLIB = libz.a
+TEST = all teststatic
+VER = 1.2.8
+Z_U4 =
+exec_prefix = ${prefix}
+includedir = ${prefix}/include
+libdir = ${exec_prefix}/lib
+mandir = ${prefix}/share/man
+prefix = ./
+sharedlibdir = ${libdir}
+uname = Darwin
+--------------------
+
+
+--------------------
+./configure --help
+Wed Nov 22 10:45:04 CET 2023
+usage:
+  configure [--const] [--zprefix] [--prefix=PREFIX]  [--eprefix=EXPREFIX]
+    [--static] [--64] [--libdir=LIBDIR] [--sharedlibdir=LIBDIR]
+    [--includedir=INCLUDEDIR] [--archs="-arch i386 -arch x86_64"]
+--------------------
+./configure --prefix=./ --static CFLAGS=-march=native
+Wed Nov 22 13:38:50 CET 2023
+unknown option: CFLAGS=-march=native
+./configure --help for help
+** ./configure aborting.
+--------------------
+
+
+--------------------
+./configure --prefix=./ --static
+Wed Nov 22 13:39:10 CET 2023
+Checking for gcc...
+=== ztest6960.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+gcc -c ztest6960.c
+... using gcc
+
+Checking for obsessive-compulsive compiler options...
+=== ztest6960.c ===
+int foo() { return 0; }
+===
+gcc -c -march=native ztest6960.c
+clang: error: the clang compiler does not support '-march=native'
+(exit code 1)
+Compiler error reporting is too harsh for ./configure (perhaps remove -Werror).
+** ./configure aborting.
+--------------------
+
+
+--------------------
+./configure --prefix=./ --static
+Wed Nov 22 13:40:02 CET 2023
+Checking for gcc...
+=== ztest7137.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+gcc -c ztest7137.c
+... using gcc
+
+Checking for obsessive-compulsive compiler options...
+=== ztest7137.c ===
+int foo() { return 0; }
+===
+gcc -c -O3 ztest7137.c
+
+Building static library libz.a version 1.2.8 with gcc.
+
+=== ztest7137.c ===
+#include <stdio.h>
+#include <stdlib.h>
+size_t dummy = 0;
+===
+gcc -c -O3 ztest7137.c
+Checking for size_t... Yes.
+
+=== ztest7137.c ===
+#include <sys/types.h>
+ssize_t dummy = 0;
+===
+gcc -c -O3 ztest7137.c
+Checking for ssize_t... Yes.
+
+
+=== ztest7137.c ===
+#include <sys/types.h>
+off64_t dummy = 0;
+===
+gcc -c -O3 -D_LARGEFILE64_SOURCE=1 ztest7137.c
+ztest7137.c:2:1: error: unknown type name 'off64_t'; did you mean 'off_t'?
+off64_t dummy = 0;
+^~~~~~~
+off_t
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_off_t.h:31:33: note: 'off_t' declared here
+typedef __darwin_off_t          off_t;
+                                ^
+1 error generated.
+(exit code 1)
+Checking for off64_t... No.
+
+=== ztest7137.c ===
+#include <stdio.h>
+int main(void) {
+  fseeko(NULL, 0, 0);
+  return 0;
+}
+===
+gcc -O3 -o ztest7137 ztest7137.c
+Checking for fseeko... Yes.
+
+=== ztest7137.c ===
+#include <string.h>
+#include <errno.h>
+int main() { return strlen(strerror(errno)); }
+===
+gcc -O3 -o ztest7137 ztest7137.c
+Checking for strerror... Yes.
+
+=== ztest7137.c ===
+#include <unistd.h>
+int main() { return 0; }
+===
+gcc -c -O3 ztest7137.c
+Checking for unistd.h... Yes.
+
+=== ztest7137.c ===
+#include <stdarg.h>
+int main() { return 0; }
+===
+gcc -c -O3 ztest7137.c
+Checking for stdarg.h... Yes.
+
+=== ztest7137.c ===
+#include <stdio.h>
+#include <stdarg.h>
+#include "zconf.h"
+int main()
+{
+#ifndef STDC
+  choke me
+#endif
+  return 0;
+}
+===
+gcc -c -O3 ztest7137.c
+Checking whether to use vs[n]printf() or s[n]printf()... using vs[n]printf().
+
+=== ztest7137.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return 0;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+gcc -O3 -o ztest7137 ztest7137.c
+Checking for vsnprintf() in stdio.h... Yes.
+
+=== ztest7137.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  int n;
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  n = vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return n;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+gcc -c -O3 ztest7137.c
+Checking for return value of vsnprintf()... Yes.
+
+=== ztest7137.c ===
+#define ZLIB_INTERNAL __attribute__((visibility ("hidden")))
+int ZLIB_INTERNAL foo;
+int main()
+{
+  return 0;
+}
+===
+gcc -c -O3 ztest7137.c
+Checking for attribute(visibility) support... Yes.
+
+ALL = static
+AR = /usr/bin/libtool
+ARFLAGS = -o
+CC = gcc
+CFLAGS = -O3 -DHAVE_HIDDEN
+CPP = gcc -E
+EXE =
+LDCONFIG = ldconfig
+LDFLAGS =
+LDSHARED = gcc
+LDSHAREDLIBC = -lc
+OBJC = $(OBJZ) $(OBJG)
+PIC_OBJC = $(PIC_OBJZ) $(PIC_OBJG)
+RANLIB = ranlib
+SFLAGS = -O3 -fPIC -DHAVE_HIDDEN
+SHAREDLIB =
+SHAREDLIBM =
+SHAREDLIBV =
+STATICLIB = libz.a
+TEST = all teststatic
+VER = 1.2.8
+Z_U4 =
+exec_prefix = ${prefix}
+includedir = ${prefix}/include
+libdir = ${exec_prefix}/lib
+mandir = ${prefix}/share/man
+prefix = ./
+sharedlibdir = ${libdir}
+uname = Darwin
+--------------------
+
+
