@@ -1,4 +1,4 @@
-# quaqc: *QU*ick *A*TAC-seq *Q*uality *C*ontrol
+# quaqc: **QU**ick **A**TAC-seq **Q**uality **C**ontrol
 
 _Also works with any DNA-seq experiment! Compatible with plant genomes!!_
 
