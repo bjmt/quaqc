@@ -40,9 +40,9 @@ mandir       = ${datarootdir}/man
 CC     = gcc
 RANLIB = ranlib
 
-CPPFLAGS = -I/Users/ben/quaqc//libs/zlib
+CPPFLAGS = -I./libs/zlib
 CFLAGS   =  -Wall -g -O3 -fvisibility=hidden
-LDFLAGS  = -L/Users/ben/quaqc//libs/zlib -fvisibility=hidden
+LDFLAGS  = -L./libs/zlib -fvisibility=hidden
 VERSION_SCRIPT_LDFLAGS = 
 LIBS     = -lz 
 

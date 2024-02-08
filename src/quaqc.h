@@ -84,6 +84,8 @@ void *calloc_or_die(size_t size, const char *func_name);
 
 void print_time(const time_t s);
 
+long get_mem(void);
+
 // Enums, structs ------------------------------------------------------------
 
 enum seq_type {

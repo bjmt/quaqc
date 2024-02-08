@@ -17,8 +17,7 @@
  *
  */
 
-// TODO: Update with new options (--use-all, --lenient, --nfr, --nbr)
-// TODO: Change pileup title when --chip is used
+// TODO: Change pileup title when --chip is used (maybe not a good idea?)
 
 #include <stdlib.h>
 #include <string.h>
@@ -37,7 +36,7 @@
 #define null_get(OBJ, MEM) (((OBJ) != NULL) ? ((OBJ)->MEM) : 0)
 #define null_get_all(RES, MEM) (null_get((RES)->nucl, MEM) + null_get((RES)->mito, MEM) + null_get((RES)->pltd, MEM))
 
-// TODO: Use static buffers instead of dynamic memory
+// Use static buffers instead of dynamic memory
 
 // Utilities ----------------------------------------------------------------------
 
@@ -585,7 +584,9 @@ int append_json_result(char *fn, results_t *results, const params_t *params) {
 int finish_json(void) {
   char time_end_str[128];
   get_time(time(NULL), time_end_str);
-  fjson_write(fjson, "\n  ],\n  \"quaqc_time_end\": \"%s\"\n}\n", time_end_str);
+  long bytes = get_mem();
+  fjson_write(fjson, "\n  ],\n  \"quaqc_time_end\": \"%s\",\n", time_end_str);
+  fjson_write(fjson, "  \"quaqc_max_bytes\": \"%ld\"\n}\n", bytes);
   if (use_gz && gzclose(fjson.gz) != Z_OK) {
     int e;
     warn("Failed to close JSON file: %s", gzerror(fjson.gz, &e));

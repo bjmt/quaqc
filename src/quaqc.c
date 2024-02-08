@@ -302,13 +302,18 @@ void *calloc_or_die(size_t size, const char *func_name) {
   return result;
 }
 
-static void print_mem(void) {
+long get_mem(void) {
   struct rusage mem;
   getrusage(RUSAGE_SELF, &mem);
   long bytes = mem.ru_maxrss;
 #ifdef __linux__
   bytes *= 1024; // ru_maxrss is in KBytes on linux, Bytes on macOS
 #endif
+  return bytes;
+}
+
+static void print_mem(void) {
+  long bytes = get_mem();
   fprintf(stderr, "Peak memory usage: %'.2f MB\n",
     ((double) bytes / 1024.0) / 1024.0);
 }
