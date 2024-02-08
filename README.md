@@ -4,11 +4,11 @@ _Also works with any DNA-seq experiment! Compatible with plant genomes!!_
 
 TODO:
 * Create a separate quaqc-data repo that contains small test BAMs as well as Arabidopsis TSS bed.
-* Create AUTHORS, NEWS files
 * Double check fragment size average is correct, shouldn't it be close to the read
   size average in the ATAC-seq? I think in general I just need a suite of tests.
 * Clean up the human-readable report. Center the text and use fancy wchars.
 * Create a set of scripts which use jq and awk to create usable TSVs from JSON
+* Move documentation in README to a MAN page
 
 Also benchmarks. Make sure to run these on the cluster w/ gcc as well.
 * Using `ATAC_cold_MO_30.fix.bam`:
