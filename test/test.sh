@@ -2,7 +2,10 @@
 
 echo "Running test of quaqc output."
 
-../quaqc --output-ext .test.txt -T tss.bed -t target.bed reads.bam
+if ! ../quaqc --output-ext .test.txt -T tss.bed -t target.bed reads.bam ; then
+  echo "Test failed, quaqc encountered an error."
+  exit 1
+fi
 
 diff <(awk 'NR>10' reads.quaqc.txt) <(awk 'NR>10' reads.test.txt) > diff.txt
 
