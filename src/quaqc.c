@@ -519,7 +519,7 @@ loop_end:
         pthread_mutex_unlock(&json_lock);
       }
 
-#if 1
+#if 0
       for (int j = 0; j < params->tss_size; j++) {
         printf("%d\t%d\n", j - params->tss_size / 2, results[threads_ind[i]]->nucl_shared->tss[j]);
       }
