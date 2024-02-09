@@ -33,7 +33,7 @@ accomplished using `samtools` in the following manner during alignment:
 
 # OPTIONS
 
--m *STR*, \--mitochondria=*STR*
+**-m** *STR*, **\--mitochondria**=*STR*
 :   Comma-separated mitochondrial reference names (no spaces). This causes quaqc
     to skip reads mapping to these references for certain metrics. The remaining
     metrics will be merged for all matching references under a single set
@@ -41,19 +41,19 @@ accomplished using `samtools` in the following manner during alignment:
     checks for references with names matching to chrM, ChrM and Mt. To skip
     this check entirely, simply provide an empty string (e.g. `-m''`).
 
--p *STR*, \--plastids=*STR*
+**-p** *STR*, **\--plastids**=*STR*
 :   This option behaves the exact same as the `--mitochondria` option. Metrics
     for all matching references will be merged under a single set of metrics
     for "plastidic" reads. By default quaqc checks for references with names
     matching to chrC, ChrC and Pt. To skip
     this check entirely, simply provide an empty string (e.g. `-p''`).
 
--P *FILE*, \--peaks=*FILE*
+**-P** *FILE*, **\--peaks**=*FILE*
 :   Filename of a BED file containing ranges that will be use to calculate
     the fraction of reads in peaks (FRIP). The impact on the runtime of
     quaqc when using this option is generally negligible.
 
--T *FILE*, \--tss=*FILE*
+**-T** *FILE*, **\--tss**=*FILE*
 :   Filename of a BED file containing ranges that will be used to construct
     a vector of read densities around the center of the ranges.
     Afterwards a final TSS enrichment score (TES) is calculated by dividing
@@ -63,7 +63,7 @@ accomplished using `samtools` in the following manner during alignment:
     to be on the forward/positive strand. The impact on the runtime of
     quaqc when using this option is generally negligible.
 
--n *STR*, \--target-names=*STR*
+**-n** *STR*, **\--target-names**=*STR*
 :   Comma-separated reference names that quaqc will be restricted to (no spaces).
     This can include reference names also provided to `--mitochondria`
     and `--plastids`. The effective genome size for metric calculations
@@ -72,18 +72,18 @@ accomplished using `samtools` in the following manner during alignment:
     scanned, since quaqc will simply skip over the entire section of the
     BAM not containing matching reads.
 
--t *FILE*, \--target-list=*FILE*
+**-t** *FILE*, **\--target-list**=*FILE*
 :   Filename of a BED file containing ranges that quaqc will be restricted
     to. The effective genome size for metric calculations will also be
     adjusted. Cannot be used simultaneously with `--blacklist`.
 
--2, \--use-secondary
+**-2**, **\--use-secondary**
 :   Do not filter out alignments marked with the secondary alignment flag
     for use in the calculation of metrics done after read filtering. Useful
     when you wish to include multi-mapped reads (such as when `bowtie2` is run
     with the `-k` flag).
 
--N, \--use-nomate
+**-N**, **\--use-nomate**
 :   Do not filter out paired-end reads when it is properly mapped but
     its mate read is not (for use in the calculation of metrics done
     after read filtering). Note that quaqc gets fragment and mate
@@ -95,57 +95,57 @@ accomplished using `samtools` in the following manner during alignment:
     the case, using this argument may be required to prevent quaqc from
     classifying all paired-ends as filtered.
 
--d, \--use-dups
+**-d**, **\--use-dups**
 :   Do not filter out duplicate reads for use in the calculation of metrics
     done after read filtering. Note that quaqc can only know if reads are
     duplicates based on their SAM flags, which may require use of
     `samtools markdup` or equivalent.
 
-\--use-chimeric
+**\--use-chimeric**
 :   Do not filter out alignments marked with the supplementary alignment flag
     for use in the calculation of metrics done after read filtering. Generally
     this argument should never be set outside of special cases.
 
--D, \--use-dovetails
+**-D**, **\--use-dovetails**
 :   Do not filter out dovetailing alignments from paired reads. Dovetailing
     is when a read end coordinate extends past the start coordinate of its mate.
 
-\--no-se
+**\--no-se**
 :   Filter out single end (SE) reads, if a BAM happens to contain both SE and
     PE reads.
 
--q *INT*, \--mapq=*INT*
+**-q** *INT*, **\--mapq**=*INT*
 :   Filter out reads with a MAPQ below this value for use in the calculation
     of metrics done after read filtering. The default value is 30. Note that
     reads with MAPQ scores of 255 are classified as unscored and
     will ignore this setting.
 
-\--min-qlen=*INT*
+**\--min-qlen**=*INT*
 :   Filter out reads which cover fewer bases on the reference than this value
     for use in the calculation of metrics done after read filtering. The
     default value is 1.
 
-\--min-flen=*INT*
+**\--min-flen**=*INT*
 :   Filter out paired-end reads with a fragment size below this value
     for use in the calculation of metrics done after read filtering. The
     default value is 1. Note that this argument is effectively ignored
     when `--use-nomate` is set.
 
-\--max-qlen=*INT*
+**\--max-qlen**=*INT*
 :   Filter out reads which cover more bases on the reference than this value
     for use in the calculation of metrics done after read filtering. The
     default value is 250.
 
-\--max-flen=*INT*
+**\--max-flen**=*INT*
 :   Filter out paired-end reads with a fragment size higher than this value
     for use in the calculation of metrics done after read filtering. The
     default value is 2000. Note that this argument is effectively ignored
     when `--use-nomate` is set.
 
--A, \--use-all
+**-A**, **\--use-all**
 :   Do not apply ANY filters to mapped reads.
 
-\--max-depth=*INT*
+**\--max-depth**=*INT*
 :   The maximum allowed value for the read depth histogram. Depths with
     a higher value than this will be counted as this value. The default
     is 100,000. Be aware that this value is used directly during memory
@@ -157,7 +157,7 @@ accomplished using `samtools` in the following manner during alignment:
     average depth can be calculated without this data so is unaffected
     by this issue.
 
-\--max-qhist=*INT*
+**\--max-qhist**=*INT*
 :   The maximum allowed value for the covered bases per read histogram.
     Density values greater than this value will be reported as this value.
     The default is the value of `--max-qlen`. Be aware that this value is
@@ -170,7 +170,7 @@ accomplished using `samtools` in the following manner during alignment:
     average size can be calculated without this data so is unaffected
     by this issue.
 
-\--max-fhist=*INT*
+**\--max-fhist**=*INT*
 :   The maximum allowed value for the fragment size histogram.
     Density values greater than this value will be reported as this value.
     The default is the value of `--max-flen`. Be aware that this value is
@@ -183,7 +183,7 @@ accomplished using `samtools` in the following manner during alignment:
     average size can be calculated without this data so is unaffected
     by this issue.
 
-\--tss-size=*INT*
+**\--tss-size**=*INT*
 :   The size of the density vector range generated when `--tss` is set, in bases.
     Ranges are first centered at their midpoints, then resized in both
     directions to a final width of the set value. The default is 2000.
@@ -191,75 +191,75 @@ accomplished using `samtools` in the following manner during alignment:
     allocation. To estimate how much memory will be used for the TSS density
     values, multiply the value by 4 bytes (e.g. the default uses 8 kB).
 
-\--tss-qlen=*INT*
+**\--tss-qlen**=*INT*
 :   The final size of adjusted read coordinates when generating the read
     density values when `--tss` is set. Reads are first set to size 1 (anchored
     from their five-prime ends), then resized in both directions to a final
     width of the set value. The default is 100. To prevent read resizing and
     instead use the actual coordinates of the reads, set this value to 0.
 
-\--tss-tn5
+**\--tss-tn5**
 :   When resizing the reads as described in the `--tss-qlen` option, adjust
     the read five-prime coordinates forward 4 bases (to center the coordinate
     in the middle of the Tn5 transposase binding site). This option is ignored
     when `--tss-qlen` is set to 0.
 
-\--omit-gc
+**\--omit-gc**
 :   Skip GC content metrics. This can shave off a small percentage of the
     runtime for regular short read experiments (<10%). The savings may be
     more substantial for long read experiments, as quaqc has to iterate
     over every base in the alignments to count GC bases.
 
-\--omit-depth
+**\--omit-depth**
 :   Skip generation of the read depths histogram. This can shave off a
     small percentage of the runtime for regular short read experiments (<10%).
     The savings may be more substantial for long read experiments, as quaqc
     has to iterate over the entire alignment length to count per-base depths.
 
--f, \--fast
+**-f**, **\--fast**
 :   Set `--omit-gc` and `--omit-depth`, thus skipping the two metric which
     require iterating over the entire read lengths. Together this can shave off
     about 15% of the runtime for regular short read experiments. The savings
     may be more substantial for long read experiments.
 
-\--lenient
+**\--lenient**
 :   Set `--use-nomate`, `--use-dups`, `--use-dovetails`, and `--mapq=10`. This
     relaxes the filtering parameters, allowing a greater number of reads to be
     counted for QC.
 
-\--nfr
+**\--nfr**
 :   Set `--no-se`, `--max-flen=120`, and `--tss-tn5`. These filters enrich for
     reads found within nucleosome free regions (NFR), as well as shifting the
     start sites to account for the Tn5 transposase insertion.
 
-\--nbr
+**\--nbr**
 :   Set `--no-se`, `--min-flen=150`, `--max-flen=1000`, and `--tss-qlen=0`.
     These filters enrich for reads in nucleosome bound regions (NBR). In
     addition, the read coordinates are maintained as is when generating the
     TSS pileup.
 
-\--footprint
+**\--footprint**
 :   Set `--tss-qlen=1`, `--tss-size=501`, and `--tss-tn5`. This generates a
     smaller TSS pileup with single base pair resolution Tn5 transposase
     insertion.
 
-\--chip
+**\--chip**
 :   Set `--tss-qlen=0` and `--tss-size=5001`. Additionally, any BED file
     provided with the `--peaks` option is used for generating the pileup
     (which is normally generated from `--tss`).
 
--o *DIR*, \--output-dir=*DIR*
+**-o** *DIR*, **\--output-dir**=*DIR*
 :   Directory where the QC reports will be saved. By default, these are
     saved in the same directory as the input BAMs.
 
--O *STR*, \--output-ext=*STR*
+**-O** *STR*, **\--output-ext**=*STR*
 :   Filename extension of the QC report, replacing the previous ".bam" of
     the input BAMs. By default ".quaqc.txt" is used.
 
--0, \--no-output
+**-0**, **\--no-output**
 :   Suppress the generation of QC reports.
 
--J *FILE*, \--json=*FILE*
+**-J** *FILE*, **\--json**=*FILE*
 :   Save all QC reports for all samples into a single JSON file for further
     processing. This format, while not intended to be human readable, contains
     additional data such as the full alignment size, fragment size, GC content,
@@ -267,22 +267,22 @@ accomplished using `samtools` in the following manner during alignment:
     standard output, provide `-J-`. To compress the output JSON, add the ".gz"
     extension to the filename.
 
--S, \--keep
+**-S**, **\--keep**
 :   Save the nuclear reads passing all filters in a new BAM. This will
     significantly slow down quaqc.
 
--k *DIR*, \--keep-dir=*DIR*
+**-k** *DIR*, **\--keep-dir**=*DIR*
 :   By default, when `--keep` is set a new filtered BAM is
     created in the same directory as the input BAM. Setting this will
     change the final directory where the new BAM will be written.
 
--K *STR*, \--keep-ext=*STR*
+**-K** *STR*, **\--keep-ext**=*STR*
 :   By default, when `--keep` is set a new filtered BAM is
     created with the text ".filt.bam" appended to the file name. Use this
     argument to change it. If an existing ".bam" or ".cram" extension
     exists, it will be stripped.
 
--j *INT*, \--threads=*INT*
+**-j** *INT*, **\--threads**=*INT*
 :   Set the number of child threads used to process input BAMs. At minimum,
     one child thread is launched (meaning quaqc technically uses two threads,
     though not simultaneously), and at maximum, one child thread per sample
@@ -292,15 +292,15 @@ accomplished using `samtools` in the following manner during alignment:
     the `--max-depth` option has the biggest impact on memory growth. Set this
     to a lower value to mitigate this.
 
--c, \--continue
+**-c**, **\--continue**
 :   If set when processing more than one input file, quaqc will keep running if
     it encounters errors processing individual files (e.g. one file is unsorted).
 
--v, \--verbose
+**-v**, **\--verbose**
 :   Print progress messages during runtime. This flag can be used a second time
     to further increase verbosity.
 
--h, \--help
+**-h**, **\--help**
 :   Print a help message with a brief description of all available commands.
 
 # BUGS

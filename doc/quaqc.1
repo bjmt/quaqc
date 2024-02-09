@@ -41,7 +41,7 @@ manner during alignment:
 .fi
 .SH OPTIONS
 .TP
--m \f[I]STR\f[R], --mitochondria=\f[I]STR\f[R]
+\f[B]-m\f[R] \f[I]STR\f[R], \f[B]--mitochondria\f[R]=\f[I]STR\f[R]
 Comma-separated mitochondrial reference names (no spaces).
 This causes quaqc to skip reads mapping to these references for certain
 metrics.
@@ -52,7 +52,7 @@ and Mt.
 To skip this check entirely, simply provide an empty string
 (e.g.\ \f[C]-m\[aq]\[aq]\f[R]).
 .TP
--p \f[I]STR\f[R], --plastids=\f[I]STR\f[R]
+\f[B]-p\f[R] \f[I]STR\f[R], \f[B]--plastids\f[R]=\f[I]STR\f[R]
 This option behaves the exact same as the \f[C]--mitochondria\f[R]
 option.
 Metrics for all matching references will be merged under a single set of
@@ -62,13 +62,13 @@ and Pt.
 To skip this check entirely, simply provide an empty string
 (e.g.\ \f[C]-p\[aq]\[aq]\f[R]).
 .TP
--P \f[I]FILE\f[R], --peaks=\f[I]FILE\f[R]
+\f[B]-P\f[R] \f[I]FILE\f[R], \f[B]--peaks\f[R]=\f[I]FILE\f[R]
 Filename of a BED file containing ranges that will be use to calculate
 the fraction of reads in peaks (FRIP).
 The impact on the runtime of quaqc when using this option is generally
 negligible.
 .TP
--T \f[I]FILE\f[R], --tss=\f[I]FILE\f[R]
+\f[B]-T\f[R] \f[I]FILE\f[R], \f[B]--tss\f[R]=\f[I]FILE\f[R]
 Filename of a BED file containing ranges that will be used to construct
 a vector of read densities around the center of the ranges.
 Afterwards a final TSS enrichment score (TES) is calculated by dividing
@@ -80,7 +80,7 @@ forward/positive strand.
 The impact on the runtime of quaqc when using this option is generally
 negligible.
 .TP
--n \f[I]STR\f[R], --target-names=\f[I]STR\f[R]
+\f[B]-n\f[R] \f[I]STR\f[R], \f[B]--target-names\f[R]=\f[I]STR\f[R]
 Comma-separated reference names that quaqc will be restricted to (no
 spaces).
 This can include reference names also provided to
@@ -90,19 +90,19 @@ Using this option will also proportionally scale the runtime down to the
 fraction of the total genome being scanned, since quaqc will simply skip
 over the entire section of the BAM not containing matching reads.
 .TP
--t \f[I]FILE\f[R], --target-list=\f[I]FILE\f[R]
+\f[B]-t\f[R] \f[I]FILE\f[R], \f[B]--target-list\f[R]=\f[I]FILE\f[R]
 Filename of a BED file containing ranges that quaqc will be restricted
 to.
 The effective genome size for metric calculations will also be adjusted.
 Cannot be used simultaneously with \f[C]--blacklist\f[R].
 .TP
--2, --use-secondary
+\f[B]-2\f[R], \f[B]--use-secondary\f[R]
 Do not filter out alignments marked with the secondary alignment flag
 for use in the calculation of metrics done after read filtering.
 Useful when you wish to include multi-mapped reads (such as when
 \f[C]bowtie2\f[R] is run with the \f[C]-k\f[R] flag).
 .TP
--N, --use-nomate
+\f[B]-N\f[R], \f[B]--use-nomate\f[R]
 Do not filter out paired-end reads when it is properly mapped but its
 mate read is not (for use in the calculation of metrics done after read
 filtering).
@@ -116,62 +116,62 @@ equivalent.
 If this is the case, using this argument may be required to prevent
 quaqc from classifying all paired-ends as filtered.
 .TP
--d, --use-dups
+\f[B]-d\f[R], \f[B]--use-dups\f[R]
 Do not filter out duplicate reads for use in the calculation of metrics
 done after read filtering.
 Note that quaqc can only know if reads are duplicates based on their SAM
 flags, which may require use of \f[C]samtools markdup\f[R] or
 equivalent.
 .TP
---use-chimeric
+\f[B]--use-chimeric\f[R]
 Do not filter out alignments marked with the supplementary alignment
 flag for use in the calculation of metrics done after read filtering.
 Generally this argument should never be set outside of special cases.
 .TP
--D, --use-dovetails
+\f[B]-D\f[R], \f[B]--use-dovetails\f[R]
 Do not filter out dovetailing alignments from paired reads.
 Dovetailing is when a read end coordinate extends past the start
 coordinate of its mate.
 .TP
---no-se
+\f[B]--no-se\f[R]
 Filter out single end (SE) reads, if a BAM happens to contain both SE
 and PE reads.
 .TP
--q \f[I]INT\f[R], --mapq=\f[I]INT\f[R]
+\f[B]-q\f[R] \f[I]INT\f[R], \f[B]--mapq\f[R]=\f[I]INT\f[R]
 Filter out reads with a MAPQ below this value for use in the calculation
 of metrics done after read filtering.
 The default value is 30.
 Note that reads with MAPQ scores of 255 are classified as unscored and
 will ignore this setting.
 .TP
---min-qlen=\f[I]INT\f[R]
+\f[B]--min-qlen\f[R]=\f[I]INT\f[R]
 Filter out reads which cover fewer bases on the reference than this
 value for use in the calculation of metrics done after read filtering.
 The default value is 1.
 .TP
---min-flen=\f[I]INT\f[R]
+\f[B]--min-flen\f[R]=\f[I]INT\f[R]
 Filter out paired-end reads with a fragment size below this value for
 use in the calculation of metrics done after read filtering.
 The default value is 1.
 Note that this argument is effectively ignored when
 \f[C]--use-nomate\f[R] is set.
 .TP
---max-qlen=\f[I]INT\f[R]
+\f[B]--max-qlen\f[R]=\f[I]INT\f[R]
 Filter out reads which cover more bases on the reference than this value
 for use in the calculation of metrics done after read filtering.
 The default value is 250.
 .TP
---max-flen=\f[I]INT\f[R]
+\f[B]--max-flen\f[R]=\f[I]INT\f[R]
 Filter out paired-end reads with a fragment size higher than this value
 for use in the calculation of metrics done after read filtering.
 The default value is 2000.
 Note that this argument is effectively ignored when
 \f[C]--use-nomate\f[R] is set.
 .TP
--A, --use-all
+\f[B]-A\f[R], \f[B]--use-all\f[R]
 Do not apply ANY filters to mapped reads.
 .TP
---max-depth=\f[I]INT\f[R]
+\f[B]--max-depth\f[R]=\f[I]INT\f[R]
 The maximum allowed value for the read depth histogram.
 Depths with a higher value than this will be counted as this value.
 The default is 100,000.
@@ -184,7 +184,7 @@ been truncated (which will result in incorrect stats).
 The average depth can be calculated without this data so is unaffected
 by this issue.
 .TP
---max-qhist=\f[I]INT\f[R]
+\f[B]--max-qhist\f[R]=\f[I]INT\f[R]
 The maximum allowed value for the covered bases per read histogram.
 Density values greater than this value will be reported as this value.
 The default is the value of \f[C]--max-qlen\f[R].
@@ -197,7 +197,7 @@ been truncated (which will result in incorrect stats).
 The average size can be calculated without this data so is unaffected by
 this issue.
 .TP
---max-fhist=\f[I]INT\f[R]
+\f[B]--max-fhist\f[R]=\f[I]INT\f[R]
 The maximum allowed value for the fragment size histogram.
 Density values greater than this value will be reported as this value.
 The default is the value of \f[C]--max-flen\f[R].
@@ -210,7 +210,7 @@ been truncated (which will result in incorrect stats).
 The average size can be calculated without this data so is unaffected by
 this issue.
 .TP
---tss-size=\f[I]INT\f[R]
+\f[B]--tss-size\f[R]=\f[I]INT\f[R]
 The size of the density vector range generated when \f[C]--tss\f[R] is
 set, in bases.
 Ranges are first centered at their midpoints, then resized in both
@@ -220,7 +220,7 @@ Be aware that this value is used directly during memory allocation.
 To estimate how much memory will be used for the TSS density values,
 multiply the value by 4 bytes (e.g.\ the default uses 8 kB).
 .TP
---tss-qlen=\f[I]INT\f[R]
+\f[B]--tss-qlen\f[R]=\f[I]INT\f[R]
 The final size of adjusted read coordinates when generating the read
 density values when \f[C]--tss\f[R] is set.
 Reads are first set to size 1 (anchored from their five-prime ends),
@@ -229,20 +229,20 @@ The default is 100.
 To prevent read resizing and instead use the actual coordinates of the
 reads, set this value to 0.
 .TP
---tss-tn5
+\f[B]--tss-tn5\f[R]
 When resizing the reads as described in the \f[C]--tss-qlen\f[R] option,
 adjust the read five-prime coordinates forward 4 bases (to center the
 coordinate in the middle of the Tn5 transposase binding site).
 This option is ignored when \f[C]--tss-qlen\f[R] is set to 0.
 .TP
---omit-gc
+\f[B]--omit-gc\f[R]
 Skip GC content metrics.
 This can shave off a small percentage of the runtime for regular short
 read experiments (<10%).
 The savings may be more substantial for long read experiments, as quaqc
 has to iterate over every base in the alignments to count GC bases.
 .TP
---omit-depth
+\f[B]--omit-depth\f[R]
 Skip generation of the read depths histogram.
 This can shave off a small percentage of the runtime for regular short
 read experiments (<10%).
@@ -250,58 +250,58 @@ The savings may be more substantial for long read experiments, as quaqc
 has to iterate over the entire alignment length to count per-base
 depths.
 .TP
--f, --fast
+\f[B]-f\f[R], \f[B]--fast\f[R]
 Set \f[C]--omit-gc\f[R] and \f[C]--omit-depth\f[R], thus skipping the
 two metric which require iterating over the entire read lengths.
 Together this can shave off about 15% of the runtime for regular short
 read experiments.
 The savings may be more substantial for long read experiments.
 .TP
---lenient
+\f[B]--lenient\f[R]
 Set \f[C]--use-nomate\f[R], \f[C]--use-dups\f[R],
 \f[C]--use-dovetails\f[R], and \f[C]--mapq=10\f[R].
 This relaxes the filtering parameters, allowing a greater number of
 reads to be counted for QC.
 .TP
---nfr
+\f[B]--nfr\f[R]
 Set \f[C]--no-se\f[R], \f[C]--max-flen=120\f[R], and
 \f[C]--tss-tn5\f[R].
 These filters enrich for reads found within nucleosome free regions
 (NFR), as well as shifting the start sites to account for the Tn5
 transposase insertion.
 .TP
---nbr
+\f[B]--nbr\f[R]
 Set \f[C]--no-se\f[R], \f[C]--min-flen=150\f[R],
 \f[C]--max-flen=1000\f[R], and \f[C]--tss-qlen=0\f[R].
 These filters enrich for reads in nucleosome bound regions (NBR).
 In addition, the read coordinates are maintained as is when generating
 the TSS pileup.
 .TP
---footprint
+\f[B]--footprint\f[R]
 Set \f[C]--tss-qlen=1\f[R], \f[C]--tss-size=501\f[R], and
 \f[C]--tss-tn5\f[R].
 This generates a smaller TSS pileup with single base pair resolution Tn5
 transposase insertion.
 .TP
---chip
+\f[B]--chip\f[R]
 Set \f[C]--tss-qlen=0\f[R] and \f[C]--tss-size=5001\f[R].
 Additionally, any BED file provided with the \f[C]--peaks\f[R] option is
 used for generating the pileup (which is normally generated from
 \f[C]--tss\f[R]).
 .TP
--o \f[I]DIR\f[R], --output-dir=\f[I]DIR\f[R]
+\f[B]-o\f[R] \f[I]DIR\f[R], \f[B]--output-dir\f[R]=\f[I]DIR\f[R]
 Directory where the QC reports will be saved.
 By default, these are saved in the same directory as the input BAMs.
 .TP
--O \f[I]STR\f[R], --output-ext=\f[I]STR\f[R]
+\f[B]-O\f[R] \f[I]STR\f[R], \f[B]--output-ext\f[R]=\f[I]STR\f[R]
 Filename extension of the QC report, replacing the previous
 \[lq].bam\[rq] of the input BAMs.
 By default \[lq].quaqc.txt\[rq] is used.
 .TP
--0, --no-output
+\f[B]-0\f[R], \f[B]--no-output\f[R]
 Suppress the generation of QC reports.
 .TP
--J \f[I]FILE\f[R], --json=\f[I]FILE\f[R]
+\f[B]-J\f[R] \f[I]FILE\f[R], \f[B]--json\f[R]=\f[I]FILE\f[R]
 Save all QC reports for all samples into a single JSON file for further
 processing.
 This format, while not intended to be human readable, contains
@@ -311,24 +311,24 @@ To save to standard output, provide \f[C]-J-\f[R].
 To compress the output JSON, add the \[lq].gz\[rq] extension to the
 filename.
 .TP
--S, --keep
+\f[B]-S\f[R], \f[B]--keep\f[R]
 Save the nuclear reads passing all filters in a new BAM.
 This will significantly slow down quaqc.
 .TP
--k \f[I]DIR\f[R], --keep-dir=\f[I]DIR\f[R]
+\f[B]-k\f[R] \f[I]DIR\f[R], \f[B]--keep-dir\f[R]=\f[I]DIR\f[R]
 By default, when \f[C]--keep\f[R] is set a new filtered BAM is created
 in the same directory as the input BAM.
 Setting this will change the final directory where the new BAM will be
 written.
 .TP
--K \f[I]STR\f[R], --keep-ext=\f[I]STR\f[R]
+\f[B]-K\f[R] \f[I]STR\f[R], \f[B]--keep-ext\f[R]=\f[I]STR\f[R]
 By default, when \f[C]--keep\f[R] is set a new filtered BAM is created
 with the text \[lq].filt.bam\[rq] appended to the file name.
 Use this argument to change it.
 If an existing \[lq].bam\[rq] or \[lq].cram\[rq] extension exists, it
 will be stripped.
 .TP
--j \f[I]INT\f[R], --threads=\f[I]INT\f[R]
+\f[B]-j\f[R] \f[I]INT\f[R], \f[B]--threads\f[R]=\f[I]INT\f[R]
 Set the number of child threads used to process input BAMs.
 At minimum, one child thread is launched (meaning quaqc technically uses
 two threads, though not simultaneously), and at maximum, one child
@@ -339,16 +339,16 @@ When using default settings, the \f[C]--max-depth\f[R] option has the
 biggest impact on memory growth.
 Set this to a lower value to mitigate this.
 .TP
--c, --continue
+\f[B]-c\f[R], \f[B]--continue\f[R]
 If set when processing more than one input file, quaqc will keep running
 if it encounters errors processing individual files (e.g.\ one file is
 unsorted).
 .TP
--v, --verbose
+\f[B]-v\f[R], \f[B]--verbose\f[R]
 Print progress messages during runtime.
 This flag can be used a second time to further increase verbosity.
 .TP
--h, --help
+\f[B]-h\f[R], \f[B]--help\f[R]
 Print a help message with a brief description of all available commands.
 .SH BUGS
 .PP
