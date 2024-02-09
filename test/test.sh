@@ -4,7 +4,7 @@ echo "Running test of quaqc output."
 
 ../quaqc --output-ext .test.txt -T tss.bed -t target.bed reads.bam
 
-diff <(tail -n116 reads.quaqc.txt) <(tail -n116 reads.test.txt) > diff.txt
+diff <(awk 'NR>10' reads.quaqc.txt) <(awk 'NR>10' reads.test.txt) > diff.txt
 
 if [ -s diff.txt ] ; then
   echo "Test failed, found the following diff:"
