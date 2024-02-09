@@ -1,0 +1,86 @@
+System requirements
+===================
+
+GNU Make and a C compiler (gcc/clang) are required to compile quaqc.
+
+quaqc depends on the following external libraries:
+
+    Zlib    <http://zlib.net>
+    HTSlib  <http://www.htslib.org>
+
+Configuring external libraries
+==============================
+
+These dependencies come prepackaged with quaqc, within the ./libs directory.
+To compile these as static libraries, run the following:
+
+    make libz
+    make libhts
+
+The provided Zlib is the optimized Cloudfare fork. The provided HTSlib is
+version 1.17 of the library, with the compiler optimization flag set to -O3.
+Additionally, this copy of HTSlib does not link to the libbz2 and liblzma
+libraries, which are needed for full CRAM file format support. If system-wide
+shared libraries are available, they can be linked during compilation of
+HTSlib using with_lzma=1 and with_bz2=1 as follows:
+
+    make with_lzma=1 with_bz2=1 libhts
+
+Finally, curl support is disabled by default. To enable it, use with_curl=1
+if a system-wide shared library is available:
+
+    make with_curl=1 libhts
+
+This allows quaqc to work with CRAM files which require a remote connection.
+
+If shared libraries are not available system-wide, they can be used by
+specifying the LDLIBS environment variable.
+
+To instead use different static library installations, set the ZDIR and
+HTSDIR environment variables when compiling quaqc. For example:
+
+    make ZDIR=<DIR> HTSDIR=<DIR> release
+
+To instead use system-wide shared libraries, set z_dyn=1 and hts_dyn=1 when
+compiling quaqc as follows:
+
+    make z_dyn=1 hts_dyn=1 release
+
+Basic installation
+==================
+
+Run the following commands from within the project folder:
+
+    make release-full
+    make install
+    make clean
+
+The first command will compile the prepackaged external libraries as static
+libraries, then compile quaqc itself. The second command will move the quaqc
+binary to /usr/local/bin (configurable by setting the PREFIX and BINDIR
+environment variables), though this step is optional. This also moves the
+manual page to /usr/local/share/man. (configurable by setting the PREFIX and
+MANDIR environment variables). The final command will clean up intermediate
+files from the compilation process.
+
+Custom installation
+===================
+
+When adjusting the compilation process of prepackaged libraries, or using
+different library installations altogether (see "Configuring external
+libraries"), ensure that quaqc is compiled standalone as follows:
+
+    make release
+
+This skips the compilation of the prepackaged libraries.
+
+By default quaqc is compiled without CPU-specific optimizations. To enable
+these, set native=1:
+
+    make native=1 release
+
+Beware that this option is not available on all systems.
+
+See the Makefile for additional environmental variables which be set to adjust
+the compilation process of quaqc.
+
