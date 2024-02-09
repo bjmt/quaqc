@@ -134,6 +134,7 @@ man: doc/quaqc.1.md
 
 install: quaqc
 	install -p ./quaqc $(PREFIX)/$(BINDIR)
+	install -p ./doc/quaqc.1 $(PREFIX)/$(MANDIR)
 
 uninstall:
 	-rm -f $(PREFIX)/$(BINDIR)/quaqc
