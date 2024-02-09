@@ -129,6 +129,9 @@ quaqc: $(objects)
 test: quaqc
 	(cd $(TESTDIR) && bash test.sh)
 
+man: doc/quaqc.1.md
+	pandoc --standalone --to man doc/quaqc.1.md -o doc/quaqc.1
+
 install: quaqc
 	install -p ./quaqc $(PREFIX)/$(BINDIR)
 
