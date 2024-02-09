@@ -712,18 +712,24 @@ int print_results(char *fn, results_t *results, const params_t *params) {
   print_in_sbox("Target genome stats", 80, fout);
   fputc('\n', fout);
 
-  fprintf(fout, "Total sequences:               %'14lld\n", results->seq_n);
-  fprintf(fout, "- Nuclear sequences:           %'14lld\n", results->nuc_n);
-  fprintf(fout, "- Mitochondrial sequences:     %'14lld\n", results->mito_n);
-  fprintf(fout, "- Plastid sequences:           %'14lld\n", results->pltd_n);
+  fprintf(fout, "Total sequences:                %'14lld\n", results->seq_n);
+  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, " Nuclear sequences:          %'14lld\n", results->nuc_n);
+  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, " Mitochondrial sequences:    %'14lld\n", results->mito_n);
+  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x2514, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, " Plastid sequences:          %'14lld\n", results->pltd_n);
   fputc('\n', fout);
-  fprintf(fout, "Total genome size:             %'14lld\n", results->seq_sum);
+  fprintf(fout, "Total genome size:              %'14lld\n", results->seq_sum);
   double nucl_pct = calc_pct(results->nuc_sum, results->seq_sum);
-  fprintf(fout, "- Nuclear genome size:         %'14lld (%'.1f%%)\n", results->nuc_sum, nucl_pct);
+  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, " Nuclear genome size:        %'14lld (%'.1f%%)\n", results->nuc_sum, nucl_pct);
   double mito_pct = calc_pct(results->mito_sum, results->seq_sum);
-  fprintf(fout, "- Mitochondrial genome size:   %'14lld (%'.1f%%)\n", results->mito_sum, mito_pct);
+  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, " Mitochondrial genome size:  %'14lld (%'.1f%%)\n", results->mito_sum, mito_pct);
   double pltd_pct = calc_pct(results->pltd_sum, results->seq_sum);
-  fprintf(fout, "- Plastid genome size:         %'14lld (%'.1f%%)\n", results->pltd_sum, pltd_pct);
+  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x2514, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, " Plastid genome size:        %'14lld (%'.1f%%)\n", results->pltd_sum, pltd_pct);
   fputc('\n', fout);
   double nucl_act_pct = calc_pct(results->nuc_act, results->seq_sum);
   fprintf(fout, "Effective nuclear genome size: %'14lld (%'.1f%%)\n", results->nuc_act, nucl_act_pct);
@@ -732,186 +738,209 @@ int print_results(char *fn, results_t *results, const params_t *params) {
   print_in_sbox("Total read stats", 80, fout);
   fputc('\n', fout);
 
-  fprintf(fout, "Total reads:                   %'14lld\n", results->r_total);
+  fprintf(fout, "Total reads:                    %'14lld\n", results->r_total);
   double map_pct = calc_pct(results->r_mapped, results->r_total);
-  fprintf(fout, "- Mapped:                      %'14lld (%'.1f%%)\n", results->r_mapped, map_pct);
+  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, " Mapped:                     %'14lld (%'.1f%%)\n", results->r_mapped, map_pct);
   double unm_pct = calc_pct(results->r_unmapped, results->r_total);
-  fprintf(fout, "- Unmapped:                    %'14lld (%'.1f%%)\n", results->r_unmapped, unm_pct);
+  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x2514, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, " Unmapped:                   %'14lld (%'.1f%%)\n", results->r_unmapped, unm_pct);
   fputc('\n', fout);
   double eff_n_pct = calc_pct(results->r_seen, results->r_total);
-  fprintf(fout, "Effective reads:               %'14lld (%'.1f%%)\n", results->r_seen, eff_n_pct);
+  fprintf(fout, "Effective reads:                %'14lld (%'.1f%%)\n", results->r_seen, eff_n_pct);
   int64_t nucl_n = null_get(results->nucl, reads_n);
   double nucl_n_pct = calc_pct(nucl_n, results->r_seen);
-  fprintf(fout, "- Nuclear:                     %'14lld - (%'.1f%%)\n", nucl_n, nucl_n_pct);
+  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x252C, (wchar_t) 0x2500);
+  fprintf(fout, " Nuclear:                    %'14lld (%'.1f%%)\n", nucl_n, nucl_n_pct);
   int64_t nucl_dup = null_get(results->nucl, dups_n);
   double nucl_dup_pct = calc_pct(nucl_dup, null_get(results->nucl, reads_n));
-  fprintf(fout, "--- Duplicated:                %'14lld --- (%'.1f%%)\n", nucl_dup, nucl_dup_pct);
+  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x2502, (wchar_t) 0x2514, (wchar_t) 0x2500);
+  fprintf(fout, " Duplicated:                 %'14lld (%'.1f%%)\n", nucl_dup, nucl_dup_pct);
   int64_t mito_n = null_get(results->mito, reads_n);
   double mito_n_pct = calc_pct(mito_n, results->r_seen);
-  fprintf(fout, "- Mitochondrial:               %'14lld - (%'.1f%%)\n", mito_n, mito_n_pct);
+  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x252C, (wchar_t) 0x2500);
+  fprintf(fout, " Mitochondrial:              %'14lld (%'.1f%%)\n", mito_n, mito_n_pct);
   int64_t mito_dup = null_get(results->mito, dups_n);
   double mito_dup_pct = calc_pct(mito_dup, null_get(results->mito, reads_n));
-  fprintf(fout, "--- Duplicated:                %'14lld --- (%'.1f%%)\n", mito_dup, mito_dup_pct);
+  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x2502, (wchar_t) 0x2514, (wchar_t) 0x2500);
+  fprintf(fout, " Duplicated:                 %'14lld (%'.1f%%)\n", mito_dup, mito_dup_pct);
   int64_t pltd_n = null_get(results->pltd, reads_n);
   double pltd_n_pct = calc_pct(pltd_n, results->r_seen);
-  fprintf(fout, "- Plastid:                     %'14lld - (%'.1f%%)\n", pltd_n, pltd_n_pct);
+  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x252C, (wchar_t) 0x2500);
+  fprintf(fout, " Plastid:                    %'14lld (%'.1f%%)\n", pltd_n, pltd_n_pct);
   int64_t pltd_dup = null_get(results->pltd, dups_n);
   double pltd_dup_pct = calc_pct(pltd_dup, null_get(results->pltd, reads_n));
-  fprintf(fout, "--- Duplicated:                %'14lld --- (%'.1f%%)\n", pltd_dup, pltd_dup_pct);
+  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x2502, (wchar_t) 0x2514, (wchar_t) 0x2500);
+  fprintf(fout, " Duplicated:                 %'14lld (%'.1f%%)\n", pltd_dup, pltd_dup_pct);
   int64_t se_total = null_get_all(results, se_n);
   double se_pct = calc_pct(se_total, results->r_seen);
-  fprintf(fout, "- SE reads:                    %'14lld - (%'.1f%%)\n", se_total, se_pct);
+  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, " SE reads:                   %'14lld (%'.1f%%)\n", se_total, se_pct);
   int64_t pe_total = null_get_all(results, pe_n);
   double pe_pct = calc_pct(pe_total, results->r_seen);
-  fprintf(fout, "- PE reads:                    %'14lld - (%'.1f%%)\n", pe_total, pe_pct);
+  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x252C, (wchar_t) 0x2500);
+  fprintf(fout, " PE reads:                   %'14lld (%'.1f%%)\n", pe_total, pe_pct);
   int64_t pe_mated = null_get_all(results, mated_n);
   double pe_mated_pct = calc_pct(pe_mated, results->r_seen);
-  fprintf(fout, "--- Properly mated:            %'14lld --- (%'.1f%%)\n", pe_mated, pe_mated_pct);
+  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x2502, (wchar_t) 0x2514, (wchar_t) 0x2500);
+  fprintf(fout, " Properly mated:             %'14lld (%'.1f%%)\n", pe_mated, pe_mated_pct);
   int64_t pri_total = null_get_all(results, pri_n);
   double pri_pct = calc_pct(pri_total, results->r_seen);
-  fprintf(fout, "- Primary alignments:          %'14lld - (%'.1f%%)\n", pri_total, pri_pct);
+  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x252C, (wchar_t) 0x2500);
+  fprintf(fout, " Primary alignments:         %'14lld (%'.1f%%)\n", pri_total, pri_pct);
   int64_t pri_dedup_total = pri_total - null_get_all(results, dups_pri_n);
   double pri_dedup_pct = calc_pct(pri_dedup_total, pri_total);
-  fprintf(fout, "--- Non redundant fraction:    %'14lld --- (%'.1f%%)\n", pri_dedup_total, pri_dedup_pct);
+  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x2502, (wchar_t) 0x2514, (wchar_t) 0x2500);
+  fprintf(fout, " Non redundant fraction:     %'14lld (%'.1f%%)\n", pri_dedup_total, pri_dedup_pct);
   int64_t sec_total = null_get_all(results, sec_n);
   double sec_pct = calc_pct(se_total, results->r_seen);
-  fprintf(fout, "- Secondary alignments:        %'14lld - (%'.1f%%)\n", sec_total, sec_pct);
+  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, " Secondary alignments:       %'14lld (%'.1f%%)\n", sec_total, sec_pct);
   int64_t sup_total = null_get_all(results, sup_n);
   double sup_pct = calc_pct(sup_total, results->r_seen);
-  fprintf(fout, "- Supplementary alignments:    %'14lld - (%'.1f%%)\n", sup_total, sup_pct);
+  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x2514, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, " Supplementary alignments:   %'14lld (%'.1f%%)\n", sup_total, sup_pct);
   fputc('\n', fout);
 
   print_in_sbox("Nuclear read stats after filtering", 80, fout);
   fputc('\n', fout);
 
   double filt_pct = calc_pct(null_get(results->nucl, filt_n), results->r_seen);
-  fprintf(fout, "Reads passing filters:         %'14lld (%'.1f%%)\n", null_get(results->nucl, filt_n), filt_pct);
+  fprintf(fout, "Reads passing filters:          %'14lld (%'.1f%%)\n", null_get(results->nucl, filt_n), filt_pct);
   fputc('\n', fout);
   bool warn_qlen = params->qhist_max < params->qlen_max && !!results->nucl_shared->read_sizes[params->qhist_max];
-  fprintf(fout, "Alignment size min:            %'14lld%s\n", null_get(results->nucl, min_qlen), warn_qlen ? "     (!)" : "");
-  fprintf(fout, "Alignment size 1st pctile:     %'14lld%s\n", null_get(results->nucl, pct1_qlen), warn_qlen ? "     (!)" : "");
-  fprintf(fout, "Alignment size average:        %'18.3f\n", null_get(results->nucl, avg_qlen));
-  fprintf(fout, "Alignment size SD:             %'18.3f%s\n", null_get(results->nucl, sd_qlen), warn_qlen ? " (!)" : "");
-  fprintf(fout, "Alignment size 99th pctile:    %'14lld%s\n", null_get(results->nucl, pct99_qlen), warn_qlen ? "     (!)" : "");
-  fprintf(fout, "Alignment size max:            %'14lld%s\n", null_get(results->nucl, max_qlen), warn_qlen ? "     (!)" : "");
+  fprintf(fout, "Alignment size min:             %'14lld%s\n", null_get(results->nucl, min_qlen), warn_qlen ? "     (!)" : "");
+  fprintf(fout, "Alignment size 1st pctile:      %'14lld%s\n", null_get(results->nucl, pct1_qlen), warn_qlen ? "     (!)" : "");
+  fprintf(fout, "Alignment size average:         %'18.3f\n", null_get(results->nucl, avg_qlen));
+  fprintf(fout, "Alignment size SD:              %'18.3f%s\n", null_get(results->nucl, sd_qlen), warn_qlen ? " (!)" : "");
+  fprintf(fout, "Alignment size 99th pctile:     %'14lld%s\n", null_get(results->nucl, pct99_qlen), warn_qlen ? "     (!)" : "");
+  fprintf(fout, "Alignment size max:             %'14lld%s\n", null_get(results->nucl, max_qlen), warn_qlen ? "     (!)" : "");
   fputc('\n', fout);
   if (warn_qlen) {
     fprintf(fout, "(!) Note: Alignment size stats likely have been truncated.\n");
     fprintf(fout, "(!)       Try increasing --max-qhist.\n");
-    fprintf(fout, "--> Max filter size:           %'14lld (--max-qlen)\n", params->qlen_max);
-    fprintf(fout, "--> Max histogram size:        %'14d (--max-qhist)\n", params->qhist_max);
-    fprintf(fout, "----> Max recorded size:       %'14lld\n", null_get(results->nucl, max_qlen));
+    fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x2500, (wchar_t) 0x2500, (wchar_t) 0x25Ba);
+    fprintf(fout, " Max filter size:            %'14lld (--max-qlen)\n", params->qlen_max);
+    fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x252C, (wchar_t) 0x2500, (wchar_t) 0x25Ba);
+    fprintf(fout, " Max histogram size:         %'14d (--max-qhist)\n", params->qhist_max);
+    fwprintf(fout, L"%lc%lc%lc%lc", (wchar_t) 0x2514, (wchar_t) 0x2500, (wchar_t) 0x2500, (wchar_t) 0x25Ba);
+    fprintf(fout, " Max recorded size:         %'14lld\n", null_get(results->nucl, max_qlen));
     fputc('\n', fout);
   }
-  fprintf(fout, "Fragments passing filters:     %'14lld\n", null_get(results->nucl, frags_n));
+  fprintf(fout, "Fragments passing filters:      %'14lld\n", null_get(results->nucl, frags_n));
   fputc('\n', fout);
-  bool warn_flen = params->fhist_max < params->flen_max && !!!results->nucl_shared->frag_sizes[params->fhist_max];
-  fprintf(fout, "Fragment size min:             %'14lld%s\n", null_get(results->nucl, min_flen), warn_flen ? "     (!)" : "");
-  fprintf(fout, "Fragment size 1st pctile:      %'14lld%s\n", null_get(results->nucl, pct1_flen), warn_flen ? "     (!)" : "");
-  fprintf(fout, "Fragment size average:         %'18.3f\n", null_get(results->nucl, avg_flen));
-  fprintf(fout, "Fragment size SD:              %'18.3f%s\n", null_get(results->nucl, sd_flen), warn_flen ? " (!)" : "");
-  fprintf(fout, "Fragment size 99th pctile:     %'14lld%s\n", null_get(results->nucl, pct99_flen), warn_flen ? "     (!)" : "");
-  fprintf(fout, "Fragment size max:             %'14lld%s\n", null_get(results->nucl, max_flen), warn_flen ? "     (!)" : "");
+  bool warn_flen = params->fhist_max < params->flen_max && !!results->nucl_shared->frag_sizes[params->fhist_max];
+  fprintf(fout, "Fragment size min:              %'14lld%s\n", null_get(results->nucl, min_flen), warn_flen ? "     (!)" : "");
+  fprintf(fout, "Fragment size 1st pctile:       %'14lld%s\n", null_get(results->nucl, pct1_flen), warn_flen ? "     (!)" : "");
+  fprintf(fout, "Fragment size average:          %'18.3f\n", null_get(results->nucl, avg_flen));
+  fprintf(fout, "Fragment size SD:               %'18.3f%s\n", null_get(results->nucl, sd_flen), warn_flen ? " (!)" : "");
+  fprintf(fout, "Fragment size 99th pctile:      %'14lld%s\n", null_get(results->nucl, pct99_flen), warn_flen ? "     (!)" : "");
+  fprintf(fout, "Fragment size max:              %'14lld%s\n", null_get(results->nucl, max_flen), warn_flen ? "     (!)" : "");
   fputc('\n', fout);
   if (warn_flen) {
     fprintf(fout, "(!) Note: Fragment size stats likely have been truncated.\n");
     fprintf(fout, "(!)       Try increasing --max-fhist.\n");
-    fprintf(fout, "--> Max filter size:           %'14lld (--max-flen)\n", params->flen_max);
-    fprintf(fout, "--> Max histogram size:        %'14d (--max-fhist)\n", params->fhist_max);
-    fprintf(fout, "----> Max recorded size:       %'14lld\n", null_get(results->nucl, max_flen));
+    fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x2500, (wchar_t) 0x2500, (wchar_t) 0x25Ba);
+    fprintf(fout, " Max filter size:            %'14lld (--max-flen)\n", params->flen_max);
+    fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x252C, (wchar_t) 0x2500, (wchar_t) 0x25Ba);
+    fprintf(fout, " Max histogram size:         %'14d (--max-fhist)\n", params->fhist_max);
+    fwprintf(fout, L"%lc%lc%lc%lc", (wchar_t) 0x2514, (wchar_t) 0x2500, (wchar_t) 0x2500, (wchar_t) 0x25Ba);
+    fprintf(fout, " Max recorded size:         %'14lld\n", null_get(results->nucl, max_flen));
     fputc('\n', fout);
   }
   if (params->omit_depth) {
     // TODO: Fix the cov numbers and use that instead when --omit-depth is used!
-    fprintf(fout, "Genome coverage:                          ---\n");
+    fprintf(fout, "Genome coverage:                           ---\n");
   } else {
-    fprintf(fout, "Genome coverage:               %'18.3f%%\n", 100.0 * null_get(results->nucl, genom_cov));
+    fprintf(fout, "Genome coverage:                %'18.3f%%\n", 100.0 * null_get(results->nucl, genom_cov));
   }
   /* fprintf(fout, "Naive coverage:                %'18.3f%%\n", 100.0 * null_get(results->nucl, naive_cov)); */
   fputc('\n', fout);
   double LN_G = (double) null_get(results->nucl, avg_qlen) * (double) null_get(results->nucl, filt_n);
   if (results->nuc_act) LN_G /= results->nuc_act;
   if (params->omit_depth) {
-    fprintf(fout, "Read depth min:                           ---\n");
-    fprintf(fout, "Read depth 1st pctile:                    ---\n");
-    fprintf(fout, "Read depth average:                       ---\n");
-    fprintf(fout, "Read depth average:            %'18.3f\n", LN_G);
-    fprintf(fout, "Read depth SD:                            ---\n");
-    fprintf(fout, "Read depth 99th pctile:                   ---\n");
-    fprintf(fout, "Read depth max:                           ---\n");
+    fprintf(fout, "Read depth min:                            ---\n");
+    fprintf(fout, "Read depth 1st pctile:                     ---\n");
+    fprintf(fout, "Read depth average:                        ---\n");
+    fprintf(fout, "Read depth average:             %'18.3f\n", LN_G);
+    fprintf(fout, "Read depth SD:                             ---\n");
+    fprintf(fout, "Read depth 99th pctile:                    ---\n");
+    fprintf(fout, "Read depth max:                            ---\n");
     fputc('\n', fout);
     fprintf(fout, "(!) Note: Read depth stats omitted. (--omit-depth)\n");
   } else {
     bool warn_depth = !!results->nucl_shared->depths[params->depth_max];
-    fprintf(fout, "Read depth min:                %'14lld%s\n", null_get(results->nucl, min_depth), warn_depth ? "     (!)" : "");
-    fprintf(fout, "Read depth 1st pctile:         %'14lld%s\n", null_get(results->nucl, pct1_depth), warn_depth ? "     (!)" : "");
+    fprintf(fout, "Read depth min:                 %'14lld%s\n", null_get(results->nucl, min_depth), warn_depth ? "     (!)" : "");
+    fprintf(fout, "Read depth 1st pctile:          %'14lld%s\n", null_get(results->nucl, pct1_depth), warn_depth ? "     (!)" : "");
     // I think I should still prefer avg_depth over LN/G when I have it,
     // since LN/G is probably less robust to --target-list problems.
     if (warn_depth) {
-      fprintf(fout, "Read depth average:            %'18.3f\n", LN_G);
+      fprintf(fout, "Read depth average:             %'18.3f\n", LN_G);
     } else {
-      fprintf(fout, "Read depth average:            %'18.3f\n", null_get(results->nucl, avg_depth));
+      fprintf(fout, "Read depth average:             %'18.3f\n", null_get(results->nucl, avg_depth));
     }
-    fprintf(fout, "Read depth SD:                 %'18.3f%s\n", null_get(results->nucl, sd_depth), warn_depth ? " (!)" : "");
-    fprintf(fout, "Read depth 99th pctile:        %'14lld%s\n", null_get(results->nucl, pct99_depth), warn_depth ? "     (!)" : "");
-    fprintf(fout, "Read depth max:                %'14lld%s\n", null_get(results->nucl, max_depth), warn_depth ? "     (!)" : "");
+    fprintf(fout, "Read depth SD:                  %'18.3f%s\n", null_get(results->nucl, sd_depth), warn_depth ? " (!)" : "");
+    fprintf(fout, "Read depth 99th pctile:         %'14lld%s\n", null_get(results->nucl, pct99_depth), warn_depth ? "     (!)" : "");
+    fprintf(fout, "Read depth max:                 %'14lld%s\n", null_get(results->nucl, max_depth), warn_depth ? "     (!)" : "");
     if (warn_depth) {
       fputc('\n', fout);
       fprintf(fout, "(!) Note: Read depth stats likely have been truncated.\n");
       fprintf(fout, "(!)       Try increasing --max-depth.\n");
-      fprintf(fout, "--> Max allowed depth:         %'14d (--max-depth)\n", params->depth_max);
-      fprintf(fout, "--> Max recorded depth:        %'14lld\n", null_get(results->nucl, max_depth));
+      fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x252C, (wchar_t) 0x2500, (wchar_t) 0x25Ba);
+      fprintf(fout, " Max allowed depth:          %'14d (--max-depth)\n", params->depth_max);
+      fwprintf(fout, L"%lc%lc%lc%lc", (wchar_t) 0x2514, (wchar_t) 0x2500, (wchar_t) 0x2500, (wchar_t) 0x25Ba);
+      fprintf(fout, " Max recorded depth:        %'14lld\n", null_get(results->nucl, max_depth));
     }
   }
   fputc('\n', fout);
   int no_mapq = results->nucl_shared->mapqs[255];
   double no_mapq_pct = calc_pct(no_mapq, results->r_seen);
-  fprintf(fout, "Alignment MAPQ min:            %'14lld\n", null_get(results->nucl, min_mapq));
-  fprintf(fout, "Alignment MAPQ 1st pctile:     %'14lld\n", null_get(results->nucl, pct1_mapq));
-  fprintf(fout, "Alignment MAPQ average:        %'18.3f\n", null_get(results->nucl, avg_mapq2));
-  fprintf(fout, "Alignment MAPQ SD:             %'18.3f\n", null_get(results->nucl, sd_mapq));
-  fprintf(fout, "Alignment MAPQ 99th pctile:    %'14lld\n", null_get(results->nucl, pct99_mapq));
-  fprintf(fout, "Alignment MAPQ max:            %'14lld\n", null_get(results->nucl, max_mapq));
-  fprintf(fout, "Alignments without MAPQ:       %'14d (%'.1f%%)\n", no_mapq, no_mapq_pct);
+  fprintf(fout, "Alignment MAPQ min:             %'14lld\n", null_get(results->nucl, min_mapq));
+  fprintf(fout, "Alignment MAPQ 1st pctile:      %'14lld\n", null_get(results->nucl, pct1_mapq));
+  fprintf(fout, "Alignment MAPQ average:         %'18.3f\n", null_get(results->nucl, avg_mapq2));
+  fprintf(fout, "Alignment MAPQ SD:              %'18.3f\n", null_get(results->nucl, sd_mapq));
+  fprintf(fout, "Alignment MAPQ 99th pctile:     %'14lld\n", null_get(results->nucl, pct99_mapq));
+  fprintf(fout, "Alignment MAPQ max:             %'14lld\n", null_get(results->nucl, max_mapq));
+  fprintf(fout, "Alignments without MAPQ:        %'14d (%'.1f%%)\n", no_mapq, no_mapq_pct);
   fputc('\n', fout);
   if (params->omit_gc) {
-    fprintf(fout, "Alignment GC min:                         ---\n");
-    fprintf(fout, "Alignment GC 1st pctile:                  ---\n");
-    fprintf(fout, "Alignment GC average:                     ---\n");
-    fprintf(fout, "Alignment GC SD:                          ---\n");
-    fprintf(fout, "Alignment GC 99th pctile:                 ---\n");
-    fprintf(fout, "Alignment GC max:                         ---\n");
+    fprintf(fout, "Alignment GC min:                          ---\n");
+    fprintf(fout, "Alignment GC 1st pctile:                   ---\n");
+    fprintf(fout, "Alignment GC average:                      ---\n");
+    fprintf(fout, "Alignment GC SD:                           ---\n");
+    fprintf(fout, "Alignment GC 99th pctile:                  ---\n");
+    fprintf(fout, "Alignment GC max:                          ---\n");
     fputc('\n', fout);
     fprintf(fout, "(!) Note: GC stats omitted. (--omit-gc)\n");
   } else {
-    fprintf(fout, "Alignment GC min:              %'14lld%%\n", null_get(results->nucl, min_gc));
-    fprintf(fout, "Alignment GC 1st pctile:       %'14lld%%\n", null_get(results->nucl, pct1_gc));
-    fprintf(fout, "Alignment GC average:          %'18.3f%%\n", 100.0 * null_get(results->nucl, gc_pct));
-    fprintf(fout, "Alignment GC SD:               %'18.3f%%\n", null_get(results->nucl, sd_gc));
-    fprintf(fout, "Alignment GC 99th pctile:      %'14lld%%\n", null_get(results->nucl, pct99_gc));
-    fprintf(fout, "Alignment GC max:              %'14lld%%\n", null_get(results->nucl, max_gc));
+    fprintf(fout, "Alignment GC min:               %'14lld%%\n", null_get(results->nucl, min_gc));
+    fprintf(fout, "Alignment GC 1st pctile:        %'14lld%%\n", null_get(results->nucl, pct1_gc));
+    fprintf(fout, "Alignment GC average:           %'18.3f%%\n", 100.0 * null_get(results->nucl, gc_pct));
+    fprintf(fout, "Alignment GC SD:                %'18.3f%%\n", null_get(results->nucl, sd_gc));
+    fprintf(fout, "Alignment GC 99th pctile:       %'14lld%%\n", null_get(results->nucl, pct99_gc));
+    fprintf(fout, "Alignment GC max:               %'14lld%%\n", null_get(results->nucl, max_gc));
   }
   fputc('\n', fout);
   int peaks_n = params->peaks_n;
   int peaks_nuc_n = null_get(results->nucl, peaks_n);
   double peaks_nuc_pct = calc_pct(peaks_nuc_n, peaks_n);
-  fprintf(fout, "Number of peaks:               %'14d (%'.1f%%)\n", peaks_nuc_n, peaks_nuc_pct);
+  fprintf(fout, "Number of peaks:                %'14d (%'.1f%%)\n", peaks_nuc_n, peaks_nuc_pct);
   double peaks_cov = calc_pct(null_get(results->nucl, peaks_total), null_get(results->nucl, actual));
-  fprintf(fout, "Peak coverage:                 %18.3f%%\n", peaks_cov);
+  fprintf(fout, "Peak coverage:                  %18.3f%%\n", peaks_cov);
   if (params->peaks == NULL) {
-    fprintf(fout, "Fraction of reads in peaks:               ---\n");
+    fprintf(fout, "Fraction of reads in peaks:                ---\n");
   } else {
-    fprintf(fout, "Fraction of reads in peaks:    %'18.3f%%\n", 100.0 * null_get(results->nucl, frip));
+    fprintf(fout, "Fraction of reads in peaks:     %'18.3f%%\n", 100.0 * null_get(results->nucl, frip));
   }
   fputc('\n', fout);
   int tss_n = params->tss_n;
   int tss_nuc_n = null_get(results->nucl, tss_n);
   double tss_nuc_pct = calc_pct(tss_nuc_n, tss_n);
-  fprintf(fout, "Number of TSSs:                %'14d (%'.1f%%)\n", tss_nuc_n, tss_nuc_pct);
+  fprintf(fout, "Number of TSSs:                 %'14d (%'.1f%%)\n", tss_nuc_n, tss_nuc_pct);
   if (params->tss == NULL) {
-    fprintf(fout, "TSS enrichment score:                     ---\n");
+    fprintf(fout, "TSS enrichment score:                      ---\n");
   } else {
-    fprintf(fout, "TSS enrichment score:          %'18.3f\n", null_get(results->nucl, tes));
+    fprintf(fout, "TSS enrichment score:           %'18.3f\n", null_get(results->nucl, tes));
   }
   fputc('\n', fout);
   fprintf(fout, "Note: Min/max and percentile stats are always printed as integers.\n");
