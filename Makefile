@@ -24,7 +24,7 @@ ZDIR    ?=./libs/zlib
 HTSDIR  ?=./libs/htslib
 PREFIX  ?=/usr/local
 BINDIR  ?=bin
-MANDIR  ?=share/man
+MANDIR  ?=share/man/man1
 TESTDIR  =./test
 
 debug: CFLAGS+=-g3 -Og -Wall -Wextra -Wdouble-promotion -Wno-sign-compare \

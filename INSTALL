@@ -59,7 +59,7 @@ The first command will compile the prepackaged external libraries as static
 libraries, then compile quaqc itself. The second command will move the quaqc
 binary to /usr/local/bin (configurable by setting the PREFIX and BINDIR
 environment variables), though this step is optional. This also moves the
-manual page to /usr/local/share/man. (configurable by setting the PREFIX and
+manual page to /usr/local/share/man/man1. (configurable by setting the PREFIX and
 MANDIR environment variables). The final command will clean up intermediate
 files from the compilation process.
 
