@@ -14,6 +14,8 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+.PHONY: test
+
 # User-adjustable variables
 CC      ?=cc
 CFLAGS  +=-std=gnu99
@@ -23,6 +25,7 @@ HTSDIR  ?=./libs/htslib
 PREFIX  ?=/usr/local
 BINDIR  ?=bin
 MANDIR  ?=share/man
+TESTDIR  =./test
 
 debug: CFLAGS+=-g3 -Og -Wall -Wextra -Wdouble-promotion -Wno-sign-compare \
 	-fsanitize=address,undefined -fno-omit-frame-pointer -DDEBUG
@@ -122,6 +125,9 @@ objects := $(patsubst %.c,%.o,$(wildcard src/*.c))
 
 quaqc: $(objects)
 	$(CC) $(CFLAGS) $(LDFLAGS) $(LDLIBS) $(objects) -o $@ $(HTSLIB) $(ZLIB)
+
+test: quaqc
+	(cd $(TESTDIR) && bash test.sh)
 
 install: quaqc
 	install -p ./quaqc $(PREFIX)/$(BINDIR)
