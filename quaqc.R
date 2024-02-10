@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 #
-#   quaqc: Quick Unassuming Atac-seq Quality Control
+#   quaqc: QUick Atac-seq Quality Control
 #   Copyright (C) 2024  Benjamin Jean-Marie Tremblay
 #
 #   This program is free software: you can redistribute it and/or modify
