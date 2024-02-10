@@ -138,4 +138,5 @@ install: quaqc
 
 uninstall:
 	-rm -f $(PREFIX)/$(BINDIR)/quaqc
+	-rm -f $(PREFIX)/$(MANDIR)/quaqc.1
 
