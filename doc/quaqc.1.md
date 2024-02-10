@@ -15,11 +15,11 @@ data with minimal processing time and extremely low memory overhead. Any number
 of samples can be processed, using multiple threads if desired. quaqc outputs
 a comprehensive set of aligned read metrics, including alignment size, fragment
 size, percent duplicates, mapq scores, read depth, GC content, and others.
-Although designed for ATAC-seq data, quaqc can also be used for other DNA-seq
-experiments as many of the metrics are related to genereal sequencing quality.
-Non-nuclear aligned reads can also be separately considered if so desired,
-helpful when determining the level of chloroplast contamination in plant
-ATAC-seq.
+Although designed for ATAC-seq data, quaqc can also be used for other unspliced
+DNA-seq experiments (such as ChIP-seq) as many of the metrics are related to
+genereal sequencing quality.  Non-nuclear aligned reads can also be separately
+considered if so desired, helpful when determining the level of chloroplast
+contamination in plant ATAC-seq.
 
 When aligning ATAC-seq reads, it is recommended not to perform any filtering
 before using quaqc, as well as marking duplicates and fixing mate coordinates
