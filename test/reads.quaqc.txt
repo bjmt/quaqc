@@ -1,126 +1,127 @@
-                                   quaqc v0.1                                   
-════════════════════════════════════════════════════════════════════════════════
+                         quaqc v0.1                         
+════════════════════════════════════════════════════════════
 
-Input file for this report: reads.bam
+  Input file for this report: reads.bam
 
-Command arguments used: -T tss.bed -t target.bed -vv 
+  Command arguments used: -T tss.bed -t target.bed -vv 
 
-Time of run start: 2024-02-09 12:16:14 CET
-Time of run end:   2024-02-09 12:16:14 CET
-Time ellapsed:     0 seconds
+  Time of run start: 2024-02-11 12:14:49 CET
+  Time of run end:   2024-02-11 12:14:49 CET
+  Time ellapsed:     0 seconds
 
-Target names specified:                    no
-Target BED provided:                       yes
-Blacklist BED provided:                    no
-Include secondary alignments:              no
-Include chimeric read alignments:          no
-Include PE alignments with improper mate:  no
-Include duplicate alignments:              no
+  Target names specified:                    no
+  Target BED provided:                       yes
+  Blacklist BED provided:                    no
+  Include secondary alignments:              no
+  Include chimeric read alignments:          no
+  Include PE alignments with improper mate:  no
+  Include duplicate alignments:              no
 
-Minimum MAPQ:                       30
-Minimum alignment size:             15
-Maximum alignment size:            250
-Minimum fragment size:              15
-Maximum fragment size:           2,000
+  Minimum MAPQ:                       30
+  Minimum alignment size:             15
+  Maximum alignment size:            250
+  Minimum fragment size:              15
+  Maximum fragment size:           2,000
 
-Peak count in BED:                   0
-TSS count in BED:                    1
-Target list count in BED:            1
-Blacklist count in BED:              0
+  Peak count in BED:                   0
+  TSS count in BED:                    1
+  Target list count in BED:            1
+  Blacklist count in BED:              0
 
-┌──────────────────────────────────────────────────────────────────────────────┐
-│                             Target genome stats                              │
-└──────────────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────┐
+│                   Target genome stats                    │
+└──────────────────────────────────────────────────────────┘
 
-Total sequences:                             7
-├── Nuclear sequences:                       5
-├── Mitochondrial sequences:                 1
-└── Plastid sequences:                       1
+  Total sequences:                             7
+  ├── Nuclear sequences:                       5
+  ├── Mitochondrial sequences:                 1
+  └── Plastid sequences:                       1
 
-Total genome size:                 119,667,750
-├── Nuclear genome size:           119,146,348 (99.6%)
-├── Mitochondrial genome size:         366,924 (0.3%)
-└── Plastid genome size:               154,478 (0.1%)
+  Total genome size:                 119,667,750
+  ├── Nuclear genome size:           119,146,348 (99.6%)
+  ├── Mitochondrial genome size:         366,924 (0.3%)
+  └── Plastid genome size:               154,478 (0.1%)
 
-Effective nuclear genome size:          5,000 (0.0%)
+  Effective nuclear genome size:           5,000 (0.0%)
 
-┌──────────────────────────────────────────────────────────────────────────────┐
-│                               Total read stats                               │
-└──────────────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────┐
+│                     Total read stats                     │
+└──────────────────────────────────────────────────────────┘
 
-Total reads:                             3,116
-├── Mapped:                              3,114 (99.9%)
-└── Unmapped:                                2 (0.1%)
+  Total reads:                             3,116
+  ├── Mapped:                              3,114 (99.9%)
+  └── Unmapped:                                2 (0.1%)
 
-Effective reads:                         3,114 (99.9%)
-├┬─ Nuclear:                             3,114 (100.0%)
-│└─ Duplicated:                            605 (19.4%)
-├┬─ Mitochondrial:                           0 (0.0%)
-│└─ Duplicated:                              0 (0.0%)
-├┬─ Plastid:                                 0 (0.0%)
-│└─ Duplicated:                              0 (0.0%)
-├── SE reads:                                0 (0.0%)
-├┬─ PE reads:                            3,114 (100.0%)
-│└─ Properly mated:                      3,112 (99.9%)
-├┬─ Primary alignments:                  3,114 (100.0%)
-│└─ Non redundant fraction:              2,509 (80.6%)
-├── Secondary alignments:                    0 (0.0%)
-└── Supplementary alignments:                0 (0.0%)
+  Effective reads:                         3,114 (99.9%)
+  ├┬─ Nuclear:                             3,114 (100.0%)
+  │└─ Duplicated:                            605 (19.4%)
+  ├┬─ Mitochondrial:                           0 (0.0%)
+  │└─ Duplicated:                              0 (0.0%)
+  ├┬─ Plastid:                                 0 (0.0%)
+  │└─ Duplicated:                              0 (0.0%)
+  ├── SE reads:                                0 (0.0%)
+  ├┬─ PE reads:                            3,114 (100.0%)
+  │└─ Properly mated:                      3,112 (99.9%)
+  ├┬─ Primary alignments:                  3,114 (100.0%)
+  │└─ Non redundant fraction:              2,509 (80.6%)
+  ├── Secondary alignments:                    0 (0.0%)
+  └── Supplementary alignments:                0 (0.0%)
 
-┌──────────────────────────────────────────────────────────────────────────────┐
-│                      Nuclear read stats after filtering                      │
-└──────────────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────┐
+│            Nuclear read stats after filtering            │
+└──────────────────────────────────────────────────────────┘
 
-Reads passing filters:                   2,487 (79.9%)
+  Reads passing filters:                   2,487 (79.9%)
 
-Alignment size min:                         26
-Alignment size 1st pctile:                  36
-Alignment size average:                    104.363
-Alignment size SD:                          46.141
-Alignment size 99th pctile:                150
-Alignment size max:                        150
+  Alignment size min:                         26
+  Alignment size 1st pctile:                  36
+  Alignment size average:                    104.363
+  Alignment size SD:                          46.141
+  Alignment size 99th pctile:                150
+  Alignment size max:                        150
 
-Fragments passing filters:               1,245
+  Fragments passing filters:               1,245
 
-Fragment size min:                          26
-Fragment size 1st pctile:                   38
-Fragment size average:                     165.670
-Fragment size SD:                          145.897
-Fragment size 99th pctile:                 776
-Fragment size max:                         915
+  Fragment size min:                          26
+  Fragment size 1st pctile:                   38
+  Fragment size average:                     165.670
+  Fragment size SD:                          145.897
+  Fragment size 99th pctile:                 776
+  Fragment size max:                         915
 
-Genome coverage:                           100.000%
+  Genome coverage:                           100.000%
 
-Read depth min:                              0
-Read depth 1st pctile:                      16
-Read depth average:                         51.910
-Read depth SD:                              15.885
-Read depth 99th pctile:                    116
-Read depth max:                            123
+  Read depth min:                              0
+  Read depth 1st pctile:                      16
+  Read depth average:                         51.910
+  Read depth SD:                              15.885
+  Read depth 99th pctile:                    116
+  Read depth max:                            123
 
-Alignment MAPQ min:                         31
-Alignment MAPQ 1st pctile:                  38
-Alignment MAPQ average:                     41.879
-Alignment MAPQ SD:                           0.849
-Alignment MAPQ 99th pctile:                 42
-Alignment MAPQ max:                         42
-Alignments without MAPQ:                     0 (0.0%)
+  Alignment MAPQ min:                         31
+  Alignment MAPQ 1st pctile:                  38
+  Alignment MAPQ average:                     41.879
+  Alignment MAPQ SD:                           0.849
+  Alignment MAPQ 99th pctile:                 42
+  Alignment MAPQ max:                         42
+  Alignments without MAPQ:                     0 (0.0%)
 
-Alignment GC min:                           18%
-Alignment GC 1st pctile:                    22%
-Alignment GC average:                       40.174%
-Alignment GC SD:                             7.167%
-Alignment GC 99th pctile:                   56%
-Alignment GC max:                           62%
+  Alignment GC min:                           18%
+  Alignment GC 1st pctile:                    22%
+  Alignment GC average:                       40.174%
+  Alignment GC SD:                             7.167%
+  Alignment GC 99th pctile:                   56%
+  Alignment GC max:                           62%
 
-Number of peaks:                             0 (0.0%)
-Peak coverage:                               0.000%
-Fraction of reads in peaks:                ---
+  Number of peaks:                             0 (0.0%)
+  Peak coverage:                               0.000%
+  Fraction of reads in peaks:                ---
 
-Number of TSSs:                              1 (100.0%)
-TSS enrichment score:                        3.046
+  Number of TSSs:                              1 (100.0%)
+  TSS enrichment score:                        3.046
 
-Note: Min/max and percentile stats are always printed as integers.
+  Note: Min/max and percentile stats are always printed
+        as integers.
 
-════════════════════════════════════════════════════════════════════════════════
-                              End of quaqc report                               
+════════════════════════════════════════════════════════════
+                    End of quaqc report                     
