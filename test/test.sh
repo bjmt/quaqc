@@ -2,7 +2,7 @@
 
 echo "Running test of quaqc output."
 
-if ! ../quaqc --output-ext .test.txt -T tss.bed -t target.bed reads.bam ; then
+if ! ../quaqc --output-ext .test.txt -P peak.bed -T tss.bed -t target.bed reads.bam ; then
   echo "Test failed, quaqc encountered an error."
   exit 1
 fi

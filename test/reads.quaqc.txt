@@ -3,10 +3,10 @@
 
   Input file for this report: reads.bam
 
-  Command arguments used: -T tss.bed -t target.bed -vv 
+  Command arguments used: -P peak.bed -T tss.bed -t target.bed 
 
-  Time of run start: 2024-02-11 12:14:49 CET
-  Time of run end:   2024-02-11 12:14:49 CET
+  Time of run start: 2024-02-11 17:45:36 CET
+  Time of run end:   2024-02-11 17:45:36 CET
   Time ellapsed:     0 seconds
 
   Target names specified:                    no
@@ -23,7 +23,7 @@
   Minimum fragment size:              15
   Maximum fragment size:           2,000
 
-  Peak count in BED:                   0
+  Peak count in BED:                   1
   TSS count in BED:                    1
   Target list count in BED:            1
   Blacklist count in BED:              0
@@ -73,49 +73,54 @@
 
   Reads passing filters:                   2,487 (79.9%)
 
-  Alignment size min:                         26
-  Alignment size 1st pctile:                  36
-  Alignment size average:                    104.363
-  Alignment size SD:                          46.141
-  Alignment size 99th pctile:                150
-  Alignment size max:                        150
+  Alignment size
+  ├── Min:                                    26
+  ├── 1st pctile:                             36
+  ├── Average:                               104.363
+  ├── SD:                                     46.141
+  ├── 99th pctile:                           150
+  └── Max:                                   150
 
   Fragments passing filters:               1,245
 
-  Fragment size min:                          26
-  Fragment size 1st pctile:                   38
-  Fragment size average:                     165.670
-  Fragment size SD:                          145.897
-  Fragment size 99th pctile:                 776
-  Fragment size max:                         915
+  Fragment size
+  ├── Min:                                    26
+  ├── 1st pctile:                             38
+  ├── Average:                               165.670
+  ├── SD:                                    145.897
+  ├── 99th pctile:                           776
+  └── Max:                                   915
 
   Genome coverage:                           100.000%
 
-  Read depth min:                              0
-  Read depth 1st pctile:                      16
-  Read depth average:                         51.910
-  Read depth SD:                              15.885
-  Read depth 99th pctile:                    116
-  Read depth max:                            123
+  Read depth
+  ├── Min:                                     0
+  ├── 1st pctile:                             16
+  ├── Average:                                51.910
+  ├── SD:                                     15.885
+  ├── 99th pctile:                           116
+  └── Max:                                   123
 
-  Alignment MAPQ min:                         31
-  Alignment MAPQ 1st pctile:                  38
-  Alignment MAPQ average:                     41.879
-  Alignment MAPQ SD:                           0.849
-  Alignment MAPQ 99th pctile:                 42
-  Alignment MAPQ max:                         42
-  Alignments without MAPQ:                     0 (0.0%)
+  Alignment MAPQ
+  ├── Min:                                    31
+  ├── 1st pctile:                             38
+  ├── Average:                                41.879
+  ├── SD:                                      0.849
+  ├── 99th pctile:                            42
+  ├── Max:                                    42
+  └── MAPQ missing:                            0 (0.0%)
 
-  Alignment GC min:                           18%
-  Alignment GC 1st pctile:                    22%
-  Alignment GC average:                       40.174%
-  Alignment GC SD:                             7.167%
-  Alignment GC 99th pctile:                   56%
-  Alignment GC max:                           62%
+  Alignment GC
+  ├── Min:                                    18%
+  ├── 1st pctile:                             22%
+  ├── Average:                                40.174%
+  ├── SD:                                      7.167%
+  ├── 99th pctile:                            56%
+  └── Max:                                    62%
 
-  Number of peaks:                             0 (0.0%)
-  Peak coverage:                               0.000%
-  Fraction of reads in peaks:                ---
+  Number of peaks:                             1 (100.0%)
+  Peak coverage:                               5.000%
+  Fraction of reads in peaks:                 12.505%
 
   Number of TSSs:                              1 (100.0%)
   TSS enrichment score:                        3.046
