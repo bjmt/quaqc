@@ -83,12 +83,12 @@ accomplished using `samtools` in the following manner during alignment:
     metric calculations will also be adjusted. Cannot be used simultaneously
     with `--target-list`.
 
-**\--rg-names**=*STR*
+**-r** *STR*, **\--rg-names**=*STR*
 :   Comma-separated read group identifiers. This will cause quaqc to discard
     reads which do not have matching read group tags. Cannot be used
     simultaneously with `--rg-list`.
 
-**\--rg-list**=*STR*
+**-R** *STR*, **\--rg-list**=*STR*
 :   Filename of a file containing read group identifiers, one per line. This
     will cause quaqc to discard reads which do not have a matching read group
     tag. Cannot be used simultaneously with `--rg-names`.
@@ -307,6 +307,9 @@ accomplished using `samtools` in the following manner during alignment:
     increase linearly with increasing thread count. When using default settings,
     the `--max-depth` option has the biggest impact on memory growth. Set this
     to a lower value to mitigate this.
+
+**-i** *STR*, **\--title**=*STR*
+:   Assign a title to the run. All output reports will contain this title.
 
 **-c**, **\--continue**
 :   If set when processing more than one input file, quaqc will keep running if

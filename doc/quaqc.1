@@ -102,13 +102,13 @@ these regions are to be ignored by quaqc.
 The effective genome size for metric calculations will also be adjusted.
 Cannot be used simultaneously with \f[C]--target-list\f[R].
 .TP
-\f[B]--rg-names\f[R]=\f[I]STR\f[R]
+\f[B]-r\f[R] \f[I]STR\f[R], \f[B]--rg-names\f[R]=\f[I]STR\f[R]
 Comma-separated read group identifiers.
 This will cause quaqc to discard reads which do not have matching read
 group tags.
 Cannot be used simultaneously with \f[C]--rg-list\f[R].
 .TP
-\f[B]--rg-list\f[R]=\f[I]STR\f[R]
+\f[B]-R\f[R] \f[I]STR\f[R], \f[B]--rg-list\f[R]=\f[I]STR\f[R]
 Filename of a file containing read group identifiers, one per line.
 This will cause quaqc to discard reads which do not have a matching read
 group tag.
@@ -356,6 +356,10 @@ memory usage will increase linearly with increasing thread count.
 When using default settings, the \f[C]--max-depth\f[R] option has the
 biggest impact on memory growth.
 Set this to a lower value to mitigate this.
+.TP
+\f[B]-i\f[R] \f[I]STR\f[R], \f[B]--title\f[R]=\f[I]STR\f[R]
+Assign a title to the run.
+All output reports will contain this title.
 .TP
 \f[B]-c\f[R], \f[B]--continue\f[R]
 If set when processing more than one input file, quaqc will keep running
