@@ -77,6 +77,22 @@ accomplished using `samtools` in the following manner during alignment:
     to. The effective genome size for metric calculations will also be
     adjusted. Cannot be used simultaneously with `--blacklist`.
 
+**-b** *FILE*, **\--blacklist**=*FILE*
+:   Filename of a BED file containing ranges in which all read aligning to
+    these regions are to be ignored by quaqc. The effective genome size for
+    metric calculations will also be adjusted. Cannot be used simultaneously
+    with `--target-list`.
+
+**\--rg-names**=*STR*
+:   Comma-separated read group identifiers. This will cause quaqc to discard
+    reads which do not have matching read group tags. Cannot be used
+    simultaneously with `--rg-list`.
+
+**\--rg-list**=*STR*
+:   Filename of a file containing read group identifiers, one per line. This
+    will cause quaqc to discard reads which do not have a matching read group
+    tag. Cannot be used simultaneously with `--rg-names`.
+
 **-2**, **\--use-secondary**
 :   Do not filter out alignments marked with the secondary alignment flag
     for use in the calculation of metrics done after read filtering. Useful

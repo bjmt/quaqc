@@ -96,6 +96,24 @@ to.
 The effective genome size for metric calculations will also be adjusted.
 Cannot be used simultaneously with \f[C]--blacklist\f[R].
 .TP
+\f[B]-b\f[R] \f[I]FILE\f[R], \f[B]--blacklist\f[R]=\f[I]FILE\f[R]
+Filename of a BED file containing ranges in which all read aligning to
+these regions are to be ignored by quaqc.
+The effective genome size for metric calculations will also be adjusted.
+Cannot be used simultaneously with \f[C]--target-list\f[R].
+.TP
+\f[B]--rg-names\f[R]=\f[I]STR\f[R]
+Comma-separated read group identifiers.
+This will cause quaqc to discard reads which do not have matching read
+group tags.
+Cannot be used simultaneously with \f[C]--rg-list\f[R].
+.TP
+\f[B]--rg-list\f[R]=\f[I]STR\f[R]
+Filename of a file containing read group identifiers, one per line.
+This will cause quaqc to discard reads which do not have a matching read
+group tag.
+Cannot be used simultaneously with \f[C]--rg-names\f[R].
+.TP
 \f[B]-2\f[R], \f[B]--use-secondary\f[R]
 Do not filter out alignments marked with the secondary alignment flag
 for use in the calculation of metrics done after read filtering.
