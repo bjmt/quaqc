@@ -100,8 +100,8 @@ enum opts_enum {
   MAX_DEPTH,
   MAX_QHIST,
   MAX_FHIST,
-  RG_ID,
   RG_LIST,
+  RG_FILE,
   USE_CHIMERIC,
   OMIT_GC,
   OMIT_DEPTH,
@@ -138,8 +138,8 @@ static struct option opts_long[] = {
   { "max-depth",     required_argument, 0, MAX_DEPTH     },
   { "max-qhist",     required_argument, 0, MAX_QHIST     },
   { "max-fhist",     required_argument, 0, MAX_FHIST     },
-  { "rg-id",         required_argument, 0, RG_ID         },
   { "rg-list",       required_argument, 0, RG_LIST       },
+  { "rg-file",       required_argument, 0, RG_FILE       },
   { "tss-size",      required_argument, 0, TSS_SIZE      },
   { "tss-qlen",      required_argument, 0, TSS_QLEN      },
   { "tss-tn5",       no_argument,       0, TN5_SHIFT     },
@@ -189,8 +189,8 @@ static void help(void) {
     " -n, --target-names   STR   Only consider reads on target sequences.\n"
     " -t, --target-list    FILE  Only consider reads overlapping ranges in a BED file.\n"
     " -b, --blacklist      FILE  Only consider reads outside ranges in a BED file.\n"
-    "     --rg-id          STR   Only consider reads with these read groups (RG).\n"
-    "     --rg-list        FILE  Only consider reads with read groups (RG) in a file.\n"
+    "     --rg-list        STR   Only consider reads with these read groups (RG).\n"
+    "     --rg-file        FILE  Only consider reads with read groups (RG) in a file.\n"
     "\n"
     "Filter options:\n"
     " -2, --use-secondary        Allow secondary alignments.\n"
@@ -346,19 +346,21 @@ static int str_split(char *str, char **res, const char sep, const int max_size) 
   return field_n - 1;
 }
 
-static void *str_split_and_hash(char *str, int *n, const char sep) {
+static void *str_split_and_hash(char *str, int *n, int *dups, const char sep) {
   const char delim[2] = { sep, '\0' };
   *n = 0;
   if (strlen(str) == 0) return NULL;
-  int d;
+  int d, d_n = 0;
   char *rg;
   void *h = str_hash_init(NULL, 0, &d);
   rg = strtok(str, delim);
   for (int i = 0; i < MAX_HASH_SIZE && rg != NULL; i++) {
-    str_hash_add(h, rg);
+    d = str_hash_add(h, rg);
+    d_n += d == 0;
     *n += 1;
     rg = strtok(NULL, delim);   
   }
+  *dups = d_n;
   if (rg != NULL) *n = -1;
   return h;
 }
@@ -578,49 +580,37 @@ static int quaqc_main(int argc, char *argv[]) {
 
   char default_pltd[sizeof(DEFAULT_PLTD)] = DEFAULT_PLTD;
   char default_mito[sizeof(DEFAULT_MITO)] = DEFAULT_MITO;
-  char *pltd[MAX_PLASTIDS], *mito[MAX_MITOCHONDRIA]; //, *tseqs[MAX_TARGET_NAMES];
+  char *pltd[MAX_PLASTIDS], *mito[MAX_MITOCHONDRIA];
   int pltd_n = -1, mito_n = -1, tseqs_n, trg_n;
   params = init_params(argc, argv);
   char *peak_bed;
 
-  int opt, mapq_tmp; //, d;
+  int opt, mapq_tmp, d;
   while ((opt = getopt_long(argc, argv, opts_short, opts_long, NULL)) != -1) {
     switch (opt) {
       case MITOCHONDRIA:
         if (params->mito != NULL) {
           quit("--mitochondria has already been set.");
         }
-        params->mito = str_split_and_hash(optarg, &mito_n, ',');
+        params->mito = str_split_and_hash(optarg, &mito_n, &d, ',');
         if (mito_n == 0) {
           quit("Failed to parse any mitochondria (--mitochondria).");
         } else if (mito_n == -1) {
           quit("Too many mitochondria specified, max = %'d (--mitochondria).", MAX_HASH_SIZE);
         }
-        /* mito_n = str_split(optarg, mito, ',', MAX_MITOCHONDRIA); */
-        /* if (mito_n == -1) { */
-        /*   quit("Too many names specified in --mitochondria (max = %d)", MAX_MITOCHONDRIA - 1); */
-        /* } else if (mito_n) { */
-        /*   params->mito = str_hash_init(mito, mito_n, &d); */
-        /* } */
-        /* if (d) warn("Found duplicate names in --mitochondria."); */
+        if (d > 0) warn("Found duplicate names in --mitochondria.");
         break;
       case PLASTIDS:
         if (params->pltd != NULL) {
           quit("--plastids has already been set.");
         }
-        params->pltd = str_split_and_hash(optarg, &pltd_n, ',');
+        params->pltd = str_split_and_hash(optarg, &pltd_n, &d, ',');
         if (pltd_n == 0) {
           quit("Failed to parse any plastids (--plastids).");
         } else if (pltd_n == -1) {
           quit("Too many plastids specified, max = %'d (--plastids).", MAX_HASH_SIZE);
         }
-        /* pltd_n = str_split(optarg, pltd, ',', MAX_PLASTIDS); */
-        /* if (pltd_n == -1) { */
-        /*   quit("Too many names specified in --plastids (max = %d)", MAX_PLASTIDS - 1); */
-        /* } else if (pltd_n) { */
-        /*   params->pltd = str_hash_init(pltd, pltd_n, &d); */
-        /* } */
-        /* if (d) warn("Found duplicate names in --plastid."); */
+        if (d > 0) warn("Found duplicate names in --plastids.");
         break;
       case PEAKS:
         if (params->peaks != NULL) {
@@ -648,20 +638,13 @@ static int quaqc_main(int argc, char *argv[]) {
         if (params->tseqs != NULL) {
           quit("--target-names has already been set.");
         }
-        params->tseqs = str_split_and_hash(optarg, &tseqs_n, ',');
+        params->tseqs = str_split_and_hash(optarg, &tseqs_n, &d, ',');
         if (tseqs_n == 0) {
           quit("Failed to parse any target names (--target-names).");
         } else if (tseqs_n == -1) {
           quit("Too many target names specified, max = %'d (--target-names).", MAX_HASH_SIZE);
         }
-        /* tseqs_n = str_split(optarg, tseqs, ',', MAX_TARGET_NAMES); */
-        /* if (tseqs_n == -1) { */
-        /*   quit("Too many names specified in --target-names (max = %d)", MAX_TARGET_NAMES - 1); */
-        /* } else if (!tseqs_n) { */
-        /*   quit("Could not parse --target-names."); */
-        /* } */
-        /* params->tseqs = str_hash_init(tseqs, tseqs_n, &d); */
-        /* if (d) warn("Found duplicate names in --target-names."); */
+        if (d > 0) warn("Found duplicate names in --target-names.");
         break;
       case TARGET_LIST:
         if (params->tlist != NULL) {
@@ -685,18 +668,22 @@ static int quaqc_main(int argc, char *argv[]) {
         bed_unify(params->blist);
         params->blist_n = bed_n(params->blist);
         break;
-      case RG_ID:
+      case RG_LIST:
         if (params->trg != NULL) {
-          quit("Target read groups have already been set (--rg-id).");
+          quit("Target read groups have already been set (--rg-list).");
         }
-        params->trg = str_split_and_hash(optarg, &trg_n, ',');
+        params->trg = str_split_and_hash(optarg, &trg_n, &d, ',');
         if (trg_n == 0) {
-          quit("Failed to parse any read groups (--rg-id).");
+          quit("Failed to parse any read groups (--rg-list).");
         } else if (trg_n == -1) {
-          quit("Too many read groups specified, max = %'d (--rg-id).", MAX_HASH_SIZE);
+          quit("Too many read groups specified, max = %'d (--rg-list).", MAX_HASH_SIZE);
         } else {
           params->trg_n = trg_n;
         }
+        if (d > 0) warn("Found duplicate names in --target-names.");
+        break;
+      case RG_FILE:
+        // TODO
         break;
       case USE_SECONDARY:
         if (params->use_2nd) {

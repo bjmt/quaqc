@@ -33,11 +33,12 @@ void *str_hash_init(char *str_arr[], const int str_n, int *dups) {;
   return (void *) h;
 }
 
-void str_hash_add(void *h, char *str_one) {
+int str_hash_add(void *h, char *str_one) {
+  int ret = 1;
   if (h != NULL) {
-    int ret;
     kh_put(str, (khash_t(str) *) h, str_one, &ret);
   }
+  return ret;
 }
 
 bool str_hash_exists(void *h, const char *str) {

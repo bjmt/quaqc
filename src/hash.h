@@ -24,7 +24,7 @@
 
 void *str_hash_init(char *str_arr[], const int str_n, int *dups);
 bool str_hash_exists(void *h, const char *str);
-void str_hash_add(void *h, char *str_one);
+int str_hash_add(void *h, char *str_one);
 void str_hash_destroy(void *h);
 int str_hash_size(void *h);
 
