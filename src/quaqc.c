@@ -47,11 +47,16 @@
 #include <pthread.h>
 #include "htslib/hts.h"
 #include "htslib/sam.h"
+#include "htslib/kstring.h"
+#include "htslib/kseq.h"
 #include "bedidx.h"
 #include "quaqc.h"
 #include "bam.h"
 #include "output.h"
 #include "hash.h"
+#include "zlib.h"
+
+KSTREAM_INIT(gzFile, gzread, 8192)
 
 // Thread stuff ----------------------------------------------------------------------
 
@@ -100,8 +105,8 @@ enum opts_enum {
   MAX_DEPTH,
   MAX_QHIST,
   MAX_FHIST,
+  RG_NAMES,
   RG_LIST,
-  RG_FILE,
   USE_CHIMERIC,
   OMIT_GC,
   OMIT_DEPTH,
@@ -138,8 +143,8 @@ static struct option opts_long[] = {
   { "max-depth",     required_argument, 0, MAX_DEPTH     },
   { "max-qhist",     required_argument, 0, MAX_QHIST     },
   { "max-fhist",     required_argument, 0, MAX_FHIST     },
+  { "rg-names",      required_argument, 0, RG_NAMES      },
   { "rg-list",       required_argument, 0, RG_LIST       },
-  { "rg-file",       required_argument, 0, RG_FILE       },
   { "tss-size",      required_argument, 0, TSS_SIZE      },
   { "tss-qlen",      required_argument, 0, TSS_QLEN      },
   { "tss-tn5",       no_argument,       0, TN5_SHIFT     },
@@ -189,8 +194,8 @@ static void help(void) {
     " -n, --target-names   STR   Only consider reads on target sequences.\n"
     " -t, --target-list    FILE  Only consider reads overlapping ranges in a BED file.\n"
     " -b, --blacklist      FILE  Only consider reads outside ranges in a BED file.\n"
-    "     --rg-list        STR   Only consider reads with these read groups (RG).\n"
-    "     --rg-file        FILE  Only consider reads with read groups (RG) in a file.\n"
+    "     --rg-names       STR   Only consider reads with these read groups (RG).\n"
+    "     --rg-list        FILE  Only consider reads with read groups (RG) in a file.\n"
     "\n"
     "Filter options:\n"
     " -2, --use-secondary        Allow secondary alignments.\n"
@@ -361,8 +366,55 @@ static void *str_split_and_hash(char *str, int *n, int *dups, const char sep) {
     rg = strtok(NULL, delim);   
   }
   *dups = d_n;
-  if (rg != NULL) *n = -1;
+  if (rg != NULL) {
+    *n = -1;
+  } else {
+    *n -= *dups;
+  }
   return h;
+}
+
+static void *read_file_and_hash(const char *fn, int *n, int *dups) {
+  *n = 0;
+  int d, d_n = 0;
+  void *h = str_hash_init(NULL, 0, &d);
+  gzFile fp = gzopen(fn, "r");
+  if (fp == 0) {
+    *n = -2;
+    return NULL;
+  }
+  kstring_t str = { 0, 0, NULL };
+  kstream_t *ks = ks_init(fp);
+  int ks_len, dret, l_n = 0;
+  while ((ks_len = ks_getuntil(ks, KS_SEP_LINE, &str, &dret)) >= 0) {
+    if (ks_len > 0 && str.s[0] != '\0') {
+      l_n++;
+      if (l_n > MAX_HASH_SIZE) {
+        *n = -1;
+        str_hash_destroy(h);
+        return NULL;
+      }
+      d = str_hash_add(h, str.s);
+      d_n += d == 0;
+    }
+  }
+  ks_destroy(ks);
+  free(str.s);
+  if (gzclose(fp) != Z_OK) {
+    fp = NULL;
+    *n = -3;
+    str_hash_destroy(h);
+    return NULL;
+  }
+  *n = l_n;
+  if (l_n == 0) {
+    str_hash_destroy(h);
+    return NULL;
+  } else {
+    *dups = d_n;
+    *n -= *dups;
+    return h;
+  }
 }
 
 // params_t ----------------------------------------------------------------------
@@ -668,7 +720,7 @@ static int quaqc_main(int argc, char *argv[]) {
         bed_unify(params->blist);
         params->blist_n = bed_n(params->blist);
         break;
-      case RG_LIST:
+      case RG_NAMES:
         if (params->trg != NULL) {
           quit("Target read groups have already been set (--rg-list).");
         }
@@ -680,10 +732,23 @@ static int quaqc_main(int argc, char *argv[]) {
         } else {
           params->trg_n = trg_n;
         }
-        if (d > 0) warn("Found duplicate names in --target-names.");
+        if (d > 0) warn("Found duplicate names in --rg-list.");
         break;
-      case RG_FILE:
-        // TODO
+      case RG_LIST:
+        if (params->trg != NULL) {
+          quit("Target read groups have already been set (--rg-file).");
+        }
+        params->trg = read_file_and_hash(optarg, &trg_n, &d);
+        if (trg_n == 0) {
+          quit("Failed to parse any read groups (--rg-file).");
+        } else if (trg_n == -1) {
+          quit("Too many read groups specified, max = %'d (--rg-list).", MAX_HASH_SIZE);
+        } else if (trg_n == -2) {
+          quit("Failed to open file (--rg-file).");
+        } else if (trg_n == -3) {
+          warn("Failed to close file (--rg-file).");
+        }
+        if (d > 0) warn("Found duplicate names in --rg-file.");
         break;
       case USE_SECONDARY:
         if (params->use_2nd) {
