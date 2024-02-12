@@ -58,6 +58,7 @@
 #define MAX_PLASTIDS     1024
 #define MAX_MITOCHONDRIA 1024
 #define MAX_TARGET_NAMES 1024
+#define MAX_HASH_SIZE    1000000000
 
 #define   likely(cond) __builtin_expect((cond), 1)
 #define unlikely(cond) __builtin_expect((cond), 0)
@@ -98,8 +99,8 @@ typedef struct params_t {
   char **argv; int argc, flag_n;
   void *mito, *pltd, *tseqs;
   char *out_dir, *out_ext, *keep_dir, *keep_ext, *json;
-  void *peaks, *tss, *blist, *tlist;
-  int peaks_n, tss_n, blist_n, tlist_n;
+  void *peaks, *tss, *blist, *tlist, *trg;
+  int peaks_n, tss_n, blist_n, tlist_n, trg_n;
   uint8_t mapq;
   hts_pos_t qlen_min, flen_min, qlen_max, flen_max;
   int threads, depth_max, qhist_max, fhist_max, tss_size, tss_qlen;

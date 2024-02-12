@@ -205,6 +205,8 @@ int init_json(const params_t *params) {
   fjson_write(fjson, "    \"target_list_bed_n\": %d,\n", params->tlist_n);
   fjson_write(fjson, "    \"blacklist_bed\": %s,\n", strbool(params->blist != NULL));
   fjson_write(fjson, "    \"blacklist_bed_n\": %d,\n", params->blist_n);
+  fjson_write(fjson, "    \"read_groups\": %s,\n", strbool(params->trg != NULL));
+  fjson_write(fjson, "    \"read_groups_n\": %d,\n", params->trg_n);
   fjson_write(fjson, "    \"mapq_min\": %d,\n", (int) params->mapq);
   fjson_write(fjson, "    \"alignment_size_min\": %d,\n", (int) params->qlen_min);
   fjson_write(fjson, "    \"alignment_size_max\": %d,\n", (int) params->qlen_max);
@@ -693,6 +695,8 @@ int print_results(char *fn, results_t *results, const params_t *params) {
   fprintf(fout, "Target BED provided:                       %s\n", bool2str(params->tlist != NULL));
   printWS(WS, fout);
   fprintf(fout, "Blacklist BED provided:                    %s\n", bool2str(params->blist != NULL));
+  printWS(WS, fout);
+  fprintf(fout, "Read groups specified:                     %s\n", bool2str(params->trg != NULL));
   printWS(WS, fout);
   fprintf(fout, "Include secondary alignments:              %s\n", bool2str(params->use_2nd));
   printWS(WS, fout);

@@ -91,8 +91,20 @@ static inline bool frag_filter(const bam1_t *aln, const hts_pos_t qlen, const pa
   ;
 }
 
+static inline bool check_rg(const bam1_t *aln, const params_t *params) {
+  uint8_t *rg_p = bam_aux_get(aln, "RG");
+  if (rg_p == NULL) return false;
+  char *rg = bam_aux2Z(rg_p);
+  if (rg == NULL) return false;
+  return str_hash_exists(params->trg, rg);
+}
+
+static inline bool use_rg(const bam1_t *aln, const params_t *params) {
+  return params->trg == NULL || check_rg(aln, params);
+}
+
 static inline bool read_is_visible(const bam1_t *aln, const char *seq, const hts_pos_t qend, const params_t *params) {
-  return whitelisted(params->tlist, seq, aln, qend) && !blacklisted(params->blist, seq, aln, qend);
+  return whitelisted(params->tlist, seq, aln, qend) && !blacklisted(params->blist, seq, aln, qend) && use_rg(aln, params);
 }
 
 static inline bool passes_filters(const bam1_t *aln, const hts_pos_t qlen, const params_t *params) {
@@ -540,6 +552,7 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params) {
       }
       while ((itr_ret = sam_itr_next(bam, itr, aln)) >= 0) {
         if (unlikely((aln->core.flag & BAM_FUNMAP) != 0)) continue;
+        check_rg(aln, params);
         proc_n++; stats->reads_n++; results->r_seen++;
 
         if (proc_n % 10000000 == 0) {
