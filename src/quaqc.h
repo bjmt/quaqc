@@ -98,7 +98,7 @@ enum seq_type {
 typedef struct params_t {
   char **argv; int argc, flag_n;
   void *mito, *pltd, *tseqs;
-  char *out_dir, *out_ext, *keep_dir, *keep_ext, *json;
+  char *title, *out_dir, *out_ext, *keep_dir, *keep_ext, *json;
   void *peaks, *tss, *blist, *tlist, *trg;
   int peaks_n, tss_n, blist_n, tlist_n, trg_n;
   uint8_t mapq;

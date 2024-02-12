@@ -1,12 +1,13 @@
                          quaqc v0.1                         
 ════════════════════════════════════════════════════════════
 
+  Run title: ---
   Input file for this report: reads.bam
 
   Command arguments used: -P peak.bed -T tss.bed -t target.bed 
 
-  Time of run start: 2024-02-12 13:59:32 CET
-  Time of run end:   2024-02-12 13:59:32 CET
+  Time of run start: 2024-02-12 17:36:06 CET
+  Time of run end:   2024-02-12 17:36:06 CET
   Time ellapsed:     0 seconds
 
   Target names specified:                    no

@@ -97,6 +97,9 @@ enum opts_enum {
   USE_ALL       = 'A',
   USE_DOVETAILS = 'D',
   LOW_MEM       = 'L',
+  TITLE         = 'i',
+  RG_NAMES      = 'r',
+  RG_LIST       = 'R',
 
   MIN_QLEN      = 1000,
   MIN_FLEN,
@@ -105,8 +108,6 @@ enum opts_enum {
   MAX_DEPTH,
   MAX_QHIST,
   MAX_FHIST,
-  RG_NAMES,
-  RG_LIST,
   USE_CHIMERIC,
   OMIT_GC,
   OMIT_DEPTH,
@@ -121,7 +122,7 @@ enum opts_enum {
   CHIP,
 };
 
-const static char *opts_short = "m:p:n:t:b:2q:o:t:Sk:K:j:fhcvJ:0P:T:NDO:AdL";
+const static char *opts_short = "m:p:n:t:b:2q:o:t:Sk:K:j:fhcvJ:0P:T:NDO:AdLi:r:R:";
 
 static struct option opts_long[] = {
   { "mitochondria",  required_argument, 0, MITOCHONDRIA  },
@@ -169,6 +170,7 @@ static struct option opts_long[] = {
   { "low-mem",       no_argument,       0, LOW_MEM       },
   { "chip",          no_argument,       0, CHIP          },
   { "help",          no_argument,       0, HELP          },
+  { "title",         required_argument, 0, TITLE         },
   { "continue",      no_argument,       0, CONTINUE      },
   { "verbose",       no_argument,       0, VERBOSE       },
   { 0,               0,                 0, 0             }
@@ -194,8 +196,8 @@ static void help(void) {
     " -n, --target-names   STR   Only consider reads on target sequences.\n"
     " -t, --target-list    FILE  Only consider reads overlapping ranges in a BED file.\n"
     " -b, --blacklist      FILE  Only consider reads outside ranges in a BED file.\n"
-    "     --rg-names       STR   Only consider reads with these read groups (RG).\n"
-    "     --rg-list        FILE  Only consider reads with read groups (RG) in a file.\n"
+    " -r, --rg-names       STR   Only consider reads with these read groups (RG).\n"
+    " -R, --rg-list        FILE  Only consider reads with read groups (RG) in a file.\n"
     "\n"
     "Filter options:\n"
     " -2, --use-secondary        Allow secondary alignments.\n"
@@ -241,6 +243,7 @@ static void help(void) {
     "\n"
     "Program options:\n"
     " -j, --threads        INT   Number of worker threads. Max one per sample. [%d]\n"
+    " -i, --title          STR   Assign a title to run.\n"
     " -c, --continue             Do not stop when a sample triggers a program error.\n"
     " -v, --verbose              Print progress messages during runtime.\n"
     " -h, --help                 Print this help message.\n"
@@ -1009,6 +1012,15 @@ static int quaqc_main(int argc, char *argv[]) {
         params->threads = parse_num(optarg);
         if (params->threads < 1) {
           quit("--threads must be a positive integer.");
+        }
+        break;
+      case TITLE:
+        if (params->title != NULL) {
+          quit("--title has already been set.");
+        }
+        params->title = optarg;
+        if (strlen(params->title) < 1) {
+          quit("--title cannot be an empty string.");
         }
         break;
       case CONTINUE:
