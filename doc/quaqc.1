@@ -107,12 +107,16 @@ Comma-separated read group identifiers.
 This will cause quaqc to discard reads which do not have matching read
 group tags.
 Cannot be used simultaneously with \f[C]--rg-list\f[R].
+If a BAM header does not contain any of the target read groups, the run
+will end with an error.
 .TP
 \f[B]-R\f[R] \f[I]STR\f[R], \f[B]--rg-list\f[R]=\f[I]STR\f[R]
 Filename of a file containing read group identifiers, one per line.
 This will cause quaqc to discard reads which do not have a matching read
 group tag.
 Cannot be used simultaneously with \f[C]--rg-names\f[R].
+If a BAM header does not contain any of the target read groups, the run
+will end with an error.
 .TP
 \f[B]-2\f[R], \f[B]--use-secondary\f[R]
 Do not filter out alignments marked with the secondary alignment flag

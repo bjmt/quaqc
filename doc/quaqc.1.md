@@ -86,12 +86,14 @@ accomplished using `samtools` in the following manner during alignment:
 **-r** *STR*, **\--rg-names**=*STR*
 :   Comma-separated read group identifiers. This will cause quaqc to discard
     reads which do not have matching read group tags. Cannot be used
-    simultaneously with `--rg-list`.
+    simultaneously with `--rg-list`. If a BAM header does not contain any of
+    the target read groups, the run will end with an error.
 
 **-R** *STR*, **\--rg-list**=*STR*
 :   Filename of a file containing read group identifiers, one per line. This
     will cause quaqc to discard reads which do not have a matching read group
-    tag. Cannot be used simultaneously with `--rg-names`.
+    tag. Cannot be used simultaneously with `--rg-names`. If a BAM header does
+    not contain any of the target read groups, the run will end with an error.
 
 **-2**, **\--use-secondary**
 :   Do not filter out alignments marked with the secondary alignment flag
