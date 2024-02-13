@@ -18,6 +18,7 @@
 #
 
 quaqc.R_version <- "0.1"
+quaqc.R_year <- "2024"
 
 #-------------------------------------------------------------------------------
 # Choose whether to launch app in interactive sessions.
