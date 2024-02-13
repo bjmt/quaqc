@@ -394,10 +394,11 @@ static void *read_file_and_hash(const char *fn, int *n, int *dups) {
       l_n++;
       if (l_n > MAX_HASH_SIZE) {
         *n = -1;
-        str_hash_destroy(h);
+        str_hash_free_and_destroy(h);
         return NULL;
       }
-      d = str_hash_add(h, str.s);
+      fprintf(stderr, "RG:%s\n", str.s);
+      d = str_hash_add(h, strdup(str.s));
       d_n += d == 0;
     }
   }
@@ -406,12 +407,12 @@ static void *read_file_and_hash(const char *fn, int *n, int *dups) {
   if (gzclose(fp) != Z_OK) {
     fp = NULL;
     *n = -3;
-    str_hash_destroy(h);
+    str_hash_free_and_destroy(h);
     return NULL;
   }
   *n = l_n;
   if (l_n == 0) {
-    str_hash_destroy(h);
+    str_hash_free_and_destroy(h);
     return NULL;
   } else {
     *dups = d_n;
@@ -454,10 +455,10 @@ static void destroy_params(params_t *params) {
   free(params->tss);
   free(params->blist);
   free(params->tlist);
-  str_hash_destroy(params->mito);
-  str_hash_destroy(params->pltd);
-  str_hash_destroy(params->tseqs);
-  str_hash_destroy(params->trg);
+  str_hash_destroy(params->mito);           // v
+  str_hash_destroy(params->pltd);           // -> Keys owned by argv
+  str_hash_destroy(params->tseqs);          // ^
+  str_hash_free_and_destroy(params->trg);   // --> Owns the memory
   free(params);
 }
 

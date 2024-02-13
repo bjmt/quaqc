@@ -473,6 +473,27 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params) {
     error(params->qerr, "Failed to open header: %s", bam->fn);
     goto run_quaqc_end;
   }
+  // Check read groups if necessary.
+  if (params->trg != NULL) {
+    int rg_n = sam_hdr_count_lines(hdr, "RG");
+    if (rg_n < 1) {
+      error(params->qerr, "No read group info in header for file '%s'.", bam->fn);
+      goto run_quaqc_end;
+    }
+    kstring_t hdr_line = { 0, 0, NULL };
+    int rg_trg_n = 0;
+    for (unsigned int i = 0; i != str_hash_end(params->trg); i++) {
+      if (str_ind_exists(params->trg, i) &&
+          sam_hdr_find_line_id(hdr, "RG", "ID", str_hash_key(params->trg, i), &hdr_line) == 0) {
+        rg_trg_n++;
+      }
+    }
+    ks_free(&hdr_line);
+    if (rg_trg_n == 0) {
+      error(params->qerr, "No target read groups in header for file '%s'.", bam->fn);
+      goto run_quaqc_end;
+    }
+  }
   aln = bam_init1();
 
   if (!hdr->n_targets) {

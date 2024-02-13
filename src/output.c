@@ -190,7 +190,7 @@ int init_json(const params_t *params) {
 
   fjson_write(fjson, "{\n");
   fjson_write(fjson, "  \"quaqc_version\": \"" QUAQC_VERSION "\",\n");
-  fjson_write(fjson, "  \"quaqc_run_title\": \"%s\",\n", params->title == NULL ? "---" : params->title);
+  fjson_write(fjson, "  \"quaqc_run_title\": \"%s\",\n", params->title == NULL ? "" : params->title);
   fjson_write(fjson, "  \"quaqc_args\": \"%s\",\n", CMD);
   fjson_write(fjson, "  \"quaqc_time_start\": \"%s\",\n", time_start_str);
 
@@ -677,7 +677,7 @@ int print_results(char *fn, results_t *results, const params_t *params) {
   fputc('\n', fout);
 
   printWS(WS, fout);
-  fprintf(fout, "Run title: %s\n", params->title == NULL ? "---" : params->title);
+  fprintf(fout, "Run title: %s\n", params->title == NULL ? "" : params->title);
   printWS(WS, fout);
   fprintf(fout, "Input file for this report: %s\n", fn);
   fputc('\n', fout);

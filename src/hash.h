@@ -22,10 +22,14 @@
 
 #include <stdbool.h>
 
+unsigned int str_hash_end(void *h);
+const char *str_hash_key(void *h, const unsigned int i);
+bool str_ind_exists(void *h, const unsigned int i);
 void *str_hash_init(char *str_arr[], const int str_n, int *dups);
 bool str_hash_exists(void *h, const char *str);
 int str_hash_add(void *h, char *str_one);
 void str_hash_destroy(void *h);
+void str_hash_free_and_destroy(void *h);
 int str_hash_size(void *h);
 
 #endif
