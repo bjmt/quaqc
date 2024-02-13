@@ -636,7 +636,7 @@ static int quaqc_main(int argc, char *argv[]) {
 
   char default_pltd[sizeof(DEFAULT_PLTD)] = DEFAULT_PLTD;
   char default_mito[sizeof(DEFAULT_MITO)] = DEFAULT_MITO;
-  char *pltd[MAX_PLASTIDS], *mito[MAX_MITOCHONDRIA];
+  char *pltd[1024], *mito[1024];
   int pltd_n = -1, mito_n = -1, tseqs_n, trg_n;
   params = init_params(argc, argv);
   char *peak_bed;
@@ -1137,12 +1137,12 @@ static int quaqc_main(int argc, char *argv[]) {
   }
 
   if (mito_n == -1) {
-    mito_n = str_split(default_mito, mito, ',', MAX_MITOCHONDRIA);
+    mito_n = str_split(default_mito, mito, ',', 1024);
     int d;
     params->mito = str_hash_init(mito, mito_n, &d);
   }
   if (pltd_n == -1) {
-    pltd_n = str_split(default_pltd, pltd, ',', MAX_PLASTIDS);
+    pltd_n = str_split(default_pltd, pltd, ',', 1024);
     int d;
     params->pltd = str_hash_init(pltd, pltd_n, &d);
   }

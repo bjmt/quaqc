@@ -55,9 +55,8 @@
       need_for, (size), (double)((size) * 4) / 1024.0 / 1024.0); \
   } } while (0) 
 
-#define MAX_PLASTIDS     1024
-#define MAX_MITOCHONDRIA 1024
-#define MAX_TARGET_NAMES 1024
+// Maximum number of elements allowed for hash table construction when parsing
+// -p, -m, -n, -r, and -R.
 #define MAX_HASH_SIZE    1000000000
 
 #define   likely(cond) __builtin_expect((cond), 1)
