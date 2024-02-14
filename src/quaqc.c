@@ -725,7 +725,6 @@ static int quaqc_main(int argc, char *argv[]) {
         params->blist_n = bed_n(params->blist);
         break;
       case RG_NAMES:
-        // TODO: update flags
         if (params->trg != NULL) {
           quit("Target read groups have already been set (--rg-names).");
         }
