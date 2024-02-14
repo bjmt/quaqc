@@ -725,34 +725,35 @@ static int quaqc_main(int argc, char *argv[]) {
         params->blist_n = bed_n(params->blist);
         break;
       case RG_NAMES:
+        // TODO: update flags
+        if (params->trg != NULL) {
+          quit("Target read groups have already been set (--rg-names).");
+        }
+        params->trg = str_split_and_hash(optarg, &trg_n, &d, ',');
+        if (trg_n == 0) {
+          quit("Failed to parse any read groups (--rg-names).");
+        } else if (trg_n == -1) {
+          quit("Too many read groups specified, max = %'d (--rg-names).", MAX_HASH_SIZE);
+        } else {
+          params->trg_n = trg_n;
+        }
+        if (d > 0) warn("Found duplicate names in --rg-names.");
+        break;
+      case RG_LIST:
         if (params->trg != NULL) {
           quit("Target read groups have already been set (--rg-list).");
         }
-        params->trg = str_split_and_hash(optarg, &trg_n, &d, ',');
+        params->trg = read_file_and_hash(optarg, &trg_n, &d);
         if (trg_n == 0) {
           quit("Failed to parse any read groups (--rg-list).");
         } else if (trg_n == -1) {
           quit("Too many read groups specified, max = %'d (--rg-list).", MAX_HASH_SIZE);
-        } else {
-          params->trg_n = trg_n;
+        } else if (trg_n == -2) {
+          quit("Failed to open file (--rg-list).");
+        } else if (trg_n == -3) {
+          warn("Failed to close file (--rg-list).");
         }
         if (d > 0) warn("Found duplicate names in --rg-list.");
-        break;
-      case RG_LIST:
-        if (params->trg != NULL) {
-          quit("Target read groups have already been set (--rg-file).");
-        }
-        params->trg = read_file_and_hash(optarg, &trg_n, &d);
-        if (trg_n == 0) {
-          quit("Failed to parse any read groups (--rg-file).");
-        } else if (trg_n == -1) {
-          quit("Too many read groups specified, max = %'d (--rg-list).", MAX_HASH_SIZE);
-        } else if (trg_n == -2) {
-          quit("Failed to open file (--rg-file).");
-        } else if (trg_n == -3) {
-          warn("Failed to close file (--rg-file).");
-        }
-        if (d > 0) warn("Found duplicate names in --rg-file.");
         break;
       case USE_SECONDARY:
         if (params->use_2nd) {
