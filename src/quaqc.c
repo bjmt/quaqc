@@ -120,6 +120,7 @@ enum opts_enum {
   NO_SE,
   FOOTPRINT,
   CHIP,
+  VERSION,
 };
 
 static const char *opts_short = "m:p:n:t:b:2q:o:t:Sk:K:j:fhcvJ:0P:T:NDO:AdLi:r:R:";
@@ -173,6 +174,7 @@ static struct option opts_long[] = {
   { "title",         required_argument, 0, TITLE         },
   { "continue",      no_argument,       0, CONTINUE      },
   { "verbose",       no_argument,       0, VERBOSE       },
+  { "version",       no_argument,       0, VERSION       },
   { 0,               0,                 0, 0             }
 };
 
@@ -246,6 +248,7 @@ static void help(void) {
     " -i, --title          STR   Assign a title to run.\n"
     " -c, --continue             Do not stop when a sample triggers a program error.\n"
     " -v, --verbose              Print progress messages during runtime.\n"
+    "     --version              Print the version and exit.\n"
     " -h, --help                 Print this help message.\n"
     , QUAQC_VERSION, QUAQC_YEAR
     , DEFAULT_MITO, DEFAULT_PLTD
@@ -1039,6 +1042,9 @@ static int quaqc_main(int argc, char *argv[]) {
           quit("--verbose can only be set twice at most.");
         }
         break;
+      case VERSION:
+        printf("quaqc v%s\n", QUAQC_VERSION);
+        exit(EXIT_SUCCESS);
       case HELP:
         help();
         exit(EXIT_SUCCESS);

@@ -322,6 +322,9 @@ accomplished using `samtools` in the following manner during alignment:
 :   Print progress messages during runtime. This flag can be used a second time
     to further increase verbosity.
 
+**\--version**
+:   Print the version number of quaqc to `stdout` and exit.
+
 **-h**, **\--help**
 :   Print a help message with a brief description of all available commands.
 
