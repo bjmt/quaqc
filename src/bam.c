@@ -270,7 +270,7 @@ static void calc_summary_stats(stats_t *stats, const params_t *params) {
 }
 
 static void calc_nucl_shared_stats_core(const int32_t *arr, const int arr_max, const double arr_avg, int64_t *mem_pct1, int64_t *mem_pct99, int64_t *mem_max, int64_t *mem_min, double *mem_avg, double *mem_sd, const bool use_arr_avg) {
-  int64_t tmp_total = 0, tmp_n = 0, tmp_max, tmp_min;
+  int64_t tmp_total = 0, tmp_n = 0, tmp_max, tmp_min = 0;
   for (int i = 0; i < arr_max + 1; i++) {
     if (arr[i]) {
       tmp_min = i;

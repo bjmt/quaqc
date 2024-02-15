@@ -122,7 +122,7 @@ enum opts_enum {
   CHIP,
 };
 
-const static char *opts_short = "m:p:n:t:b:2q:o:t:Sk:K:j:fhcvJ:0P:T:NDO:AdLi:r:R:";
+static const char *opts_short = "m:p:n:t:b:2q:o:t:Sk:K:j:fhcvJ:0P:T:NDO:AdLi:r:R:";
 
 static struct option opts_long[] = {
   { "mitochondria",  required_argument, 0, MITOCHONDRIA  },
@@ -639,7 +639,7 @@ static int quaqc_main(int argc, char *argv[]) {
   char *pltd[1024], *mito[1024];
   int pltd_n = -1, mito_n = -1, tseqs_n, trg_n;
   params = init_params(argc, argv);
-  char *peak_bed;
+  char *peak_bed = NULL;
 
   int opt, mapq_tmp, d;
   while ((opt = getopt_long(argc, argv, opts_short, opts_long, NULL)) != -1) {
@@ -1108,6 +1108,9 @@ static int quaqc_main(int argc, char *argv[]) {
   if (params->chip) {
     if (params->tss != NULL) {
       quit("--chip and --tss cannot be used simultaneously.");
+    }
+    if (peak_bed == NULL) {
+      quit("--peaks must be set when using --chip.");
     }
     params->tss = bed_read(peak_bed);
     if (params->tss == NULL) {
