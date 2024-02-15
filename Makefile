@@ -35,7 +35,7 @@ profile: CFLAGS+=-fprofile-instr-generate -fcoverage-mapping
 profile: release
 
 release: CFLAGS+=-DNDEBUG -O3 -flto
-release: LDFLAGS+=-dead_strip
+# release: LDFLAGS+=-dead_strip
 release: quaqc
 
 release-full: libz libhts release
