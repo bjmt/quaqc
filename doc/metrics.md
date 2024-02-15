@@ -87,6 +87,27 @@ mitochondrial, and plastid reads, as well as additional general
 read metrics. The non redundant fraction (NRF) refers to the number of
 de-duplicated primary alignments.
 
+PE reads are considered properly
+mated if they are aligned such that they are oriented towards each
+other, for example:
+
+```
+Proper:     |--->  <---|
+Improper:   |--->  |--->
+```
+
+Improperly mated reads can be preserved using the `-N/--use-nomate` flag.
+An additional flag can also specifically preserve those which are dovetailing
+with `-D/--use-dovetails`, which is when the end coordinates of alignments
+extend past the start coordinates of the mate alignment:
+
+```
+Proper:       |--->  <---|
+
+Dovetailing:      |--->
+                 <---|
+```
+
 ## Nuclear read stats after filtering
 
 ```
