@@ -7,10 +7,11 @@ _Also works with any unspliced DNA-seq experiment! Compatible with plant genomes
 Requires gcc/clang and GNU Make, tested with macOS and Linux. Basic install:
 
 ```sh
-git clone https://github.com/bjmt/quaqc  # Or download lastest release
+git clone https://github.com/bjmt/quaqc  # Or download latest release
 cd quaqc
 make release-full
 make install  # Copy quaqc + manual to /usr/local (optional, may require sudo)
+make test  # Make sure quaqc produces the expected outputs (optional)
 ```
 
 See [INSTALL](./INSTALL) for configuration options.
@@ -33,9 +34,13 @@ cat ./reads.quaqc.txt
 
 This command changes the location of the output QC report to the current directory,
 and uses the peak and TSS files to generate additional stats. Since this example
-BAM is just a subset of reads contained within a small region, the `target.bed`
+BAM is just a subset of reads contained within a small region of the Arabidpsis
+genome, the `target.bed`
 file restricts quaqc to only consider that region of the genome (and thus adjust
 how it calculates the stats). 
+
+Note that quaqc can also save the final reads passing all filters to a new BAM
+file via the `-S/--keep` flag. (This will increase the runtime.)
 
 ## Help
 
@@ -49,19 +54,47 @@ if you find this software useful in your research.
 
 Tremblay, B.J.M. (2024). quaqc: Quick ATAC-seq QC (Version 0.1) [Computer software]. https://github.com/bjmt/quaqc
 
-## Examples usage of quaqc
+## Additional use cases
 
-### Comprehensive NGS QC
+### Fast iteration of the effects of different read quality thresholds
 
+quaqc is fairly performant, but it can still require some patience for decently
+sized BAMs (e.g., about one minute for 40 million reads from Arabidopsis ATAC-seq).
+To substantially speed up quaqc to iterate through different filtering
+thresholds, make use of the `-n/--target-names` to restrict quaqc to only
+look at single chromosomes. This is often enough to get an idea of the quality of
+the data while getting a several fold speed up (e.g., restricting quaqc to the
+first chromosome of Arabidopsis takes just over 10 seconds for the previously
+mentioned example).
 
+For example, to try out several MAPQ thresholds for an Arabidopsis ATAC-seq sample
+by only scanning chromosome 1 (which is just '1' for this version of TAIR10):
 
-### Fast iteration of read quality threshold testing
+```sh
+for i in 5 10 15 20 25 30 ; do
+    quaqc -n 1 -q $i -i "MAPQ >= ${i}" -O .quaqc.mapq${i}.txt Sample.bam
+done
+```
 
+Now, six different MAPQ thresholds have been tested in the time it would take
+to process the entire BAM file once across all chromosomes.
 
+### Quick motif footprints
 
-### Motif footprints
+The TSS pileup functionality of quaqc can be used to instead generate motif
+footprints. Note that these are only useful for testing, as no correction
+of base composition is peformed to reduce Tn5 insertion biases. The output
+must be saved in JSON format to recover the footprint data, which can then
+be plotted with an external program.
 
+In this example code, the `--footprint` preset will adjust the TSS pileup
+to produce single base resolution data of Tn5 transposase insertion
+frequency. The `--nfr` present is also used to only consider nucleosome-free
+reads.
 
+```sh
+quaqc --nfr --footprint --tss motif.bed --json sample_motif.json Sample.bam
+```
 
 ## The metrics
 
@@ -75,7 +108,7 @@ found useful. If you can think of additional important ones,
 please create an issue on GitHub and I would be happy to implement
 them if it seems feasible to do so.
 
-## Misc
+## Extra
 
 ### Information on input BAMs
 
@@ -111,7 +144,7 @@ as well as being grouped by read name. For further information check out
 ### CRAM
 
 As far as I can tell CRAM files work fine as well, as long as the reference
-is available locally. See the notes in the installation instructions section
+is available locally. See the notes in the installation instructions
 about compiling quaqc with libcurl if you need to work with CRAMs depending
 on remote references.
 
@@ -120,7 +153,8 @@ on remote references.
 Some quick testing shows that quaqc seems to work with DNA-seq long read
 BAMs too. However if you try it out and see obvious errors in the output,
 please open an issue and I will do my best to fix the problem. Overall
-this is probably the wrong tool to use to run QC on long reads.
+this is probably the wrong tool to use to run QC on long reads. Keep in
+mind quaqc will not properly handle supplementary alignments.
 
 ### Spliced reads
 
