@@ -7,10 +7,10 @@ _Also works with any unspliced DNA-seq experiment! Compatible with plant genomes
 Requires gcc/clang and GNU Make, tested with macOS and Linux. Basic install:
 
 ```console
-$ git clone https://github.com/bjmt/quaqc  # Or download lastest release
-$ cd quaqc
-$ make release-full
-$ make install  # Copy quaqc + manual to /usr/local (optional, may require sudo)
+git clone https://github.com/bjmt/quaqc  # Or download lastest release
+cd quaqc
+make release-full
+make install  # Copy quaqc + manual to /usr/local (optional, may require sudo)
 ```
 
 See [INSTALL](./INSTALL) for configuration options.
@@ -26,9 +26,9 @@ compilation by editing [quaqc.h](src/quaqc.h).) To run quaqc using the test
 data:
 
 ```console
-$ ./quaqc -v --output-dir . --peaks test/peak.bed --tss test/tss.bed \
+./quaqc -v --output-dir . --peaks test/peak.bed --tss test/tss.bed \
     --target-list test/target.bed test/reads.bam
-$ cat ./reads.quaqc.txt
+cat ./reads.quaqc.txt
 ```
 
 This command changes the location of the output QC report to the current directory,
