@@ -1,0 +1,13 @@
+cff-version: 1.2.0
+title: "quaqc: Quick ATAC-seq QC"
+message: "If you use this software, please cite it as below."
+type: software
+authors:
+  - given-names: Benjamin J.M.
+    family-names: Tremblay
+    orcid: https://orcid.org/0000-0002-7441-2951
+repository-code: https://github.com/bjmt/quaqc
+license: GPL-3.0
+version: 0.1
+date-released: 2024-02-15
+
