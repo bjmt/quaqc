@@ -60,7 +60,7 @@ Tremblay, B.J.M. (2024). quaqc: Quick ATAC-seq QC (Version 0.1) [Computer softwa
 ### Fast iteration of the effects of different read quality thresholds
 
 quaqc is fairly performant, but it can still require some patience for decently
-sized BAMs (e.g., about one minute for 40 million reads from Arabidopsis ATAC-seq).
+sized BAMs (e.g., about one minute for 80 million reads from Arabidopsis ATAC-seq).
 To substantially speed up quaqc to iterate through different filtering
 thresholds, make use of the `-n/--target-names` to restrict quaqc to only
 look at single chromosomes. This is often enough to get an idea of the quality of
@@ -100,8 +100,7 @@ quaqc --nfr --footprint --tss motif.bed --json sample_motif.json Sample.bam
 
 ## The metrics
 
-* Make sure to explain "effective".
-* Emphasize the difference between "read" and "alignment".
+See this [annotated report](doc/metrics.md) for a description of the metrics.
 
 ### A note on additional metrics
 
@@ -142,6 +141,10 @@ during sequence alignment. For example:
 This requires a sequence aligner which can output its results to `stdout`,
 as well as being grouped by read name. For further information check out
 [this article](http://www.htslib.org/algorithms/duplicate.html).
+
+quaqc only works with indexed BAMs, though actually indexing them before
+using quaqc is optional. If no index can be found then quaqc will
+attempt to create the index.
 
 ### CRAM
 

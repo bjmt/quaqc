@@ -729,6 +729,8 @@ int print_results(char *fn, results_t *results, const params_t *params) {
   fprintf(fout, "Target list count in BED:   %'10d\n", params->tlist_n);
   printWS(WS, fout);
   fprintf(fout, "Blacklist count in BED:     %'10d\n", params->blist_n);
+  printWS(WS, fout);
+  fprintf(fout, "Read group count in file:   %'10d\n", params->trg_n);
   fputc('\n', fout);
   if (params->qhist_max < params->qlen_max) {
     printWS(WS, fout);
