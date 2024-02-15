@@ -20,6 +20,8 @@
 quaqc.R_version <- "0.1"
 quaqc.R_year <- "2024"
 
+warning("Note that quaqc.R is not yet complete! Use at your own risk.")
+
 #-------------------------------------------------------------------------------
 # Choose whether to launch app in interactive sessions.
 
@@ -87,6 +89,7 @@ reportToDf <- function(f, x) {
   if (is.null(x) || !checkReport(x)) {
     data.frame(row.names = NULL, check.names = FALSE,
       File = f,
+      Title = "",
       Status = "BAD INPUT",
       Version = NA,
       Samples = NA,
@@ -95,10 +98,46 @@ reportToDf <- function(f, x) {
   } else {
     data.frame(row.names = NULL, check.names = FALSE,
       File = f,
+      Title = x$quaqc_run_title,
       Status = "OK",
       Version = x$quaqc_version,
       Samples = length(x$quaqc_reports),
       Date = x$quaqc_time_end
+    )
+  }
+}
+
+reportToParams <- function(x, i) {
+  if (is.null(i)) {
+    data.frame(row.names = NULL, check.names = FALSE,
+      Flag = c("--mitochondria", "--plastids", "--peaks", "--tss",
+        "--target-names", "--target-list", "--blacklist", "--rg-names",
+        "--rg-list", "--use-secondary", "--use-nomate", "--use-dups",
+        "--use-chimeric", "--use-dovetails", "--no-se", "--mapq",
+        "--min-qlen", "--min-flen", "--max-qlen", "--max-flen", "--use-all",
+        "--max-depth", "--max-qhist", "--max-fhist", "--tss-size", 
+        "--tss-qlen", "--tss-tn5", "--omit-gc", "--omit-depth",
+        "--fast", "--lenient", "--nfr", "--nbr", "--footprint", "--chip",
+        "--output-dir", "--output-ext", "--no-output", "--json",
+        "--keep", "--keep-dir", "--keep-ext", "--threads", "--title",
+        "--continue", "--verbose"),
+      Value = NA
+    )
+  } else {
+    r <- x[[i]]$quaqc_params
+    data.frame(row.names = NULL, check.names = FALSE,
+      Flag = c("--mitochondria", "--plastids", "--peaks", "--tss",
+        "--target-names", "--target-list", "--blacklist", "--rg-names",
+        "--rg-list", "--use-secondary", "--use-nomate", "--use-dups",
+        "--use-chimeric", "--use-dovetails", "--no-se", "--mapq",
+        "--min-qlen", "--min-flen", "--max-qlen", "--max-flen", "--use-all",
+        "--max-depth", "--max-qhist", "--max-fhist", "--tss-size", 
+        "--tss-qlen", "--tss-tn5", "--omit-gc", "--omit-depth",
+        "--fast", "--lenient", "--nfr", "--nbr", "--footprint", "--chip",
+        "--output-dir", "--output-ext", "--no-output", "--json",
+        "--keep", "--keep-dir", "--keep-ext", "--threads", "--title",
+        "--continue", "--verbose"),
+      Value = NA
     )
   }
 }
@@ -110,9 +149,8 @@ ui <- dashboardPage(
   dashboardHeader(title = "quaqc"),
   dashboardSidebar(
     sidebarMenu(
-      menuItem("Run quaqc / load results", tabName = "load"),
+      menuItem("Load results", tabName = "load"),
       menuItem("Explore results", tabName = "results"),
-      menuItem("Install / configure quaqc", tabName = "config"),
       menuItem("About", tabName = "about")
     )
   ),
@@ -129,13 +167,9 @@ ui <- dashboardPage(
         box(width = NULL, status = "primary", solidHeader = TRUE,
           title = "Parameters of loaded JSON report",
           dataTableOutput("report_parameters")
-        ),
-        box(width = NULL, status = "primary", solidHeader = TRUE,
-          title = "Run quaqc"
         )
       ),
       tabItem(tabName = "results"),
-      tabItem(tabName = "config"),
       tabItem(tabName = "about")
     )
   )
@@ -146,15 +180,28 @@ ui <- dashboardPage(
 
 server <- function(input, output, session) {
 
+  reports <- reactiveValues(
+    files = NULL, data = NULL, selected = NULL
+  )
+
   output$report_files_table <- renderDataTable(datatable({
     req(input$report_files)
-    reports <- multiReadQuaqcReports(input$report_files$datapath)
+    reports$files <- input$report_files
+    reports$data <- multiReadQuaqcReports(input$report_files$datapath)
     reportRows <- mapply(function(x, y) reportToDf(x, y),
-      input$report_files$name, reports, SIMPLIFY = FALSE)
+      reports$files$name, reports$data, SIMPLIFY = FALSE)
     reportTable <- do.call(rbind, reportRows)
     reportTable[order(reportTable$Status, decreasing = TRUE), ]
   }, selection = list(mode = "single", selected = 1), rownames = FALSE,
     options = list(dom = "t", columnDefs = list(list(className = "dt-center", targets = "_all"))))
+  )
+
+  output$report_parameters <- renderDataTable(datatable({
+    # req(input$report_files)
+    reportToParams(reports$data, input$report_files_table_rows_selected)
+  }, rownames = FALSE, selection = "none",
+    options = list(ordering = FALSE, dom = "t", pageLength = 999,
+      columnDefs = list(list(className = "dt-left", targets = "_all"))))
   )
 
 }
