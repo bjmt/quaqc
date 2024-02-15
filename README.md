@@ -37,7 +37,8 @@ and uses the peak and TSS files to generate additional stats. Since this example
 BAM is just a subset of reads contained within a small region of the Arabidpsis
 genome, the `target.bed`
 file restricts quaqc to only consider that region of the genome (and thus adjust
-how it calculates the stats). 
+how it calculates the stats). See a copy of the output
+report [here](./test/reads.quaqc.txt).
 
 Note that quaqc can also save the final reads passing all filters to a new BAM
 file via the `-S/--keep` flag. (This will increase the runtime.)
@@ -77,19 +78,20 @@ done
 ```
 
 Now, six different MAPQ thresholds have been tested in the time it would take
-to process the entire BAM file once across all chromosomes.
+to process the entire BAM file once across all chromosomes. (The `-i/--title`
+flag is used to add a unique title to each run.)
 
 ### Quick motif footprints
 
 The TSS pileup functionality of quaqc can be used to instead generate motif
 footprints. Note that these are only useful for testing, as no correction
-of base composition is peformed to reduce Tn5 insertion biases. The output
+of base composition is peformed to reduce Tn5 transposase insertion biases. The output
 must be saved in JSON format to recover the footprint data, which can then
 be plotted with an external program.
 
 In this example code, the `--footprint` preset will adjust the TSS pileup
 to produce single base resolution data of Tn5 transposase insertion
-frequency. The `--nfr` present is also used to only consider nucleosome-free
+frequency. The `--nfr` preset is also used to only consider nucleosome-free
 reads.
 
 ```sh
