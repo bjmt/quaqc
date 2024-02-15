@@ -67,6 +67,7 @@ Filename of a BED file containing ranges that will be use to calculate
 the fraction of reads in peaks (FRIP).
 The impact on the runtime of quaqc when using this option is generally
 negligible.
+Can be gzipped.
 .TP
 \f[B]-T\f[R] \f[I]FILE\f[R], \f[B]--tss\f[R]=\f[I]FILE\f[R]
 Filename of a BED file containing ranges that will be used to construct
@@ -79,6 +80,7 @@ If ranges are missing strand information, they are assumed to be on the
 forward/positive strand.
 The impact on the runtime of quaqc when using this option is generally
 negligible.
+Can be gzipped.
 .TP
 \f[B]-n\f[R] \f[I]STR\f[R], \f[B]--target-names\f[R]=\f[I]STR\f[R]
 Comma-separated reference names that quaqc will be restricted to (no
@@ -95,12 +97,14 @@ Filename of a BED file containing ranges that quaqc will be restricted
 to.
 The effective genome size for metric calculations will also be adjusted.
 Cannot be used simultaneously with \f[C]--blacklist\f[R].
+Can be gzipped.
 .TP
 \f[B]-b\f[R] \f[I]FILE\f[R], \f[B]--blacklist\f[R]=\f[I]FILE\f[R]
 Filename of a BED file containing ranges in which all read aligning to
 these regions are to be ignored by quaqc.
 The effective genome size for metric calculations will also be adjusted.
 Cannot be used simultaneously with \f[C]--target-list\f[R].
+Can be gzipped.
 .TP
 \f[B]-r\f[R] \f[I]STR\f[R], \f[B]--rg-names\f[R]=\f[I]STR\f[R]
 Comma-separated read group identifiers.
@@ -117,6 +121,7 @@ group tag.
 Cannot be used simultaneously with \f[C]--rg-names\f[R].
 If a BAM header does not contain any of the target read groups, the run
 will end with an error.
+Can be gzipped.
 .TP
 \f[B]-2\f[R], \f[B]--use-secondary\f[R]
 Do not filter out alignments marked with the secondary alignment flag
@@ -302,8 +307,8 @@ the TSS pileup.
 \f[B]--footprint\f[R]
 Set \f[C]--tss-qlen=1\f[R], \f[C]--tss-size=501\f[R], and
 \f[C]--tss-tn5\f[R].
-This generates a smaller TSS pileup with single base pair resolution Tn5
-transposase insertion.
+This generates a smaller TSS pileup with single base pair resolution of
+Tn5 transposase insertion frequency.
 .TP
 \f[B]--chip\f[R]
 Set \f[C]--tss-qlen=0\f[R] and \f[C]--tss-size=5001\f[R].
@@ -331,7 +336,7 @@ additional data such as the full alignment size, fragment size, GC
 content, mapq, and read depth histograms, as well as the TSS pileup.
 To save to standard output, provide \f[C]-J-\f[R].
 To compress the output JSON, add the \[lq].gz\[rq] extension to the
-filename.
+supplied filename.
 .TP
 \f[B]-S\f[R], \f[B]--keep\f[R]
 Save the nuclear reads passing all filters in a new BAM.

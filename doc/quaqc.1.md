@@ -51,7 +51,7 @@ accomplished using `samtools` in the following manner during alignment:
 **-P** *FILE*, **\--peaks**=*FILE*
 :   Filename of a BED file containing ranges that will be use to calculate
     the fraction of reads in peaks (FRIP). The impact on the runtime of
-    quaqc when using this option is generally negligible.
+    quaqc when using this option is generally negligible. Can be gzipped.
 
 **-T** *FILE*, **\--tss**=*FILE*
 :   Filename of a BED file containing ranges that will be used to construct
@@ -61,7 +61,7 @@ accomplished using `samtools` in the following manner during alignment:
     average read depth in the first 25% of the ranges. This function is
     strand-aware. If ranges are missing strand information, they are assumed
     to be on the forward/positive strand. The impact on the runtime of
-    quaqc when using this option is generally negligible.
+    quaqc when using this option is generally negligible. Can be gzipped.
 
 **-n** *STR*, **\--target-names**=*STR*
 :   Comma-separated reference names that quaqc will be restricted to (no spaces).
@@ -75,13 +75,13 @@ accomplished using `samtools` in the following manner during alignment:
 **-t** *FILE*, **\--target-list**=*FILE*
 :   Filename of a BED file containing ranges that quaqc will be restricted
     to. The effective genome size for metric calculations will also be
-    adjusted. Cannot be used simultaneously with `--blacklist`.
+    adjusted. Cannot be used simultaneously with `--blacklist`. Can be gzipped.
 
 **-b** *FILE*, **\--blacklist**=*FILE*
 :   Filename of a BED file containing ranges in which all read aligning to
     these regions are to be ignored by quaqc. The effective genome size for
     metric calculations will also be adjusted. Cannot be used simultaneously
-    with `--target-list`.
+    with `--target-list`. Can be gzipped.
 
 **-r** *STR*, **\--rg-names**=*STR*
 :   Comma-separated read group identifiers. This will cause quaqc to discard
@@ -94,6 +94,7 @@ accomplished using `samtools` in the following manner during alignment:
     will cause quaqc to discard reads which do not have a matching read group
     tag. Cannot be used simultaneously with `--rg-names`. If a BAM header does
     not contain any of the target read groups, the run will end with an error.
+    Can be gzipped.
 
 **-2**, **\--use-secondary**
 :   Do not filter out alignments marked with the secondary alignment flag
@@ -258,8 +259,8 @@ accomplished using `samtools` in the following manner during alignment:
 
 **\--footprint**
 :   Set `--tss-qlen=1`, `--tss-size=501`, and `--tss-tn5`. This generates a
-    smaller TSS pileup with single base pair resolution Tn5 transposase
-    insertion.
+    smaller TSS pileup with single base pair resolution  of Tn5 transposase
+    insertion frequency.
 
 **\--chip**
 :   Set `--tss-qlen=0` and `--tss-size=5001`. Additionally, any BED file
@@ -283,7 +284,7 @@ accomplished using `samtools` in the following manner during alignment:
     additional data such as the full alignment size, fragment size, GC content,
     mapq, and read depth histograms, as well as the TSS pileup. To save to
     standard output, provide `-J-`. To compress the output JSON, add the ".gz"
-    extension to the filename.
+    extension to the supplied filename.
 
 **-S**, **\--keep**
 :   Save the nuclear reads passing all filters in a new BAM. This will
