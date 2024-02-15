@@ -6,8 +6,8 @@
 
   Command arguments used: -P peak.bed -T tss.bed -t target.bed 
 
-  Time of run start: 2024-02-13 09:47:16 CET
-  Time of run end:   2024-02-13 09:47:16 CET
+  Time of run start: 2024-02-15 16:36:08 CET
+  Time of run end:   2024-02-15 16:36:08 CET
   Time ellapsed:     0 seconds
 
   Target names specified:                    no
@@ -29,6 +29,7 @@
   TSS count in BED:                    1
   Target list count in BED:            1
   Blacklist count in BED:              0
+  Read group count in file:            0
 
 ┌──────────────────────────────────────────────────────────┐
 │                   Target genome stats                    │

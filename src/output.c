@@ -25,7 +25,6 @@
 #include <time.h>
 #include <ctype.h>
 #include <errno.h>
-#include <wchar.h>
 #include "htslib/sam.h"
 #include "quaqc.h"
 #include "zlib.h"
@@ -610,24 +609,24 @@ static void print_centered(char *text, int width, FILE *con) {
   fprintf(con, "%*.*s%s%*.s", pad_left, pad_left, " ", text, pad_right, " ");
 }
 
-static void repeat_wchar(wchar_t wc, int width, FILE *con) {
+static void repeat_wchar(char *wc, int width, FILE *con) {
   for (int i = 0; i < width; i++) {
-    fputwc(wc, con);
+    fprintf(con, "%s", wc);
   }
 }
 
 static void print_in_sbox(char *text, int width, FILE *con) {
-  fwprintf(con, L"%lc", (wchar_t) 0x250C);
-  repeat_wchar((wchar_t) 0x2500, width - 2, con);
-  fwprintf(con, L"%lc", (wchar_t) 0x2510);
+  fprintf(con, "%s", "\u250C");
+  repeat_wchar("\u2500", width - 2, con);
+  fprintf(con, "%s", "\u2510");
   fputc('\n', con);
-  fwprintf(con, L"%lc", (wchar_t) 0x2502);
+  fprintf(con, "%s", "\u2502");
   print_centered(text, width - 2, con);
-  fwprintf(con, L"%lc", (wchar_t) 0x2502);
+  fprintf(con, "%s", "\u2502");
   fputc('\n', con);
-  fwprintf(con, L"%lc", (wchar_t) 0x2514);
-  repeat_wchar((wchar_t) 0x2500, width - 2, con);
-  fwprintf(con, L"%lc", (wchar_t) 0x2518);
+  fprintf(con, "%s", "\u2514");
+  repeat_wchar("\u2500", width - 2, con);
+  fprintf(con, "%s", "\u2518");
   fputc('\n', con);
 }
 
@@ -672,7 +671,7 @@ int print_results(char *fn, results_t *results, const params_t *params) {
 
   print_centered("quaqc v"QUAQC_VERSION, 60, fout);
   fputc('\n', fout);
-  repeat_wchar((wchar_t) 0x2550, 60, fout);
+  repeat_wchar("\u2550", 60, fout);
   fputc('\n', fout);
   fputc('\n', fout);
 
@@ -750,28 +749,28 @@ int print_results(char *fn, results_t *results, const params_t *params) {
   printWS(WS, fout);
   fprintf(fout, "Total sequences:                %'14lld\n", results->seq_n);
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u251C\u2500\u2500");
   fprintf(fout, " Nuclear sequences:          %'14lld\n", results->nuc_n);
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u251C\u2500\u2500");
   fprintf(fout, " Mitochondrial sequences:    %'14lld\n", results->mito_n);
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x2514, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u2514\u2500\u2500");
   fprintf(fout, " Plastid sequences:          %'14lld\n", results->pltd_n);
   fputc('\n', fout);
   printWS(WS, fout);
   fprintf(fout, "Total genome size:              %'14lld\n", results->seq_sum);
   double nucl_pct = calc_pct(results->nuc_sum, results->seq_sum);
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u251C\u2500\u2500");
   fprintf(fout, " Nuclear genome size:        %'14lld (%'.1f%%)\n", results->nuc_sum, nucl_pct);
   double mito_pct = calc_pct(results->mito_sum, results->seq_sum);
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u251C\u2500\u2500");
   fprintf(fout, " Mitochondrial genome size:  %'14lld (%'.1f%%)\n", results->mito_sum, mito_pct);
   double pltd_pct = calc_pct(results->pltd_sum, results->seq_sum);
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x2514, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u2514\u2500\u2500");
   fprintf(fout, " Plastid genome size:        %'14lld (%'.1f%%)\n", results->pltd_sum, pltd_pct);
   fputc('\n', fout);
   double nucl_act_pct = calc_pct(results->nuc_act, results->seq_sum);
@@ -786,11 +785,11 @@ int print_results(char *fn, results_t *results, const params_t *params) {
   fprintf(fout, "Total reads:                    %'14lld\n", results->r_total);
   double map_pct = calc_pct(results->r_mapped, results->r_total);
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u251C\u2500\u2500");
   fprintf(fout, " Mapped:                     %'14lld (%'.1f%%)\n", results->r_mapped, map_pct);
   double unm_pct = calc_pct(results->r_unmapped, results->r_total);
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x2514, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u2514\u2500\u2500");
   fprintf(fout, " Unmapped:                   %'14lld (%'.1f%%)\n", results->r_unmapped, unm_pct);
   fputc('\n', fout);
   double eff_n_pct = calc_pct(results->r_seen, results->r_total);
@@ -799,67 +798,67 @@ int print_results(char *fn, results_t *results, const params_t *params) {
   int64_t nucl_n = null_get(results->nucl, reads_n);
   double nucl_n_pct = calc_pct(nucl_n, results->r_seen);
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x252C, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u251C\u252C\u2500");
   fprintf(fout, " Nuclear:                    %'14lld (%'.1f%%)\n", nucl_n, nucl_n_pct);
   int64_t nucl_dup = null_get(results->nucl, dups_n);
   double nucl_dup_pct = calc_pct(nucl_dup, null_get(results->nucl, reads_n));
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x2502, (wchar_t) 0x2514, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u2502\u2514\u2500");
   fprintf(fout, " Duplicated:                 %'14lld (%'.1f%%)\n", nucl_dup, nucl_dup_pct);
   int64_t mito_n = null_get(results->mito, reads_n);
   double mito_n_pct = calc_pct(mito_n, results->r_seen);
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x252C, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u251C\u252C\u2500");
   fprintf(fout, " Mitochondrial:              %'14lld (%'.1f%%)\n", mito_n, mito_n_pct);
   int64_t mito_dup = null_get(results->mito, dups_n);
   double mito_dup_pct = calc_pct(mito_dup, null_get(results->mito, reads_n));
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x2502, (wchar_t) 0x2514, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u2502\u2514\u2500");
   fprintf(fout, " Duplicated:                 %'14lld (%'.1f%%)\n", mito_dup, mito_dup_pct);
   int64_t pltd_n = null_get(results->pltd, reads_n);
   double pltd_n_pct = calc_pct(pltd_n, results->r_seen);
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x252C, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u251C\u252C\u2500");
   fprintf(fout, " Plastid:                    %'14lld (%'.1f%%)\n", pltd_n, pltd_n_pct);
   int64_t pltd_dup = null_get(results->pltd, dups_n);
   double pltd_dup_pct = calc_pct(pltd_dup, null_get(results->pltd, reads_n));
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x2502, (wchar_t) 0x2514, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u2502\u2514\u2500");
   fprintf(fout, " Duplicated:                 %'14lld (%'.1f%%)\n", pltd_dup, pltd_dup_pct);
   int64_t se_total = null_get_all(results, se_n);
   double se_pct = calc_pct(se_total, results->r_seen);
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u251C\u2500\u2500");
   fprintf(fout, " SE reads:                   %'14lld (%'.1f%%)\n", se_total, se_pct);
   int64_t pe_total = null_get_all(results, pe_n);
   double pe_pct = calc_pct(pe_total, results->r_seen);
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x252C, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u251C\u252C\u2500");
   fprintf(fout, " PE reads:                   %'14lld (%'.1f%%)\n", pe_total, pe_pct);
   int64_t pe_mated = null_get_all(results, mated_n);
   double pe_mated_pct = calc_pct(pe_mated, results->r_seen);
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x2502, (wchar_t) 0x2514, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u2502\u2514\u2500");
   fprintf(fout, " Properly mated:             %'14lld (%'.1f%%)\n", pe_mated, pe_mated_pct);
   int64_t pri_total = null_get_all(results, pri_n);
   double pri_pct = calc_pct(pri_total, results->r_seen);
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x252C, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u251C\u252C\u2500");
   fprintf(fout, " Primary alignments:         %'14lld (%'.1f%%)\n", pri_total, pri_pct);
   int64_t pri_dedup_total = pri_total - null_get_all(results, dups_pri_n);
   double pri_dedup_pct = calc_pct(pri_dedup_total, pri_total);
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x2502, (wchar_t) 0x2514, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u2502\u2514\u2500");
   fprintf(fout, " Non redundant fraction:     %'14lld (%'.1f%%)\n", pri_dedup_total, pri_dedup_pct);
   int64_t sec_total = null_get_all(results, sec_n);
   double sec_pct = calc_pct(se_total, results->r_seen);
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u251C\u2500\u2500");
   fprintf(fout, " Secondary alignments:       %'14lld (%'.1f%%)\n", sec_total, sec_pct);
   int64_t sup_total = null_get_all(results, sup_n);
   double sup_pct = calc_pct(sup_total, results->r_seen);
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x2514, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u2514\u2500\u2500");
   fprintf(fout, " Supplementary alignments:   %'14lld (%'.1f%%)\n", sup_total, sup_pct);
   fputc('\n', fout);
 
@@ -874,22 +873,22 @@ int print_results(char *fn, results_t *results, const params_t *params) {
   printWS(WS, fout);
   fprintf(fout, "Alignment size\n");
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u251C\u2500\u2500");
   fprintf(fout, " Min:                        %'14lld%s\n", null_get(results->nucl, min_qlen), warn_qlen ? "     (!)" : "");
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u251C\u2500\u2500");
   fprintf(fout, " 1st pctile:                 %'14lld%s\n", null_get(results->nucl, pct1_qlen), warn_qlen ? "     (!)" : "");
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u251C\u2500\u2500");
   fprintf(fout, " Average:                    %'18.3f\n", null_get(results->nucl, avg_qlen));
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u251C\u2500\u2500");
   fprintf(fout, " SD:                         %'18.3f%s\n", null_get(results->nucl, sd_qlen), warn_qlen ? " (!)" : "");
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u251C\u2500\u2500");
   fprintf(fout, " 99th pctile:                %'14lld%s\n", null_get(results->nucl, pct99_qlen), warn_qlen ? "     (!)" : "");
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x2514, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u2514\u2500\u2500");
   fprintf(fout, " Max:                        %'14lld%s\n", null_get(results->nucl, max_qlen), warn_qlen ? "     (!)" : "");
   fputc('\n', fout);
   if (warn_qlen) {
@@ -898,13 +897,13 @@ int print_results(char *fn, results_t *results, const params_t *params) {
     printWS(WS, fout);
     fprintf(fout, "(!)       Try increasing --max-qhist.\n");
     printWS(WS, fout);
-    fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x2500, (wchar_t) 0x2500, (wchar_t) 0x25Ba);
+    fprintf(fout, "%s", "\u2500\u2500\u25Ba");
     fprintf(fout, " Max filter size:            %'14lld (--max-qlen)\n", params->qlen_max);
     printWS(WS, fout);
-    fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x252C, (wchar_t) 0x2500, (wchar_t) 0x25Ba);
+    fprintf(fout, "%s", "\u252C\u2500\u25Ba");
     fprintf(fout, " Max histogram size:         %'14d (--max-qhist)\n", params->qhist_max);
     printWS(WS, fout);
-    fwprintf(fout, L"%lc%lc%lc%lc", (wchar_t) 0x2514, (wchar_t) 0x2500, (wchar_t) 0x2500, (wchar_t) 0x25Ba);
+    fprintf(fout, "%s", "\u2514\u2500\u2500\u25Ba");
     fprintf(fout, " Max recorded size:         %'14lld\n", null_get(results->nucl, max_qlen));
     fputc('\n', fout);
   }
@@ -915,22 +914,22 @@ int print_results(char *fn, results_t *results, const params_t *params) {
   printWS(WS, fout);
   fprintf(fout, "Fragment size\n");
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u251C\u2500\u2500");
   fprintf(fout, " Min:                        %'14lld%s\n", null_get(results->nucl, min_flen), warn_flen ? "     (!)" : "");
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u251C\u2500\u2500");
   fprintf(fout, " 1st pctile:                 %'14lld%s\n", null_get(results->nucl, pct1_flen), warn_flen ? "     (!)" : "");
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u251C\u2500\u2500");
   fprintf(fout, " Average:                    %'18.3f\n", null_get(results->nucl, avg_flen));
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u251C\u2500\u2500");
   fprintf(fout, " SD:                         %'18.3f%s\n", null_get(results->nucl, sd_flen), warn_flen ? " (!)" : "");
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u251C\u2500\u2500");
   fprintf(fout, " 99th pctile:                %'14lld%s\n", null_get(results->nucl, pct99_flen), warn_flen ? "     (!)" : "");
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x2514, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u2514\u2500\u2500");
   fprintf(fout, " Max:                        %'14lld%s\n", null_get(results->nucl, max_flen), warn_flen ? "     (!)" : "");
   fputc('\n', fout);
   if (warn_flen) {
@@ -939,13 +938,13 @@ int print_results(char *fn, results_t *results, const params_t *params) {
     printWS(WS, fout);
     fprintf(fout, "(!)       Try increasing --max-fhist.\n");
     printWS(WS, fout);
-    fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x2500, (wchar_t) 0x2500, (wchar_t) 0x25Ba);
+    fprintf(fout, "%s", "\u2500\u2500\u25Ba");
     fprintf(fout, " Max filter size:            %'14lld (--max-flen)\n", params->flen_max);
     printWS(WS, fout);
-    fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x252C, (wchar_t) 0x2500, (wchar_t) 0x25Ba);
+    fprintf(fout, "%s", "\u252C\u2500\u25Ba");
     fprintf(fout, " Max histogram size:         %'14d (--max-fhist)\n", params->fhist_max);
     printWS(WS, fout);
-    fwprintf(fout, L"%lc%lc%lc%lc", (wchar_t) 0x2514, (wchar_t) 0x2500, (wchar_t) 0x2500, (wchar_t) 0x25Ba);
+    fprintf(fout, "%s", "\u2514\u2500\u2500\u25Ba");
     fprintf(fout, " Max recorded size:         %'14lld\n", null_get(results->nucl, max_flen));
     fputc('\n', fout);
   }
@@ -965,22 +964,22 @@ int print_results(char *fn, results_t *results, const params_t *params) {
     printWS(WS, fout);
     fprintf(fout, "Read depth\n");
     printWS(WS, fout);
-    fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+    fprintf(fout, "%s", "\u251C\u2500\u2500");
     fprintf(fout, " Min:                                   ---\n");
     printWS(WS, fout);
-    fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+    fprintf(fout, "%s", "\u251C\u2500\u2500");
     fprintf(fout, " 1st pctile:                            ---\n");
     printWS(WS, fout);
-    fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+    fprintf(fout, "%s", "\u251C\u2500\u2500");
     fprintf(fout, " Average:                    %'18.3f\n", LN_G);
     printWS(WS, fout);
-    fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+    fprintf(fout, "%s", "\u251C\u2500\u2500");
     fprintf(fout, " SD:                                    ---\n");
     printWS(WS, fout);
-    fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+    fprintf(fout, "%s", "\u251C\u2500\u2500");
     fprintf(fout, " 99th pctile:                           ---\n");
     printWS(WS, fout);
-    fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x2514, (wchar_t) 0x2500, (wchar_t) 0x2500);
+    fprintf(fout, "%s", "\u2514\u2500\u2500");
     fprintf(fout, " Max:                                   ---\n");
     fputc('\n', fout);
     printWS(WS, fout);
@@ -990,30 +989,30 @@ int print_results(char *fn, results_t *results, const params_t *params) {
     printWS(WS, fout);
     fprintf(fout, "Read depth\n");
     printWS(WS, fout);
-    fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+    fprintf(fout, "%s", "\u251C\u2500\u2500");
     fprintf(fout, " Min:                        %'14lld%s\n", null_get(results->nucl, min_depth), warn_depth ? "     (!)" : "");
     printWS(WS, fout);
-    fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+    fprintf(fout, "%s", "\u251C\u2500\u2500");
     fprintf(fout, " 1st pctile:                 %'14lld%s\n", null_get(results->nucl, pct1_depth), warn_depth ? "     (!)" : "");
     // I think I should still prefer avg_depth over LN/G when I have it,
     // since LN/G is probably less robust to --target-list problems.
     if (warn_depth) {
       printWS(WS, fout);
-      fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+      fprintf(fout, "%s", "\u251C\u2500\u2500");
       fprintf(fout, " Average:                    %'18.3f\n", LN_G);
     } else {
       printWS(WS, fout);
-      fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+      fprintf(fout, "%s", "\u251C\u2500\u2500");
       fprintf(fout, " Average:                    %'18.3f\n", null_get(results->nucl, avg_depth));
     }
     printWS(WS, fout);
-    fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+    fprintf(fout, "%s", "\u251C\u2500\u2500");
     fprintf(fout, " SD:                         %'18.3f%s\n", null_get(results->nucl, sd_depth), warn_depth ? " (!)" : "");
     printWS(WS, fout);
-    fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+    fprintf(fout, "%s", "\u251C\u2500\u2500");
     fprintf(fout, " 99th pctile:                %'14lld%s\n", null_get(results->nucl, pct99_depth), warn_depth ? "     (!)" : "");
     printWS(WS, fout);
-    fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x2514, (wchar_t) 0x2500, (wchar_t) 0x2500);
+    fprintf(fout, "%s", "\u2514\u2500\u2500");
     fprintf(fout, " Max:                        %'14lld%s\n", null_get(results->nucl, max_depth), warn_depth ? "     (!)" : "");
     if (warn_depth) {
       fputc('\n', fout);
@@ -1022,10 +1021,10 @@ int print_results(char *fn, results_t *results, const params_t *params) {
       printWS(WS, fout);
       fprintf(fout, "(!)       Try increasing --max-depth.\n");
       printWS(WS, fout);
-      fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x252C, (wchar_t) 0x2500, (wchar_t) 0x25Ba);
+      fprintf(fout, "%s", "\u252C\u2500\u25Ba");
       fprintf(fout, " Max allowed depth:          %'14d (--max-depth)\n", params->depth_max);
       printWS(WS, fout);
-      fwprintf(fout, L"%lc%lc%lc%lc", (wchar_t) 0x2514, (wchar_t) 0x2500, (wchar_t) 0x2500, (wchar_t) 0x25Ba);
+      fprintf(fout, "%s", "\u2514\u2500\u2500\u25Ba");
       fprintf(fout, " Max recorded depth:        %'14lld\n", null_get(results->nucl, max_depth));
     }
   }
@@ -1035,47 +1034,47 @@ int print_results(char *fn, results_t *results, const params_t *params) {
   printWS(WS, fout);
   fprintf(fout, "Alignment MAPQ\n");
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u251C\u2500\u2500");
   fprintf(fout, " Min:                        %'14lld\n", null_get(results->nucl, min_mapq));
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u251C\u2500\u2500");
   fprintf(fout, " 1st pctile:                 %'14lld\n", null_get(results->nucl, pct1_mapq));
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u251C\u2500\u2500");
   fprintf(fout, " Average:                    %'18.3f\n", null_get(results->nucl, avg_mapq2));
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u251C\u2500\u2500");
   fprintf(fout, " SD:                         %'18.3f\n", null_get(results->nucl, sd_mapq));
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u251C\u2500\u2500");
   fprintf(fout, " 99th pctile:                %'14lld\n", null_get(results->nucl, pct99_mapq));
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u251C\u2500\u2500");
   fprintf(fout, " Max:                        %'14lld\n", null_get(results->nucl, max_mapq));
   printWS(WS, fout);
-  fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x2514, (wchar_t) 0x2500, (wchar_t) 0x2500);
+  fprintf(fout, "%s", "\u2514\u2500\u2500");
   fprintf(fout, " MAPQ missing:               %'14d (%'.1f%%)\n", no_mapq, no_mapq_pct);
   fputc('\n', fout);
   if (params->omit_gc) {
     printWS(WS, fout);
     fprintf(fout, "Alignment GC\n");
     printWS(WS, fout);
-    fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+    fprintf(fout, "%s", "\u251C\u2500\u2500");
     fprintf(fout, " Min:                                   ---\n");
     printWS(WS, fout);
-    fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+    fprintf(fout, "%s", "\u251C\u2500\u2500");
     fprintf(fout, " 1st pctile:                            ---\n");
     printWS(WS, fout);
-    fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+    fprintf(fout, "%s", "\u251C\u2500\u2500");
     fprintf(fout, " Average:                               ---\n");
     printWS(WS, fout);
-    fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+    fprintf(fout, "%s", "\u251C\u2500\u2500");
     fprintf(fout, " SD:                                    ---\n");
     printWS(WS, fout);
-    fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+    fprintf(fout, "%s", "\u251C\u2500\u2500");
     fprintf(fout, " 99th pctile:                           ---\n");
     printWS(WS, fout);
-    fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x2514, (wchar_t) 0x2500, (wchar_t) 0x2500);
+    fprintf(fout, "%s", "\u2514\u2500\u2500");
     fprintf(fout, " Max:                                   ---\n");
     fputc('\n', fout);
     printWS(WS, fout);
@@ -1084,22 +1083,22 @@ int print_results(char *fn, results_t *results, const params_t *params) {
     printWS(WS, fout);
     fprintf(fout, "Alignment GC\n");
     printWS(WS, fout);
-    fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+    fprintf(fout, "%s", "\u251C\u2500\u2500");
     fprintf(fout, " Min:                        %'14lld%%\n", null_get(results->nucl, min_gc));
     printWS(WS, fout);
-    fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+    fprintf(fout, "%s", "\u251C\u2500\u2500");
     fprintf(fout, " 1st pctile:                 %'14lld%%\n", null_get(results->nucl, pct1_gc));
     printWS(WS, fout);
-    fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+    fprintf(fout, "%s", "\u251C\u2500\u2500");
     fprintf(fout, " Average:                    %'18.3f%%\n", 100.0 * null_get(results->nucl, gc_pct));
     printWS(WS, fout);
-    fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+    fprintf(fout, "%s", "\u251C\u2500\u2500");
     fprintf(fout, " SD:                         %'18.3f%%\n", null_get(results->nucl, sd_gc));
     printWS(WS, fout);
-    fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x251C, (wchar_t) 0x2500, (wchar_t) 0x2500);
+    fprintf(fout, "%s", "\u251C\u2500\u2500");
     fprintf(fout, " 99th pctile:                %'14lld%%\n", null_get(results->nucl, pct99_gc));
     printWS(WS, fout);
-    fwprintf(fout, L"%lc%lc%lc", (wchar_t) 0x2514, (wchar_t) 0x2500, (wchar_t) 0x2500);
+    fprintf(fout, "%s", "\u2514\u2500\u2500");
     fprintf(fout, " Max:                        %'14lld%%\n", null_get(results->nucl, max_gc));
   }
   fputc('\n', fout);
@@ -1158,7 +1157,7 @@ int print_results(char *fn, results_t *results, const params_t *params) {
   fputc('\n', fout);
   */
 
-  repeat_wchar((wchar_t) 0x2550, 60, fout);
+  repeat_wchar("\u2550", 60, fout);
   fputc('\n', fout);
   print_centered("End of quaqc report", 60, fout);
   fputc('\n', fout);
