@@ -127,7 +127,7 @@ quaqc: $(objects)
 	$(CC) $(CFLAGS) $(LDFLAGS) $(objects) -o $@ $(HTSLIB) $(ZLIB) $(LDLIBS) 
 
 test: quaqc
-	(cd $(TESTDIR) && LC_NUMERIC="en_US" bash test.sh)
+	(cd $(TESTDIR) && LC_NUMERIC="en_US.UTF-8" bash test.sh)
 
 man: doc/quaqc.1.md
 	pandoc --standalone --to man doc/quaqc.1.md -o doc/quaqc.1
