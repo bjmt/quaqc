@@ -26,6 +26,11 @@ HTSlib using with_lzma=1 and with_bz2=1 as follows:
 
     make with_lzma=1 with_bz2=1 libhts
 
+HTSlib also tries to link to LIBDEFLATE by default if present, though this
+has been disabled for the prepackaged HTSlib. To re-enable it:
+
+    make with_deflate=1 libhts
+
 Finally, curl support is disabled by default. To enable it, use with_curl=1
 if a system-wide shared library is available:
 
@@ -35,7 +40,7 @@ This allows quaqc to work with CRAM files which require a remote connection.
 In all cases, make sure to again provide these options when compiling quaqc
 itself, for example:
 
-    make with_lzma=1 with_bz2=1 with_curl=1 release
+    make with_lzma=1 with_bz2=1 with_deflate=1 with_curl=1 release
 
 If shared libraries are not available system-wide, they can be used by
 specifying the LDLIBS environment variable.

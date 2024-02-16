@@ -72,7 +72,7 @@ ifneq ($(shell uname -s),Darwin)
 endif
 endif
 
-ifeq ($(no_deflate),)
+ifeq ($(with_deflate),)
 	HTSOPS+=--without-libdeflate 
 endif
 
