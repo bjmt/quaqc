@@ -6,8 +6,8 @@
 
   Command arguments used: -P peak.bed -T tss.bed -t target.bed 
 
-  Time of run start: 2024-02-15 16:36:08 CET
-  Time of run end:   2024-02-15 16:36:08 CET
+  Time of run start: 2024-02-16 13:48:05 CET
+  Time of run end:   2024-02-16 13:48:05 CET
   Time ellapsed:     0 seconds
 
   Target names specified:                    no
@@ -74,41 +74,41 @@
 │            Nuclear read stats after filtering            │
 └──────────────────────────────────────────────────────────┘
 
-  Reads passing filters:                   2,487 (79.9%)
+  Reads passing filters:                   2,397 (77.0%)
 
   Alignment size
   ├── Min:                                    26
-  ├── 1st pctile:                             36
-  ├── Average:                               104.363
-  ├── SD:                                     46.141
+  ├── 1st pctile:                             35
+  ├── Average:                               103.471
+  ├── SD:                                     46.251
   ├── 99th pctile:                           150
   └── Max:                                   150
 
-  Fragments passing filters:               1,245
+  Fragments passing filters:               1,201
 
   Fragment size
   ├── Min:                                    26
   ├── 1st pctile:                             38
-  ├── Average:                               165.670
-  ├── SD:                                    145.897
+  ├── Average:                               163.575
+  ├── SD:                                    145.566
   ├── 99th pctile:                           776
   └── Max:                                   915
 
-  Genome coverage:                           100.000%
+  Genome coverage:                            99.860%
 
   Read depth
   ├── Min:                                     0
   ├── 1st pctile:                             16
-  ├── Average:                                51.910
-  ├── SD:                                     15.885
+  ├── Average:                                49.604
+  ├── SD:                                     19.606
   ├── 99th pctile:                           116
   └── Max:                                   123
 
   Alignment MAPQ
   ├── Min:                                    31
   ├── 1st pctile:                             38
-  ├── Average:                                41.879
-  ├── SD:                                      0.849
+  ├── Average:                                41.876
+  ├── SD:                                      0.863
   ├── 99th pctile:                            42
   ├── Max:                                    42
   └── MAPQ missing:                            0 (0.0%)
@@ -116,14 +116,14 @@
   Alignment GC
   ├── Min:                                    18%
   ├── 1st pctile:                             22%
-  ├── Average:                                40.174%
-  ├── SD:                                      7.167%
+  ├── Average:                                40.274%
+  ├── SD:                                      7.214%
   ├── 99th pctile:                            56%
   └── Max:                                    62%
 
   Number of peaks:                             1 (100.0%)
   Peak coverage:                               5.000%
-  Fraction of reads in peaks:                 12.505%
+  Fraction of reads in peaks:                 12.975%
 
   Number of TSSs:                              1 (100.0%)
   TSS enrichment score:                        3.046

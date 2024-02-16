@@ -76,12 +76,14 @@ accomplished using `samtools` in the following manner during alignment:
 :   Filename of a BED file containing ranges that quaqc will be restricted
     to. The effective genome size for metric calculations will also be
     adjusted. Cannot be used simultaneously with `--blacklist`. Can be gzipped.
+    To be used for QC, reads must be fully contained within these ranges.
 
 **-b** *FILE*, **\--blacklist**=*FILE*
 :   Filename of a BED file containing ranges in which all read aligning to
     these regions are to be ignored by quaqc. The effective genome size for
     metric calculations will also be adjusted. Cannot be used simultaneously
-    with `--target-list`. Can be gzipped.
+    with `--target-list`. Can be gzipped. To be used for QC, reads must be
+    fully outside these ranges.
 
 **-r** *STR*, **\--rg-names**=*STR*
 :   Comma-separated read group identifiers. This will cause quaqc to discard

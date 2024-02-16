@@ -98,6 +98,7 @@ to.
 The effective genome size for metric calculations will also be adjusted.
 Cannot be used simultaneously with \f[C]--blacklist\f[R].
 Can be gzipped.
+To be used for QC, reads must be fully contained within these ranges.
 .TP
 \f[B]-b\f[R] \f[I]FILE\f[R], \f[B]--blacklist\f[R]=\f[I]FILE\f[R]
 Filename of a BED file containing ranges in which all read aligning to
@@ -105,6 +106,7 @@ these regions are to be ignored by quaqc.
 The effective genome size for metric calculations will also be adjusted.
 Cannot be used simultaneously with \f[C]--target-list\f[R].
 Can be gzipped.
+To be used for QC, reads must be fully outside these ranges.
 .TP
 \f[B]-r\f[R] \f[I]STR\f[R], \f[B]--rg-names\f[R]=\f[I]STR\f[R]
 Comma-separated read group identifiers.

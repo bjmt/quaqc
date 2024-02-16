@@ -62,7 +62,7 @@ static inline hts_pos_t actual_size(const char *seq, const hts_pos_t size, const
 }
 
 static inline bool whitelisted(const void *tlist, const char *seq, const bam1_t *aln, const hts_pos_t qend) {
-  return tlist == NULL || bed_overlap(tlist, seq, aln->core.pos, qend);
+  return tlist == NULL || bed_overlap_within(tlist, seq, aln->core.pos, qend);
 }
 
 static inline bool blacklisted(const void *blist, const char *seq, const bam1_t *aln, const hts_pos_t qend) {
@@ -349,6 +349,9 @@ static void calc_nucl_shared_stats(stats_t *stats, const globals_t *nucl_shared,
     for (int i = 0; i < params->depth_max + 1; i++) {
       depths_total += nucl_shared->depths[i];
     }
+#if 0
+    msg("Initial depths0 = %'d stats->actual = %'"PRId64"\n", nucl_shared->depths[0], stats->actual);
+#endif
     nucl_shared->depths[0] -= (depths_total - stats->actual);
 #if 0
     for (int i = 0; i < params->depth_max; i++) {

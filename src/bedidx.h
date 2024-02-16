@@ -46,6 +46,7 @@ void *bed_read(const char *fn);
 void bed_destroy(void *_h);
 void bed_unify(void *reg_hash);
 void bed_resize(void *_h, const hts_pos_t up, const hts_pos_t down);
+int bed_overlap_within(const void *_h, const char *chr, hts_pos_t beg, hts_pos_t end);
 int bed_overlap(const void *_h, const char *chr, hts_pos_t beg, hts_pos_t end);
 int bed_overlap_offset(void *_h, const char *seq, const hts_pos_t beg, const hts_pos_t end);
 hts_pos_t bed_total(void *reg_hash, const char *chr, const hts_pos_t size);
