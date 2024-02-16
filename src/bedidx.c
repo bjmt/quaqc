@@ -169,7 +169,7 @@ static void bed_index_without_sort(void *_h)
 
 static inline void coord_resize(hts_pos_t *s1, hts_pos_t *s2, const hts_pos_t up, const hts_pos_t down, const char s) {
 #if 0
-    fprintf(stderr, "bedidx.c: Before: %lld\t%lld\t%c\n", *s1, *s2, s);
+    fprintf(stderr, "bedidx.c: Before: %"PRId64"\t%"PRId64"\t%c\n", *s1, *s2, s);
 #endif
   if (s == '-') {
     *s1 = down > *s1 ? 0: *s1 - down;
@@ -179,7 +179,7 @@ static inline void coord_resize(hts_pos_t *s1, hts_pos_t *s2, const hts_pos_t up
     *s2 += down;
   }
 #if 0
-    fprintf(stderr, "bedidx.c: After:  %lld\t%lld\t%c\t(-%lld, +%lld)\n", *s1, *s2, s, up, down);
+    fprintf(stderr, "bedidx.c: After:  %"PRId64"\t%"PRId64"\t%c\t(-%"PRId64", +%"PRId64")\n", *s1, *s2, s, up, down);
 #endif
 }
 

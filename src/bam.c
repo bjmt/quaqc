@@ -354,7 +354,7 @@ static void calc_nucl_shared_stats(stats_t *stats, const globals_t *nucl_shared,
     for (int i = 0; i < params->depth_max; i++) {
       msg("%d ", nucl_shared->depths[i]);
     } msg("\n");
-    msg("Cov = %'lld DepthTotal = %'lld Depth0 = %'d\n", stats->cov, depths_total, nucl_shared->depths[0]);
+    msg("Cov = %'"PRId64" DepthTotal = %'"PRId64" Depth0 = %'d\n", stats->cov, depths_total, nucl_shared->depths[0]);
 #endif
     stats->genom_cov = (double) (stats->actual - nucl_shared->depths[0]) / (double) stats->actual;
     if (stats->genom_cov > 1.0) stats->genom_cov = 1.0;
@@ -577,7 +577,7 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params) {
         proc_n++; stats->reads_n++; results->r_seen++;
 
         if (proc_n % 10000000 == 0) {
-          vvmsg("... %s: processed %'lld M reads, %.1f%% passing filters\n", bam->fn, proc_n / 1000000, 100.0 * (double)results->r_filt / (double)(proc_n - 1));
+          vvmsg("... %s: processed %'"PRId64" M reads, %.1f%% passing filters\n", bam->fn, proc_n / 1000000, 100.0 * (double)results->r_filt / (double)(proc_n - 1));
         }
 
         qend = bam_endpos(aln); // Half open!!!
@@ -623,7 +623,7 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params) {
             if (stats->type == SEQ_NUCL) {
               if (params->tss != NULL) {
 #if 0
-                fprintf(stderr, "bam.c: Before: %lld\t%lld\t%c\n", aln->core.pos, qend, is_pos_strand(aln)? '+':'-');
+                fprintf(stderr, "bam.c: Before: %"PRId64"\t%"PRId64"\t%c\n", aln->core.pos, qend, is_pos_strand(aln)? '+':'-');
 #endif
                 if (params->tss_qlen == 0) {
                   tss_qbeg = aln->core.pos + tn5_fwd;
@@ -650,7 +650,7 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params) {
                 tss_qend = min(tss_qend, hdr->target_len[i]);
                 tss_offset = bed_overlap_offset(params->tss, hdr->target_name[i], tss_qbeg, tss_qend);
 #if 0
-                fprintf(stderr, "bam.c: After:  %lld\t%lld\t%c (tss_qlen=%d, tn5_fwd=%lld, tn5_rev=%lld, offset=%d)\n", tss_qbeg, tss_qend, is_pos_strand(aln)? '+':'-', params->tss_qlen / 2, tn5_fwd, tn5_rev, tss_offset);
+                fprintf(stderr, "bam.c: After:  %"PRId64"\t%"PRId64"\t%c (tss_qlen=%d, tn5_fwd=%"PRId64", tn5_rev=%"PRId64", offset=%d)\n", tss_qbeg, tss_qend, is_pos_strand(aln)? '+':'-', params->tss_qlen / 2, tn5_fwd, tn5_rev, tss_offset);
 #endif
                 if (tss_offset != INT_MIN) {
                   add_read_to_tss(results->nucl_shared->tss, params->tss_size, tss_offset, tss_qend - tss_qbeg);
@@ -757,7 +757,7 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params) {
     } else if (proc_n > (1 << 10)) {
       msg("|--> Processed %'.1f K reads, ", (double) proc_n / 1000.0);
     } else {
-      msg("|--> Processed %'lld read%s, ", proc_n, pluralize(proc_n));
+      msg("|--> Processed %'"PRId64" read%s, ", proc_n, pluralize(proc_n));
     }
     msg("%.1f%% passing filters.\n|--> Time to process: ", reads_p);
     print_time(difftime(time_end, time_start));
