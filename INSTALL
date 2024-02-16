@@ -32,6 +32,10 @@ if a system-wide shared library is available:
     make with_curl=1 libhts
 
 This allows quaqc to work with CRAM files which require a remote connection.
+In all cases, make sure to again provide these options when compiling quaqc
+itself, for example:
+
+    make with_lzma=1 with_bz2=1 with_curl=1 release
 
 If shared libraries are not available system-wide, they can be used by
 specifying the LDLIBS environment variable.
