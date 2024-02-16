@@ -70,10 +70,9 @@ ifeq ($(with_curl),)
 	HTSOPS+=--disable-libcurl
 else
 	LDLIBS+=-lcurl
-## Need to test if this is necessary on linux
-# ifeq ($(shell uname -s),Darwin)
-#         LDLIBS+=-lssl -lcrypto
-# endif
+ifneq ($(shell uname -s),Darwin)
+        LDLIBS+=-lssl -lcrypto
+endif
 endif
 
 ifeq ($(z_dyn),)

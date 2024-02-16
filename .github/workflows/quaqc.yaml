@@ -1,0 +1,14 @@
+name: quaqc-build
+run-name: ${{ github.actor }} build
+on: [push, pull_request]
+
+jobs:
+  macos:
+    runs-on: macos-latest
+    steps:
+      - name: clone
+        uses: actions/checkout@v4
+      - name: build
+        run: make release-full
+      - name: Test
+        run: make test
