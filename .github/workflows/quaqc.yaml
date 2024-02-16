@@ -1,14 +1,27 @@
 name: quaqc-build
-run-name: ${{ github.actor }} build
-on: [push, pull_request]
+on: push
 
 jobs:
   macos:
     runs-on: macos-latest
+    if: contains(github.event.head_commit.message, 'build_me')
     steps:
       - name: clone
         uses: actions/checkout@v4
       - name: build
         run: make release-full
-      - name: Test
+      - name: test
+        run: make test
+  ubuntu:
+    strategy:
+      matrix:
+        cc: [gcc, clang]
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, 'build_me')
+    steps:
+      - name: clone
+        uses: actions/checkout@v4
+      - name: build
+        run: make release-full
+      - name: test
         run: make test
