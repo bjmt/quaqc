@@ -7,7 +7,7 @@ if ! ../quaqc --output-ext .test.txt -P peak.bed -T tss.bed -t target.bed reads.
   exit 1
 fi
 
-diff <(awk 'NR>10' reads.quaqc.txt) <(awk 'NR>10' reads.test.txt) > diff.txt
+diff <(awk 'NR>11' reads.quaqc.txt) <(awk 'NR>11' reads.test.txt) > diff.txt
 
 if [ -s diff.txt ] ; then
   echo "Test failed, found the following diff:"
