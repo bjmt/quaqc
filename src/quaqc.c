@@ -634,8 +634,7 @@ static int quaqc_main(int argc, char *argv[]) {
 
   /* fprintf(stderr, "%zu\n", sizeof(stats_t)); */
 
-  setlocale(LC_NUMERIC, "en_US");  // For thousandths sep
-  setlocale(LC_CTYPE,   "en_US");  // For wchar_t printing
+  setlocale(LC_NUMERIC, "");  // For thousandths sep
 
   char default_pltd[sizeof(DEFAULT_PLTD)] = DEFAULT_PLTD;
   char default_mito[sizeof(DEFAULT_MITO)] = DEFAULT_MITO;
