@@ -45,8 +45,7 @@ file via the `-S/--keep` flag. (This will increase the runtime.)
 
 ## Help
 
-Please open an [issue](https://github.com/bjmt/quaqc/issues) on GitHub or email
-me at `benjmtremblay` _at_ `gmail.com`.
+Please open an [issue](https://github.com/bjmt/quaqc/issues) on GitHub.
 
 ## Citation
 
