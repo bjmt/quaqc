@@ -24,4 +24,4 @@ jobs:
       - name: build
         run: make release-full
       - name: test
-        run: locale -c -k LC_NUMERIC && LC_NUMERIC="en_US" make test
+        run: LC_NUMERIC="en_US" locale -c -k LC_NUMERIC && make test
