@@ -46,9 +46,6 @@ ZLIB=
 HTSOPS=
 HTSLIB=
 
-# TODO: What happens if libhts is built with libdeflate? Do I need to add something to LDLIBS?
-# HTSOPS+=--without-libdeflate  # To disable
-
 ifneq ($(native),)
 	CFLAGS+=-march=native
 	HTSOPS+=CFLAGS=-march=native
@@ -73,6 +70,10 @@ else
 ifneq ($(shell uname -s),Darwin)
         LDLIBS+=-lssl -lcrypto
 endif
+endif
+
+ifeq ($(no_deflate),)
+	HTSOPS+=--without-libdeflate 
 endif
 
 ifeq ($(z_dyn),)
@@ -123,7 +124,7 @@ src/%.o: src/%.c
 objects := $(patsubst %.c,%.o,$(wildcard src/*.c))
 
 quaqc: $(objects)
-	$(CC) $(CFLAGS) $(LDFLAGS) $(LDLIBS) $(objects) -o $@ $(HTSLIB) $(ZLIB)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(objects) -o $@ $(HTSLIB) $(ZLIB) $(LDLIBS) 
 
 test: quaqc
 	(cd $(TESTDIR) && bash test.sh)
