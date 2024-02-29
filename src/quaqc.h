@@ -43,8 +43,8 @@
 #define DEFAULT_OUT_EXT     ".quaqc.txt"
 #define DEFAULT_BAM_EXT      ".filt.bam"
 
-#define DEFAULT_MITO      "chrM,ChrM,Mt"
-#define DEFAULT_PLTD      "chrC,ChrC,Pt"
+#define DEFAULT_MITO      "chrM,ChrM,Mt,mitochondria"
+#define DEFAULT_PLTD      "chrC,ChrC,Pt,chloroplast"
 
 // Functions, macros ------------------------------------------------------------
 

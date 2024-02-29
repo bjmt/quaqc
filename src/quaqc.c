@@ -100,6 +100,7 @@ enum opts_enum {
   TITLE         = 'i',
   RG_NAMES      = 'r',
   RG_LIST       = 'R',
+  VERSION       = 'V',
 
   MIN_QLEN      = 1000,
   MIN_FLEN,
@@ -120,10 +121,9 @@ enum opts_enum {
   NO_SE,
   FOOTPRINT,
   CHIP,
-  VERSION,
 };
 
-static const char *opts_short = "m:p:n:t:b:2q:o:t:Sk:K:j:fhcvJ:0P:T:NDO:AdLi:r:R:";
+static const char *opts_short = "m:p:n:t:b:2q:o:t:Sk:K:j:fhcvJ:0P:T:NDO:AdLi:r:R:V";
 
 static struct option opts_long[] = {
   { "mitochondria",  required_argument, 0, MITOCHONDRIA  },
@@ -248,7 +248,7 @@ static void help(void) {
     " -i, --title          STR   Assign a title to run.\n"
     " -c, --continue             Do not stop when a sample triggers a program error.\n"
     " -v, --verbose              Print progress messages during runtime.\n"
-    "     --version              Print the version and exit.\n"
+    " -V, --version              Print the version and exit.\n"
     " -h, --help                 Print this help message.\n"
     , QUAQC_VERSION, QUAQC_YEAR
     , DEFAULT_MITO, DEFAULT_PLTD

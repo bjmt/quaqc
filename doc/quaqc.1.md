@@ -38,14 +38,14 @@ accomplished using `samtools` in the following manner during alignment:
     to skip reads mapping to these references for certain metrics. The remaining
     metrics will be merged for all matching references under a single set
     of metrics for "mitochondrial" reads. By default quaqc
-    checks for references with names matching to chrM, ChrM and Mt. To skip
-    this check entirely, simply provide an empty string (e.g. `-m''`).
+    checks for references with names matching to chrM, ChrM, Mt and mitochondria.
+    To skip this check entirely, simply provide an empty string (e.g. `-m''`).
 
 **-p** *STR*, **\--plastids**=*STR*
 :   This option behaves the exact same as the `--mitochondria` option. Metrics
     for all matching references will be merged under a single set of metrics
     for "plastidic" reads. By default quaqc checks for references with names
-    matching to chrC, ChrC and Pt. To skip
+    matching to chrC, ChrC, Pt and chloroplast. To skip
     this check entirely, simply provide an empty string (e.g. `-p''`).
 
 **-P** *FILE*, **\--peaks**=*FILE*
