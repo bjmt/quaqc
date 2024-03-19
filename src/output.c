@@ -536,7 +536,8 @@ int append_json_result(char *fn, results_t *results, const params_t *params) {
     fjson_write(fjson, "            },\n");
   }
   if (params->tss == NULL) {
-    fjson_write(fjson, "            \"tss\": null,\n");
+    fjson_write(fjson, "            \"tss\": null\n");
+    fjson_write(fjson, "          },\n");
   } else {
     fjson_write(fjson, "            \"tss\": {\n");
     fjson_write(fjson, "              \"n\": %d,\n", null_get(results->nucl, tss_n));
