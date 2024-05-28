@@ -10,8 +10,8 @@ Requires gcc/clang and GNU Make, tested with macOS and Linux. Basic install:
 git clone https://github.com/bjmt/quaqc  # Or download latest release
 cd quaqc
 make release-full
-make install  # Copy quaqc + manual to /usr/local (optional, may require sudo)
 make test  # Make sure quaqc produces the expected outputs (optional)
+make install  # Copy quaqc + manual to /usr/local (optional, may require sudo)
 ```
 
 See [INSTALL](./INSTALL) for configuration options.
@@ -34,7 +34,7 @@ cat ./reads.quaqc.txt
 
 This command changes the location of the output QC report to the current directory,
 and uses the peak and TSS files to generate additional stats. Since this example
-BAM is just a subset of reads contained within a small region of the Arabidpsis
+BAM is just a subset of reads contained within a small region of the Arabidopsis
 genome, the `target.bed`
 file restricts quaqc to only consider that region of the genome (and thus adjust
 how it calculates the stats). See a copy of the output
