@@ -43,6 +43,14 @@ report [here](./test/reads.quaqc.txt).
 Note that quaqc can also save the final reads passing all filters to a new BAM
 file via the `-S/--keep` flag. (This will increase the runtime.)
 
+## quaqcr
+
+For those who prefer to analyze their data with R, a companion package
+[`quaqcr`](https://github.com/bjmt/quaqcr) is available. This package contains
+functions for both executing quaqc from within R as well as analyzing all of
+its outputs made available when outputting the results in JSON format. See
+the README for a detailed tutorial.
+
 ## Help
 
 Please open an [issue](https://github.com/bjmt/quaqc/issues) on GitHub.
