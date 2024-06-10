@@ -360,10 +360,10 @@ static int str_split(char *str, char **res, const char sep, const int max_size) 
 static void *str_split_and_hash(char *str, int *n, int *dups, const char sep) {
   const char delim[2] = { sep, '\0' };
   *n = 0;
+  if (strlen(str) == 0) return NULL;
   int d, d_n = 0;
   char *rg;
   void *h = str_hash_init(NULL, 0, &d);
-  if (strlen(str) == 0) return h;
   rg = strtok(str, delim);
   for (int i = 0; i < MAX_HASH_SIZE && rg != NULL; i++) {
     d = str_hash_add(h, rg);
