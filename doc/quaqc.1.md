@@ -248,6 +248,11 @@ accomplished using `samtools` in the following manner during alignment:
     relaxes the filtering parameters, allowing a greater number of reads to be
     counted for QC.
 
+**\--strict**
+:   Set `--min-flen=50`, `--max-flen=150`, and `--mapq=40`. This
+    restricts the filtering parameters to keep only the highest quality
+    reads.
+
 **\--nfr**
 :   Set `--no-se`, `--max-flen=120`, and `--tss-tn5`. These filters enrich for
     reads found within nucleosome free regions (NFR), as well as shifting the

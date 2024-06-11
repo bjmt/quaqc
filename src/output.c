@@ -233,6 +233,7 @@ int init_json(const params_t *params) {
   fjson_write(fjson, "    \"fast_mode\": %s,\n", strbool(params->fast));
   fjson_write(fjson, "    \"low_mem_mode\": %s,\n", strbool(params->low_mem));
   fjson_write(fjson, "    \"lenient_mode\": %s,\n", strbool(params->lenient));
+  fjson_write(fjson, "    \"strict_mode\": %s,\n", strbool(params->strict));
   fjson_write(fjson, "    \"nfr_mode\": %s,\n", strbool(params->nfr));
   fjson_write(fjson, "    \"nbr_mode\": %s,\n", strbool(params->nbr));
   fjson_write(fjson, "    \"footprint_mode\": %s,\n", strbool(params->footprint));

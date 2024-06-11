@@ -116,6 +116,7 @@ enum opts_enum {
   TSS_QLEN,
   TN5_SHIFT,
   LENIENT,
+  STRICT,
   NFR,
   NBR,
   NO_SE,
@@ -152,6 +153,7 @@ static struct option opts_long[] = {
   { "tss-tn5",       no_argument,       0, TN5_SHIFT     },
   { "use-all",       no_argument,       0, USE_ALL       },
   { "lenient",       no_argument,       0, LENIENT       },
+  { "strict",        no_argument,       0, STRICT        },
   { "nfr",           no_argument,       0, NFR           },
   { "nbr",           no_argument,       0, NBR           },
   { "footprint",     no_argument,       0, FOOTPRINT     },
@@ -229,6 +231,7 @@ static void help(void) {
     " -f, --fast                 --omit-gc --omit-depth (~15%% shorter runtime)\n"
     /* " -L, --low-mem              --max-depth=1 --max-qhist=1 --max-fhist=1 --tss-size=1\n" */ // hide for now
     "     --lenient              --use-nomate --use-dups --use-dovetails --mapq=10\n"
+    "     --strict               --min-flen=50 --max-flen=150 --mapq=40\n"
     "     --nfr                  --no-se --max-flen=120 --tss-tn5\n"
     "     --nbr                  --no-se --min-flen=150 --max-flen=1000 --tss-qlen=0\n"
     "     --footprint            --tss-qlen=1 --tss-size=501 --tss-tn5\n"
@@ -889,6 +892,12 @@ static int quaqc_main(int argc, char *argv[]) {
         }
         params->lenient = true;
         break;
+      case STRICT:
+        if (params->strict) {
+          quit("--strict has already been set.");
+        }
+        params->strict = true;
+        break;
       case NFR:
         if (params->nfr) {
           quit("--nfr has already been set.");
@@ -1065,6 +1074,12 @@ static int quaqc_main(int argc, char *argv[]) {
     params->use_nomate = true;
     params->mapq = 10;
     params->use_dovetail = true;
+  }
+
+  if (params->strict) {
+    params->flen_min = 50;
+    params->flen_max = 150;
+    params->mapq = 40;
   }
 
   if (params->nbr && params->nfr) {

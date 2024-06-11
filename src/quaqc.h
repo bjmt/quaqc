@@ -104,7 +104,7 @@ typedef struct params_t {
   hts_pos_t qlen_min, flen_min, qlen_max, flen_max;
   int threads, depth_max, qhist_max, fhist_max, tss_size, tss_qlen;
   bool use_2nd, use_chi, use_nomate, use_dups, use_all;
-  bool lenient, nfr, nbr, use_dovetail;
+  bool lenient, strict, nfr, nbr, use_dovetail;
   bool no_se, no_out, save, tn5_shift, omit_gc, omit_depth;
   bool fast, qerr, v, vv, footprint, low_mem, chip;
 } params_t;
