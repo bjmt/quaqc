@@ -224,7 +224,7 @@ inside the peaks is calculated.
 
 Lastly, if the `-T/--tss` flag is used, a TSS pileup is generated
 (available in the JSON output) and a TSS enrichment score (TES)
-is provided. This is calculated as the number of reads within the middle
+is provided. This is calculated as the max read density within the middle
 10% of the TSS pileup range divided by the first 25% of the range (i.e.,
 background levels in the promoter region).
 
