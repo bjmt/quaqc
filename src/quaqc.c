@@ -1082,6 +1082,12 @@ static int quaqc_main(int argc, char *argv[]) {
     params->mapq = 40;
   }
 
+  if (params->nbr && params->strict) {
+    quit("--strict and --nbr cannot be set simultaneously.");
+  }
+  if (params->nfr && params->strict) {
+    quit("--strict and --nfr cannot be set simultaneously.");
+  }
   if (params->nbr && params->nfr) {
     quit("--nfr and --nbr cannot be set simultaneously.");
   }
