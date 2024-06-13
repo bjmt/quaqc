@@ -181,6 +181,9 @@ static void read_gc(const bam1_t *aln, int *at, int *gc) {
 static void add_read_to_tss(int32_t *tss, const int tss_size, int tss_offset, int qlen) {
   // Note: When using the actual read coords (ie --tss-size 0), spliced
   // reads are not properly handled.
+#if 0
+  fprintf(stderr, "1: offset = %'d\tqlen=%'d\ttss_size=%'d\n",tss_offset,qlen,tss_size);
+#endif
   if (tss_offset < 0) {
     qlen -= (-1 * tss_offset);
     tss_offset = 0;
@@ -191,6 +194,10 @@ static void add_read_to_tss(int32_t *tss, const int tss_size, int tss_offset, in
   for (int i = tss_offset; i < tss_offset + qlen; i++) {
     tss[i]++;
   }
+#if 0
+  fprintf(stderr, "2: offset = %'d\tqlen=%'d\ttss_size=%'d\n",tss_offset,qlen,tss_size);
+#endif
+  if (tss_offset > tss_size) abort();
 }
 
 static void calc_flag_stats(const bam1_t *aln, stats_t *stats) {
@@ -651,6 +658,9 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params) {
                 }
                 tss_qbeg = max(0, tss_qbeg);
                 tss_qend = min(tss_qend, hdr->target_len[i]);
+#if 0
+                fprintf(stderr, "0b: qbeg = %'lld\tqend=%'lld\n", tss_qbeg, tss_qend);
+#endif
                 tss_offset = bed_overlap_offset(params->tss, hdr->target_name[i], tss_qbeg, tss_qend);
 #if 0
                 fprintf(stderr, "bam.c: After:  %"PRId64"\t%"PRId64"\t%c (tss_qlen=%d, tn5_fwd=%"PRId64", tn5_rev=%"PRId64", offset=%d)\n", tss_qbeg, tss_qend, is_pos_strand(aln)? '+':'-', params->tss_qlen / 2, tn5_fwd, tn5_rev, tss_offset);

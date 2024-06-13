@@ -52,6 +52,7 @@ int bed_overlap_offset(void *_h, const char *seq, const hts_pos_t beg, const hts
 hts_pos_t bed_total(void *reg_hash, const char *chr, const hts_pos_t size);
 int bed_n_in_chr(void *_h, const char *chr);
 int bed_n(void *_h);
+int bed_remove_overlaps(void *reg_hash);
 
 #if 0
 void bed_print(void *reg_hash);

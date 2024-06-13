@@ -171,10 +171,15 @@ static inline void coord_resize(hts_pos_t *s1, hts_pos_t *s2, const hts_pos_t up
 #if 0
     fprintf(stderr, "bedidx.c: Before: %"PRId64"\t%"PRId64"\t%c\n", *s1, *s2, s);
 #endif
+    hts_pos_t len = *s2 - *s1;
+    *s2 -= len / 2;
+    *s1 += len / 2;
   if (s == '-') {
+    *s1 += len % 2;
     *s1 = down > *s1 ? 0: *s1 - down;
     *s2 += up;
   } else {
+    *s2 -= len % 2;
     *s1 = up > *s1 ? 0 : *s1 - up;
     *s2 += down;
   }
@@ -300,10 +305,67 @@ int bed_overlap_offset(void *_h, const char *seq, const hts_pos_t beg, const hts
     for (int i = min_off; i < p->n; ++i) {
         if (p->a[i].beg >= end) return INT_MIN;
         if (p->a[i].end > beg && p->a[i].beg <= end) {
+#if 0
+          fprintf(stderr, "0: pbeg = %'lld\tpend = %'lld\n", p->a[i].beg, p->a[i].end);
+#endif
             return p->s[i] == '-' ? p->a[i].end - end : beg - p->a[i].beg;
         }
     }
     return INT_MIN;
+}
+
+int bed_remove_overlaps(void *reg_hash) {
+
+    int ranges_are_overlapped = 0;
+    int i;
+    reghash_t *h;
+    bed_reglist_t *p;
+
+    if (!reg_hash)
+        return 0;
+
+    h = (reghash_t *)reg_hash;
+
+    for (i = kh_begin(h); i < kh_end(h); i++) {
+        if (!kh_exist(h,i) || !(p = &kh_val(h,i)) || !(p->n))
+            continue;
+
+#if 0
+        for (int chr_i = 0; chr_i < p->n; chr_i++) {
+            fprintf(stderr, "beg = %'lld\tend = %'lld\n", p->a[chr_i].beg, p->a[chr_i].end);
+        }
+#endif
+        // Overlapping ranges are simply 'hidden' by setting
+        // their coordinates to be the same as the previous
+        // range, thus making it so they are never reached by
+        // bed_overlap_offset(). The other option would be
+        // to delete the overlapping ranges somehow, or simply
+        // rebuild the list...
+        for (int chr_i = 0, next; chr_i < p->n - 1; ) {
+          next = 1;
+          for (int chr_j = chr_i + 1; chr_j < p->n; chr_j++) {
+            if (p->a[chr_i].end > p->a[chr_j].beg) {
+#if 0
+            fprintf(stderr, "i: beg = %'lld\tend = %'lld\n", p->a[chr_i].beg, p->a[chr_i].end);
+            fprintf(stderr, "j: beg = %'lld\tend = %'lld\n", p->a[chr_j].beg, p->a[chr_j].end);
+#endif
+              p->a[chr_j].beg = p->a[chr_i].beg;
+              p->a[chr_j].end = p->a[chr_i].end;
+              next++;
+              ranges_are_overlapped += 1;
+            } else {
+              break;
+            }
+          }
+          chr_i += next;
+        }
+#if 0
+        for (int chr_i = 0; chr_i < p->n; chr_i++) {
+            fprintf(stderr, "beg = %'lld\tend = %'lld\n", p->a[chr_i].beg, p->a[chr_i].end);
+        }
+#endif
+    }
+    return ranges_are_overlapped;
 }
 
 /** @brief Trim a sorted interval list, inside a region hash table,
@@ -459,6 +521,8 @@ void *bed_read(const char *fn)
             goto fail;
         }
         if (num < 3) strand = '.';
+        /* if (num < 3 || strand == '.') strand = '+'; */
+        /* if (strand == '.') strand = '+'; */
 
         // Put reg in the hash table if not already there
         k = kh_get(reg, h, ref);

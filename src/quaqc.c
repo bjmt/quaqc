@@ -1142,6 +1142,8 @@ static int quaqc_main(int argc, char *argv[]) {
     if (params->tss == NULL) {
       quit("Failed to read --peaks.");
     }
+    // TODO: Ajust this further to only count ranges
+    // overlapping effective genome.
     params->tss_n = bed_n(params->tss);
     params->tss_size = 5001;
     params->tss_qlen = 0;
@@ -1158,9 +1160,14 @@ static int quaqc_main(int argc, char *argv[]) {
   if (params->omit_depth) params->depth_max = 0;
 
   if (params->tss != NULL) {
-    int up = params->tss_size, down = params->tss_size;
-    up = up / 2; down = down / 2 + down % 2 - 1;
+    int up = params->tss_size / 2, down = params->tss_size;
+    down = down / 2 + down % 2 - 1;
     bed_resize(params->tss, (hts_pos_t) up, (hts_pos_t) down);
+    int n_ovs = bed_remove_overlaps(params->tss);
+    if (n_ovs) {
+      msg("Warning: Removed %'d overlapping ranges in --tss.\n", n_ovs);
+      params->tss_n -= n_ovs;
+    }
   } else {
     params->tss_size = 0;
   }

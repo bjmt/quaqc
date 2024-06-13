@@ -1,0 +1,6 @@
+2024-06-13  Benjamin Jean-Marie Tremblay  <benjmtremblay@gmail.com>
+
+* Added --strict
+* Overlapping ranges provided to --tss are now removed
+* Fixed a bug with detection of read overlapping with --tss
+* Bumped quaqc version to 1.1
