@@ -682,8 +682,8 @@ static int quaqc_main(int argc, char *argv[]) {
         if (params->peaks == NULL) {
           quit("Failed to read --peaks.");
         }
-        bed_unify(params->peaks);
         params->peaks_n = bed_n(params->peaks);
+        bed_unify(params->peaks);
         break;
       case TSS:
         if (params->tss != NULL) {
