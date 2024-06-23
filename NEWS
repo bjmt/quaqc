@@ -1,7 +1,11 @@
-CHANGES IN VERSION 1.0 (2024-01-??)
+CHANGES IN VERSION 1.1 (2024-06-13)
 -----------------------------------
 
-* TBD
+* Added --strict flag: Use strict filtering parameters from manuscript
 
-* Etc...
+* Overlapping ranges provided to --tss are now removed to prevent imbalanced
+  pileups due to reads only being counted for the first overlapping range
+  even if multiple overlapping ranges exist
+
+* Fixed a bug with read overlap detection for --tss option
 
