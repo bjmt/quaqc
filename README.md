@@ -57,10 +57,10 @@ Please open an [issue](https://github.com/bjmt/quaqc/issues) on GitHub.
 
 ## Citation
 
-No article about quaqc is yet published. Until then, please cite this repository
-if you find this software useful in your research.
+Please cite the following journal article if you find this software useful
+in your research:
 
-Tremblay, B.J.M. (2024). quaqc: Quick ATAC-seq QC (Version 0.1) [Computer software]. https://github.com/bjmt/quaqc
+Tremblay, B.J.M. and Qüesta, J.I. (2024). quaqc: efficient and quick ATAC-seq quality control and filtering. _Bioinformatics_, btae649. [https://doi.org/10.1093/bioinformatics/btae649](https://doi.org/10.1093/bioinformatics/btae649)
 
 ## Additional use cases
 
