@@ -1,13 +1,30 @@
 cff-version: 1.2.0
-title: "quaqc: Quick ATAC-seq QC"
-message: "If you use this software, please cite it as below."
-type: software
+message: 'If you use this software, please cite it as below.'
 authors:
   - given-names: Benjamin J.M.
     family-names: Tremblay
-    orcid: https://orcid.org/0000-0002-7441-2951
-repository-code: https://github.com/bjmt/quaqc
-license: GPL-3.0
-version: 0.1
-date-released: 2024-02-15
+    orcid: 'https://orcid.org/0000-0002-7441-2951'
+  - given-names: Julia I.
+    family-names: Qüesta
+    orcid: 'https://orcid.org/0000-0002-0462-8423'
+title: 'quaqc: quick ATAC-seq quality control'
+version: 1.1
+date-released: '2024-10-31'
+url: 'https://github.com/bjmt/quaqc'
+preferred-citation:
+  type: article
+  authors:
+  - given-names: Benjamin J.M.
+    family-names: Tremblay
+    orcid: 'https://orcid.org/0000-0002-7441-2951'
+  - given-names: Julia I.
+    family-names: Qüesta
+    orcid: 'https://orcid.org/0000-0002-0462-8423'
+  doi: 10.1093/bioinformatics/btae649
+  journal: 'Bioinformatics'
+  title: >-
+    quaqc: efficient and quick ATAC-seq quality control and
+    filtering
+  start: btae649
+  year: 2024
 
