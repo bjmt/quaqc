@@ -60,7 +60,7 @@ Please open an [issue](https://github.com/bjmt/quaqc/issues) on GitHub.
 Please cite the following journal article if you find this software useful
 in your research:
 
-Tremblay, B.J.M. and Qüesta, J.I. (2024). quaqc: efficient and quick ATAC-seq quality control and filtering. _Bioinformatics_, btae649. [https://doi.org/10.1093/bioinformatics/btae649](https://doi.org/10.1093/bioinformatics/btae649)
+Tremblay, B.J.M. and Qüesta, J.I. (2024). quaqc: efficient and quick ATAC-seq quality control and filtering. _Bioinformatics_ **40**, btae649. [https://doi.org/10.1093/bioinformatics/btae649](https://doi.org/10.1093/bioinformatics/btae649)
 
 ## Additional use cases
 
