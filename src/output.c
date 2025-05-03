@@ -250,6 +250,9 @@ int init_json(const params_t *params) {
   fjson_write(fjson, "    \"save_as_json\": %s,\n", strbool(params->save));
   fjson_write(fjson, "    \"omit_gc_stats\": %s,\n", strbool(params->omit_gc));
   fjson_write(fjson, "    \"omit_depth_stats\": %s,\n", strbool(params->omit_depth));
+  fjson_write(fjson, "    \"bedGraph\": %s,\n", strbool(params->bedGraph));
+  fjson_write(fjson, "    \"bedGraph_qlen\": %d,\n", params->bg_qlen);
+  fjson_write(fjson, "    \"bedGraph_tn5\": %s,\n", strbool(params->bg_tn5));
   fjson_write(fjson, "    \"fast_mode\": %s,\n", strbool(params->fast));
   fjson_write(fjson, "    \"low_mem_mode\": %s,\n", strbool(params->low_mem));
   fjson_write(fjson, "    \"lenient_mode\": %s,\n", strbool(params->lenient));

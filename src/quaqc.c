@@ -259,7 +259,7 @@ static void help(void) {
     "BedGraph options:\n"
     " -B, --bedGraph             Output a gzipped read density bedGraph.\n"
     "     --bedGraph-qlen  INT   Resize reads (centered on the 5p end). [%d]\n"
-    "     --bedGraph-tn5   INT   Shift 5-prime end coordinates +%d/-%d bases.\n"
+    "     --bedGraph-tn5         Shift 5-prime end coordinates +%d/-%d bases.\n"
     "     --bedGraph-dir   DIR   Directory to output bedGraphs if not that of input.\n"
     "     --bedGraph-ext   STR   Filename extension for bedGraphs. [%s]\n"
     "\n"
@@ -624,22 +624,6 @@ loop_end:
         }
         pthread_mutex_unlock(&json_lock);
       }
-
-#if 0
-      for (int j = 0; j < params->tss_size; j++) {
-        printf("%d\t%d\n", j - params->tss_size / 2, results[threads_ind[i]]->nucl_shared->tss[j]);
-      }
-#endif
-#if 0
-      for (int j = 0; j <= results[threads_ind[i]]->nucl->max_depth; j++) {
-        printf("%d\t%d\n", j, results[threads_ind[i]]->nucl_shared->depths[j]);
-      }
-#endif
-#if 0
-      for (int j = 0; j <= params->fhist_max; j++) {
-        printf("%d\t%d\n", j, results[threads_ind[i]]->nucl_shared->frag_sizes[j]);
-      }
-#endif
 
       reset_results(results[threads_ind[i]], params);
       if (bam != NULL) hts_close(bam);

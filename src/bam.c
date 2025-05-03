@@ -182,9 +182,6 @@ static void read_gc(const bam1_t *aln, int *at, int *gc) {
 static void add_read_to_tss(int32_t *tss, const int tss_size, int tss_offset, int qlen) {
   // Note: When using the actual read coords (ie --tss-size 0), spliced
   // reads are not properly handled.
-#if 0
-  fprintf(stderr, "1: offset = %'d\tqlen=%'d\ttss_size=%'d\n",tss_offset,qlen,tss_size);
-#endif
   if (tss_offset < 0) {
     qlen -= (-1 * tss_offset);
     tss_offset = 0;
@@ -195,9 +192,6 @@ static void add_read_to_tss(int32_t *tss, const int tss_size, int tss_offset, in
   for (int i = tss_offset; i < tss_offset + qlen; i++) {
     tss[i]++;
   }
-#if 0
-  fprintf(stderr, "2: offset = %'d\tqlen=%'d\ttss_size=%'d\n",tss_offset,qlen,tss_size);
-#endif
   if (tss_offset > tss_size) abort();
 }
 
@@ -357,16 +351,7 @@ static void calc_nucl_shared_stats(stats_t *stats, const globals_t *nucl_shared,
     for (int i = 0; i < params->depth_max + 1; i++) {
       depths_total += nucl_shared->depths[i];
     }
-#if 0
-    msg("Initial depths0 = %'d stats->actual = %'"PRId64"\n", nucl_shared->depths[0], stats->actual);
-#endif
     nucl_shared->depths[0] -= (depths_total - stats->actual);
-#if 0
-    for (int i = 0; i < params->depth_max; i++) {
-      msg("%d ", nucl_shared->depths[i]);
-    } msg("\n");
-    msg("Cov = %'"PRId64" DepthTotal = %'"PRId64" Depth0 = %'d\n", stats->cov, depths_total, nucl_shared->depths[0]);
-#endif
     stats->genom_cov = (double) (stats->actual - nucl_shared->depths[0]) / (double) stats->actual;
     if (stats->genom_cov > 1.0) stats->genom_cov = 1.0;
     calc_nucl_shared_stats_core(nucl_shared->depths, params->depth_max, 0,
@@ -642,9 +627,6 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params) {
 
             if (stats->type == SEQ_NUCL) {
               if (params->tss != NULL) {
-#if 0
-                fprintf(stderr, "bam.c: Before: %"PRId64"\t%"PRId64"\t%c\n", aln->core.pos, qend, is_pos_strand(aln)? '+':'-');
-#endif
                 if (params->tss_qlen == 0) {
                   tss_qbeg = aln->core.pos + tn5_fwd;
                   tss_qend = max(qend - tn5_rev, tss_qbeg + 1);
@@ -668,13 +650,7 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params) {
                 }
                 tss_qbeg = max(0, tss_qbeg);
                 tss_qend = min(tss_qend, hdr->target_len[i]);
-#if 0
-                fprintf(stderr, "0b: qbeg = %'lld\tqend=%'lld\n", tss_qbeg, tss_qend);
-#endif
                 tss_offset = bed_overlap_offset(params->tss, hdr->target_name[i], tss_qbeg, tss_qend);
-#if 0
-                fprintf(stderr, "bam.c: After:  %"PRId64"\t%"PRId64"\t%c (tss_qlen=%d, tn5_fwd=%"PRId64", tn5_rev=%"PRId64", offset=%d)\n", tss_qbeg, tss_qend, is_pos_strand(aln)? '+':'-', params->tss_qlen / 2, tn5_fwd, tn5_rev, tss_offset);
-#endif
                 if (tss_offset != INT_MIN) {
                   add_read_to_tss(results->nucl_shared->tss, params->tss_size, tss_offset, tss_qend - tss_qbeg);
                 }
@@ -683,7 +659,6 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params) {
               if ((at + gc + n) > 0) {
                 const double gc_frac = (double)(100 * gc) / (double)(at + gc + n); 
                 results->nucl_shared->read_gc[lround(gc_frac)]++;
-                /* results->nucl_shared->read_gc[(100 * gc) / (at + gc + n)]++; */
               }
               results->nucl_shared->read_sizes[min(qlen, params->qhist_max)]++;
               if (!params->omit_depth) {
