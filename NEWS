@@ -1,3 +1,11 @@
+CHANGES IN VERSION 1.2 (2025-05-03)
+-----------------------------------
+
+* Added bedGraph output (--bedGraph). The behaviour of the output pileup
+  is similar to the pileup created by the --tss option, with the ability
+  to either make a pileup from the exact read coordinates or centered
+  around resized 5-prime coordinates.
+
 CHANGES IN VERSION 1.1 (2024-06-13)
 -----------------------------------
 

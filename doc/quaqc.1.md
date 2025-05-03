@@ -308,6 +308,32 @@ accomplished using `samtools` in the following manner during alignment:
     argument to change it. If an existing ".bam" or ".cram" extension
     exists, it will be stripped.
 
+**-B**, **\--bedGraph**
+:   Output a Gzipped bedGraph of the alignments passing all filters within
+    target regions. Only limited memory is used to store bedGraph records
+    which are output on the fly. This means that some consecutive positions
+    with identical scores will sometimes be present as distinct ranges if
+    quaqc ran out of memory to store such records simultaneously. 
+
+**\--bedGraph-qlen**=*INT*
+:   When outputting the alignments in bedGraph format, they are resized from
+    the 5-prime position. This option controls the final size of the 5-prime
+    centered alignment. To instead use the original start and end coordinates
+    of the alignment, set this option to 0.
+
+**\--bedGraph-tn5**
+:   Shift the 5-prime alignment coordinates of each read when generating the
+    bedGraph.
+
+**\--bedGraph-dir**=*DIR*
+:   As per the `--keep-dir` option, change the output directory of the 
+    bedGraph files.
+
+**\--bedGraph-ext**=*STR*
+:   As per the `--keep-ext` option, change the default bedGraph filename
+    extension. The bedGraph will always be Gzipped, so not including ".gz"
+    will still lead to a compressed file.
+
 **-j** *INT*, **\--threads**=*INT*
 :   Set the number of child threads used to process input BAMs. At minimum,
     one child thread is launched (meaning quaqc technically uses two threads,
