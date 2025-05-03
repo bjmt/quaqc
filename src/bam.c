@@ -540,8 +540,6 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params) {
 
   init_stats_list(results, hdr, params);
 
-  bool bedGraph_max_read_size_warning = false;
-
   const hts_pos_t tn5_fwd = params->tn5_shift ? TN5_FOWARD_SHIFT : 0;
   const hts_pos_t tn5_rev = params->tn5_shift ? TN5_REVERSE_SHIFT : 0;
   const hts_pos_t bg_tn5_fwd = params->bg_tn5 ? TN5_FOWARD_SHIFT : 0;
@@ -692,7 +690,6 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params) {
                 add_read_to_depths(aln, qend, depths, results->nucl_shared->depths, params->depth_max);
               }
               if (params->bedGraph) {
-                if (qlen > BEDGRAPH_MAX_READ_SIZE) bedGraph_max_read_size_warning = true;
                 if (params->bg_qlen == 0) {
                   bg_qbeg = aln->core.pos + bg_tn5_fwd;
                   bg_qbeg0 = bg_qbeg;
@@ -803,11 +800,6 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params) {
       msg("Warning: Some read sizes likely have been truncated for '%s' (--max-qhist)\n", bam->fn);
     }
     calc_nucl_shared_stats(results->nucl, results->nucl_shared, params);
-  }
-
-  if (bedGraph_max_read_size_warning) {
-    msg("Warning: Found read size(s) exceeding max allowed (%d), possible issues with bedGraph",
-      BEDGRAPH_MAX_READ_SIZE);
   }
 
   if (params->v) {

@@ -25,7 +25,8 @@
 #define kroundup32(x) (--(x), (x)|=(x)>>1, (x)|=(x)>>2, (x)|=(x)>>4, (x)|=(x)>>8, (x)|=(x)>>16, ++(x))
 #endif
 
-#define INIT_HIST_SIZE 64
+#define INIT_HIST_SIZE            64
+#define BEDGRAPH_MAX_READ_SIZE   300
 
 typedef struct depths_t {
   hts_pos_t beg, end;
@@ -61,7 +62,6 @@ void *init_depths(void) {
 
 void *init_bedGraph(const params_t *params) {
   depths_t *depths = alloc(sizeof(depths_t));
-  // If the max read size is bigger than BEDGRAPH_MAX_READ_SIZE, then the array won't be big enough!
   depths->size = params->bg_qlen > 0 ? params->bg_qlen : BEDGRAPH_MAX_READ_SIZE;
   depths->size *= 2;
   depths->size += BEDGRAPH_MAX_READ_SIZE + 3;
@@ -131,6 +131,7 @@ void add_read_to_bedGraph(gzFile bgfile, void *bedGraph, const hts_pos_t qbeg0, 
     b->beg = qbeg0;
     b->end = qend;
   }
+  if (qend - qbeg0 > b->size) grow_depths(b, qend - qbeg0);
   if (qbeg0 > b->beg) {
     for (int i = b->beg; i < qbeg0; i++) {
       if (b->hist[i & (b->size - 1)] != 0) {

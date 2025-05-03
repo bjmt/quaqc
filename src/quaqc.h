@@ -50,7 +50,6 @@
 
 #define TN5_FOWARD_SHIFT               4
 #define TN5_REVERSE_SHIFT              5
-#define BEDGRAPH_MAX_READ_SIZE       300
 
 // Functions, macros ------------------------------------------------------------
 
