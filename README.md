@@ -64,6 +64,26 @@ Tremblay, B.J.M. and Qüesta, J.I. (2024). quaqc: efficient and quick ATAC-seq q
 
 ## Additional use cases
 
+### Creating bedGraph files centered around the 5-prime ends of reads
+
+Typically read pileups of ATAC-seq data (such as bedGraph files) are made
+in such a way as to visualize the sites of transposition, which are the
+5-prime ends of the reads. This means needed to resize each read before
+creating a bedGraph file. Both of these steps can be performed simultaneously
+using quaqc:
+
+```sh
+quaqc --bedGraph --bedGraph-qlen 150 Sample.bam
+```
+
+In this example, a bedGraph file is created where each read is resized
+to 150 bp, centered around the 5-prime end of each read. This functionality
+can also be used to visualize the exact insertions:
+
+```sh
+quaqc --bedGraph --bedGraph-tn5 --bedGraph-qlen 1 Sample.bam
+```
+
 ### Fast iteration of the effects of different read quality thresholds
 
 quaqc is fairly performant, but it can still require some patience for decently
