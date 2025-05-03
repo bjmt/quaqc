@@ -25,6 +25,8 @@ preferred-citation:
   title: >-
     quaqc: efficient and quick ATAC-seq quality control and
     filtering
+  volume: 40
+  issue: 11
   start: btae649
   year: 2024
 
