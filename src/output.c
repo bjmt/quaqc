@@ -136,6 +136,26 @@ init_filtered_bam_fail:
   return NULL;
 }
 
+// --bedGraph ----------------------------------------------------------------------
+
+gzFile init_bedGraph_f(const char *fn, const params_t *params) {
+  char *bg_fn = make_new_fn(fn, params->bg_dir, params->bg_ext, true);
+  if (check_if_matching_fn(fn, bg_fn)) {
+    error(params->qerr, "bedGraph file cannot have an identical path as input '%s'.", fn);
+    free(bg_fn);
+    return NULL;
+  }
+  gzFile bg = gzopen(bg_fn, "wb");
+  if (bg == NULL) {
+    int e;
+    warn("Cannot create file '%s': %s", bg_fn, gzerror(bg, &e));
+    free(bg_fn);
+    return NULL;
+  }
+  free(bg_fn);
+  return bg;
+}
+
 // --json ----------------------------------------------------------------------
 
 static bool use_gz = false;

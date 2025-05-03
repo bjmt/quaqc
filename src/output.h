@@ -21,6 +21,7 @@
  */
 
 #include "quaqc.h"
+#include "zlib.h"
 
 samFile *init_filtered_bam(bam_hdr_t *hdr, const char *fn, const params_t *params);
 
@@ -33,5 +34,7 @@ int finish_json(void);
 int append_json_fail(char *fn);
 
 int append_json_result(char *fn, results_t *results, const params_t *params);
+
+gzFile init_bedGraph_f(const char *fn, const params_t *params);
 
 #endif

@@ -94,6 +94,7 @@ enum opts_enum {
   USE_NOMATE    = 'N',
   USE_DUPS      = 'd',
   OUTPUT_EXT    = 'O',
+  BEDGRAPH      = 'B',
   USE_ALL       = 'A',
   USE_DOVETAILS = 'D',
   LOW_MEM       = 'L',
@@ -122,9 +123,13 @@ enum opts_enum {
   NO_SE,
   FOOTPRINT,
   CHIP,
+  BEDGRAPH_TN5,
+  BEDGRAPH_QLEN,
+  BEDGRAPH_DIR,
+  BEDGRAPH_EXT
 };
 
-static const char *opts_short = "m:p:n:t:b:2q:o:t:Sk:K:j:fhcvJ:0P:T:NDO:AdLi:r:R:V";
+static const char *opts_short = "m:p:n:t:b:2q:o:t:Sk:K:j:BfhcvJ:0P:T:NDO:AdLi:r:R:V";
 
 static struct option opts_long[] = {
   { "mitochondria",  required_argument, 0, MITOCHONDRIA  },
@@ -166,6 +171,11 @@ static struct option opts_long[] = {
   { "keep",          no_argument,       0, KEEP_FILTERED },
   { "keep-dir",      required_argument, 0, KEEP_DIR      },
   { "keep-ext",      required_argument, 0, KEEP_EXT      },
+  { "bedGraph",      no_argument,       0, BEDGRAPH      },
+  { "bedGraph-qlen", required_argument, 0, BEDGRAPH_QLEN },
+  { "bedGraph-tn5",  no_argument,       0, BEDGRAPH_TN5  },
+  { "bedGraph-dir",  required_argument, 0, BEDGRAPH_DIR  },
+  { "bedGraph-ext",  required_argument, 0, BEDGRAPH_EXT  },
   { "omit-gc",       no_argument,       0, OMIT_GC       },
   { "omit-depth",    no_argument,       0, OMIT_DEPTH    },
   { "threads",       required_argument, 0, THREADS       },
@@ -223,7 +233,7 @@ static void help(void) {
     "     --max-fhist      INT   Max fragment length for histogram. [--max-flen]\n"
     "     --tss-size       INT   Size of the TSS region for pileup. [%d]\n"
     "     --tss-qlen       INT   Resize reads (centered on the 5p end) for pileup. [%d]\n"
-    "     --tss-tn5              Shift 5-prime end coordinates +4/-5 bases for pileup.\n"
+    "     --tss-tn5              Shift 5-prime end coordinates +%d/-%d bases for pileup.\n"
     "     --omit-gc              Omit calculation of read GC content.\n"
     "     --omit-depth           Omit calculation of read depths.\n"
     "\n"
@@ -246,6 +256,13 @@ static void help(void) {
     " -k, --keep-dir       DIR   Directory to create new BAM in if not that of input.\n"
     " -K, --keep-ext       STR   Extension of new BAM. [%s]\n"
     "\n"
+    "BedGraph options:\n"
+    " -B, --bedGraph             Output a gzipped read density bedGraph.\n"
+    "     --bedGraph-qlen  INT   Resize reads (centered on the 5p end). [%d]\n"
+    "     --bedGraph-tn5   INT   Shift 5-prime end coordinates +%d/-%d bases.\n"
+    "     --bedGraph-dir   DIR   Directory to output bedGraphs if not that of input.\n"
+    "     --bedGraph-ext   STR   Filename extension for bedGraphs. [%s]\n"
+    "\n"
     "Program options:\n"
     " -j, --threads        INT   Number of worker threads. Max one per sample. [%d]\n"
     " -i, --title          STR   Assign a title to run.\n"
@@ -257,8 +274,8 @@ static void help(void) {
     , DEFAULT_MITO, DEFAULT_PLTD
     , DEFAULT_MAPQ, DEFAULT_MIN_QLEN, DEFAULT_MIN_FLEN, DEFAULT_MAX_QLEN, DEFAULT_MAX_FLEN
     , DEFAULT_MAX_DEPTH
-    , DEFAULT_TSS_SIZE, DEFAULT_TSS_QLEN
-    , DEFAULT_OUT_EXT, DEFAULT_BAM_EXT
+    , DEFAULT_TSS_SIZE, DEFAULT_TSS_QLEN, TN5_FOWARD_SHIFT, TN5_REVERSE_SHIFT
+    , DEFAULT_OUT_EXT, DEFAULT_BAM_EXT, DEFAULT_BG_QLEN, TN5_FOWARD_SHIFT, TN5_REVERSE_SHIFT, DEFAULT_BG_EXT
     , DEFAULT_THREADS
   );
 }
@@ -447,6 +464,7 @@ static params_t *init_params(int argc, char **argv) {
   params->depth_max = DEFAULT_MAX_DEPTH;
   params->tss_size  = DEFAULT_TSS_SIZE;
   params->tss_qlen  = DEFAULT_TSS_QLEN;
+  params->bg_qlen   = DEFAULT_BG_QLEN;
   params->qerr      = true;
   params->threads   = DEFAULT_THREADS;
   return params;
@@ -997,6 +1015,45 @@ static int quaqc_main(int argc, char *argv[]) {
           quit("--json cannot be an empty string.");
         }
         break;
+      case BEDGRAPH:
+        if (params->bedGraph) {
+          quit("--bedGraph has already been set.");
+        }
+        params->bedGraph = true;
+        break;
+      case BEDGRAPH_TN5:
+        if (params->bg_tn5) {
+          quit("--bedGraph-tn5 has already been set.");
+        }
+        params->bg_tn5 = true;
+        break;
+      case BEDGRAPH_QLEN:
+        if (params->bg_qlen != DEFAULT_BG_QLEN) {
+          quit("--bedGraph-qlen has already been set.");
+        }
+        params->bg_qlen = parse_num(optarg);
+        if (params->bg_qlen < 0) {
+          quit("--bedGraph-qlen cannot be a negative value.");
+        }
+        break;
+      case BEDGRAPH_DIR:
+        if (params->bg_dir != NULL) {
+          quit("--bedGraph-dir has already been set.");
+        }
+        params->bg_dir = optarg;
+        if (!check_dir(params->bg_dir)) {
+          quit("Incorrect directory provided to --bedGraph-dir.");
+        }
+        break;
+      case BEDGRAPH_EXT:
+        if (params->bg_ext != NULL) {
+          quit("--bedGraph-ext has already been set.");
+        }
+        params->bg_ext = optarg;
+        if (strlen(params->bg_ext) < 1) {
+          quit("--bedGraph-ext cannot be an empty string.");
+        }
+        break;
       case OMIT_GC:
         if (params->omit_gc) {
           quit("--omit-gc has already been set.");
@@ -1184,6 +1241,7 @@ static int quaqc_main(int argc, char *argv[]) {
   }
   if (params->keep_ext == NULL) params->keep_ext = DEFAULT_BAM_EXT;
   if (params->out_ext == NULL) params->out_ext = DEFAULT_OUT_EXT;
+  if (params->bg_ext == NULL) params->bg_ext = DEFAULT_BG_EXT;
 
   time_t time_start = time(NULL);
 

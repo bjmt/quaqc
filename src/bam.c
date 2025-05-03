@@ -32,6 +32,7 @@
 #include "hash.h"
 #include "depth.h"
 #include "output.h"
+#include "zlib.h"
 
 // Chimeric reads generate multiple lines in a SAM. A random fragment of the
 // read will be assigned as a primary alignment, whereas the remaining fragments
@@ -474,9 +475,15 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params) {
   bam_hdr_t *hdr = NULL;
   hts_itr_t *itr = NULL;
   void *depths = NULL;
+  void *bedGraph = NULL;
   samFile *filt_bam = NULL;
-
   depths = init_depths();
+  gzFile bedGraph_f = NULL;
+
+  if (params->bedGraph) {
+    bedGraph = init_bedGraph(params);
+    bedGraph_f = init_bedGraph_f(bam->fn, params);
+  }
 
   hdr = sam_hdr_read(bam);
   if (hdr == NULL) {
@@ -533,11 +540,15 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params) {
 
   init_stats_list(results, hdr, params);
 
-  const hts_pos_t tn5_fwd = params->tn5_shift ? 4 : 0;
-  const hts_pos_t tn5_rev = params->tn5_shift ? 5 : 0;
+  bool bedGraph_max_read_size_warning = false;
+
+  const hts_pos_t tn5_fwd = params->tn5_shift ? TN5_FOWARD_SHIFT : 0;
+  const hts_pos_t tn5_rev = params->tn5_shift ? TN5_REVERSE_SHIFT : 0;
+  const hts_pos_t bg_tn5_fwd = params->bg_tn5 ? TN5_FOWARD_SHIFT : 0;
+  const hts_pos_t bg_tn5_rev = params->bg_tn5 ? TN5_REVERSE_SHIFT : 0;
   int itr_ret, at, gc, n, nucl_n = 0, pltd_n = 0, mito_n = 0, tss_offset;
   int64_t proc_n = 0;
-  hts_pos_t qend, qlen, flen, last_start, last_end, tss_qbeg, tss_qend;
+  hts_pos_t qend, qlen, flen, last_start, last_end, tss_qbeg, tss_qend, bg_qbeg, bg_qend;
   stats_t *stats = results->seqs;
   for (int64_t i = 0; i < hdr->n_targets; i++) {
     itr = sam_itr_querys(bam->idx, hdr, hdr->target_name[i]);
@@ -612,6 +623,7 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params) {
             }
             flen = llabs(aln->core.isize);
 
+            // TODO: this 255 score thing doesn't always apply to all mappers
             stats->mapq_total += aln->core.qual < 255 ? (int64_t) aln->core.qual : 0;
             stats->qlen_total += qlen;
 
@@ -679,6 +691,33 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params) {
               if (!params->omit_depth) {
                 add_read_to_depths(aln, qend, depths, results->nucl_shared->depths, params->depth_max);
               }
+              if (params->bedGraph) {
+                if (params->bg_qlen == 0) {
+                  if (qlen > BEDGRAPH_MAX_READ_SIZE) bedGraph_max_read_size_warning = true;
+                  bg_qbeg = aln->core.pos + bg_tn5_fwd;
+                  bg_qend = max(qend - bg_tn5_rev, bg_qbeg + 1);
+                } else {
+                  if (is_pos_strand(aln)) {
+                    bg_qbeg = aln->core.pos + bg_tn5_fwd;
+                    bg_qend = bg_qbeg + params->bg_qlen / 2 + 1;
+                    bg_qbeg = bg_qbeg - params->bg_qlen / 2;
+                  } else {
+                    bg_qend = qend - tn5_rev;
+                    bg_qbeg = bg_qend - (params->bg_qlen / 2 + 1);
+                    bg_qend = bg_qend + params->bg_qlen / 2;
+                  }
+                  if (params->bg_qlen % 2 == 0) {
+                    if (is_pos_strand(aln)) {
+                      bg_qend--;
+                    } else {
+                      bg_qbeg++;
+                    }
+                  }
+                }
+                bg_qbeg = max(0, bg_qbeg);
+                bg_qend = min(bg_qend, hdr->target_len[i]);
+                add_read_to_bedGraph(bedGraph_f, bedGraph, bg_qbeg, bg_qend, hdr->target_name[i]);
+              }
               if (filt_bam != NULL && sam_write1(filt_bam, hdr, aln) == -1) {
                 error(params->qerr, "Failed to write to new BAM '%s'.", filt_bam->fn);
                 warn("Giving up on creating new BAM for this sample, continuing with QC.");
@@ -715,6 +754,7 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params) {
       // Clean up depths struct and add remaining positions to results->nucl_shared
 
       purge_and_reset_depths(depths, results->nucl_shared->depths, params->depth_max);
+      purge_and_reset_bedGraph(bedGraph_f, bedGraph, hdr->target_name[i]);
 
     } else {
       uint64_t m, u;
@@ -759,6 +799,10 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params) {
     calc_nucl_shared_stats(results->nucl, results->nucl_shared, params);
   }
 
+  if (bedGraph_max_read_size_warning) {
+    msg("Warning: Found read size(s) exceeding max allowed when --bedGraph-qlen=0, possible issues with bedGraph");
+  }
+
   if (params->v) {
     time_t time_end = time(NULL);
     double reads_p = proc_n == 0 ? 0.0 : 100.0 * (double) results->r_filt / (double) proc_n;
@@ -788,6 +832,13 @@ run_quaqc_end:
   if (hdr != NULL) sam_hdr_destroy(hdr);
   if (aln != NULL) bam_destroy1(aln);
   if (filt_bam != NULL) hts_close(filt_bam);
+  if (bedGraph != NULL) {
+    destroy_depths(bedGraph);
+    if (gzclose(bedGraph_f) != Z_OK) {
+      int e;
+      warn("Failed to close bedGraph file: %s", gzerror(bedGraph_f, &e));
+    }
+  }
 
   results->time_end = time(NULL);
 

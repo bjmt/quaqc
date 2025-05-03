@@ -24,10 +24,14 @@
 #include "htslib/hts.h"
 #include "htslib/sam.h"
 #include "quaqc.h"
+#include "zlib.h"
 
 void *init_depths(void);
 void add_read_to_depths(const bam1_t *aln, const hts_pos_t qlen, void *depths, int32_t *hist, const int depths_max);
 void purge_and_reset_depths(void *depths, int32_t *hist, const int depths_max);
 void destroy_depths(void *depths);
+void *init_bedGraph(const params_t *params);
+void purge_and_reset_bedGraph(gzFile bgfile, void *bedGraph, const char *chr);
+void add_read_to_bedGraph(gzFile bgfile, void *bedGraph, const hts_pos_t qbeg, const hts_pos_t qend, const char *chr);
 
 #endif

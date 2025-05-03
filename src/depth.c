@@ -59,6 +59,18 @@ void *init_depths(void) {
   return (void *) depths;
 }
 
+void *init_bedGraph(const params_t *params) {
+  depths_t *depths = alloc(sizeof(depths_t));
+  // If the max read size is bigger than BEDGRAPH_MAX_READ_SIZE, then the array won't be big enough!
+  depths->size = params->bg_qlen > 0 ? params->bg_qlen : BEDGRAPH_MAX_READ_SIZE;
+  depths->size *= 2;
+  depths->size += BEDGRAPH_MAX_READ_SIZE + 3;
+  kroundup32(depths->size);
+  depths->hist = alloc(depths->size * sizeof(int32_t));
+  depths->end = -1;
+  return (void *) depths;
+}
+
 void destroy_depths(void *depths) {
   if (depths != NULL) {
     depths_t *d = (depths_t *) depths;
@@ -95,6 +107,47 @@ void purge_and_reset_depths(void *depths, int32_t *hist, const int depths_max) {
 #ifdef DEBUG0
   print_hist(hist, depths_max);
 #endif
+}
+
+void purge_and_reset_bedGraph(gzFile bgfile, void *bedGraph, const char *chr) {
+  depths_t *b = (depths_t *) bedGraph;
+  for (int i = b->beg; i < b->end; i++) {
+    if (b->hist[i & (b->size - 1)] != 0) {
+      gzprintf(bgfile, "%s\t%d", chr, i);
+      while (i + 1 < b->beg && b->hist[i & (b->size - 1)] == b->hist[(i + 1) & (b->size - 1)]) i++;
+      gzprintf(bgfile, "\t%d\t%d\n", i + 1, b->hist[i & (b->size - 1)]);
+    }
+  }
+  for (int i = 0; i < b->size; i++) {
+    b->hist[i] = 0;
+  }
+  b->beg = 0;
+  b->end = -1;
+}
+
+void add_read_to_bedGraph(gzFile bgfile, void *bedGraph, const hts_pos_t qbeg, const hts_pos_t qend, const char *chr) {
+  depths_t *b = (depths_t *) bedGraph;
+  if (b->end == -1) {
+    b->beg = qbeg;
+    b->end = qend;
+  }
+  if (qbeg > b->beg) {
+    for (int i = b->beg; i < qbeg; i++) {
+      if (b->hist[i & (b->size - 1)] != 0) {
+        gzprintf(bgfile, "%s\t%d", chr, i);
+        while (i + 1 < qbeg && b->hist[i & (b->size - 1)] == b->hist[(i + 1) & (b->size - 1)]) i++;
+        gzprintf(bgfile, "\t%d\t%d\n", i + 1, b->hist[i & (b->size - 1)]);
+      }
+    }
+    for (int i = b->beg; i < qbeg; i++) {
+      b->hist[i & (b->size - 1)] = 0;
+    }
+    b->beg = qbeg;
+  }
+  if (qend > b->end) b->end = qend;
+  for (int i = b->beg; i < qend; i++) {
+    b->hist[i & (b->size - 1)]++;
+  }
 }
 
 void add_read_to_depths(const bam1_t *aln, const hts_pos_t qend, void *depths, int32_t *hist, const int depths_max) {

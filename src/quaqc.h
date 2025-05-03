@@ -28,7 +28,7 @@
 #define QUAQC_VERSION  "1.1"
 #define QUAQC_YEAR    "2024"
 
-// Command line defaults ------------------------------------------------------------
+// Command line & other defaults -------------------------------------------------
 
 #define DEFAULT_MAPQ                  30
 #define DEFAULT_MIN_QLEN              15
@@ -38,13 +38,19 @@
 #define DEFAULT_MAX_DEPTH         100000
 #define DEFAULT_TSS_SIZE            2001
 #define DEFAULT_TSS_QLEN             100
+#define DEFAULT_BG_QLEN              100
 #define DEFAULT_THREADS                1
 
 #define DEFAULT_OUT_EXT     ".quaqc.txt"
 #define DEFAULT_BAM_EXT      ".filt.bam"
+#define DEFAULT_BG_EXT    ".bedGraph.gz"
 
 #define DEFAULT_MITO      "chrM,ChrM,Mt,MT,MtDNA,mit,Mito,mitochondria,mitochondrion"
 #define DEFAULT_PLTD      "chrC,ChrC,Pt,PT,Pltd,Chloro,chloroplast"
+
+#define TN5_FOWARD_SHIFT               4
+#define TN5_REVERSE_SHIFT              5
+#define BEDGRAPH_MAX_READ_SIZE       300
 
 // Functions, macros ------------------------------------------------------------
 
@@ -98,14 +104,15 @@ typedef struct params_t {
   char **argv; int argc, flag_n;
   void *mito, *pltd, *tseqs;
   char *title, *out_dir, *out_ext, *keep_dir, *keep_ext, *json;
+  char *bg_ext, *bg_dir;
   void *peaks, *tss, *blist, *tlist, *trg;
   int peaks_n, tss_n, blist_n, tlist_n, trg_n;
   uint8_t mapq;
   hts_pos_t qlen_min, flen_min, qlen_max, flen_max;
-  int threads, depth_max, qhist_max, fhist_max, tss_size, tss_qlen;
+  int threads, depth_max, qhist_max, fhist_max, tss_size, tss_qlen, bg_qlen;
   bool use_2nd, use_chi, use_nomate, use_dups, use_all;
   bool lenient, strict, nfr, nbr, use_dovetail;
-  bool no_se, no_out, save, tn5_shift, omit_gc, omit_depth;
+  bool no_se, no_out, save, bedGraph, bg_tn5, tn5_shift, omit_gc, omit_depth;
   bool fast, qerr, v, vv, footprint, low_mem, chip;
 } params_t;
 
