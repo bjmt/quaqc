@@ -32,6 +32,6 @@ void purge_and_reset_depths(void *depths, int32_t *hist, const int depths_max);
 void destroy_depths(void *depths);
 void *init_bedGraph(const params_t *params);
 void purge_and_reset_bedGraph(gzFile bgfile, void *bedGraph, const char *chr);
-void add_read_to_bedGraph(gzFile bgfile, void *bedGraph, const hts_pos_t qbeg, const hts_pos_t qend, const char *chr);
+void add_read_to_bedGraph(gzFile bgfile, void *bedGraph, const hts_pos_t qbeg0, const hts_pos_t qbeg, const hts_pos_t qend, const char *chr);
 
 #endif

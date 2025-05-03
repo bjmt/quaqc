@@ -548,7 +548,7 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params) {
   const hts_pos_t bg_tn5_rev = params->bg_tn5 ? TN5_REVERSE_SHIFT : 0;
   int itr_ret, at, gc, n, nucl_n = 0, pltd_n = 0, mito_n = 0, tss_offset;
   int64_t proc_n = 0;
-  hts_pos_t qend, qlen, flen, last_start, last_end, tss_qbeg, tss_qend, bg_qbeg, bg_qend;
+  hts_pos_t qend, qlen, flen, last_start, last_end, tss_qbeg, tss_qend, bg_qbeg0, bg_qbeg, bg_qend;
   stats_t *stats = results->seqs;
   for (int64_t i = 0; i < hdr->n_targets; i++) {
     itr = sam_itr_querys(bam->idx, hdr, hdr->target_name[i]);
@@ -692,19 +692,22 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params) {
                 add_read_to_depths(aln, qend, depths, results->nucl_shared->depths, params->depth_max);
               }
               if (params->bedGraph) {
+                if (qlen > BEDGRAPH_MAX_READ_SIZE) bedGraph_max_read_size_warning = true;
                 if (params->bg_qlen == 0) {
-                  if (qlen > BEDGRAPH_MAX_READ_SIZE) bedGraph_max_read_size_warning = true;
                   bg_qbeg = aln->core.pos + bg_tn5_fwd;
+                  bg_qbeg0 = bg_qbeg;
                   bg_qend = max(qend - bg_tn5_rev, bg_qbeg + 1);
                 } else {
                   if (is_pos_strand(aln)) {
                     bg_qbeg = aln->core.pos + bg_tn5_fwd;
                     bg_qend = bg_qbeg + params->bg_qlen / 2 + 1;
                     bg_qbeg = bg_qbeg - params->bg_qlen / 2;
+                    bg_qbeg0 = bg_qbeg;
                   } else {
-                    bg_qend = qend - tn5_rev;
+                    bg_qend = qend - bg_tn5_rev;
                     bg_qbeg = bg_qend - (params->bg_qlen / 2 + 1);
                     bg_qend = bg_qend + params->bg_qlen / 2;
+                    bg_qbeg0 = min(aln->core.pos, bg_qbeg);
                   }
                   if (params->bg_qlen % 2 == 0) {
                     if (is_pos_strand(aln)) {
@@ -714,9 +717,10 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params) {
                     }
                   }
                 }
+                bg_qbeg0 = max(0, bg_qbeg0);
                 bg_qbeg = max(0, bg_qbeg);
                 bg_qend = min(bg_qend, hdr->target_len[i]);
-                add_read_to_bedGraph(bedGraph_f, bedGraph, bg_qbeg, bg_qend, hdr->target_name[i]);
+                add_read_to_bedGraph(bedGraph_f, bedGraph, bg_qbeg0, bg_qbeg, bg_qend, hdr->target_name[i]);
               }
               if (filt_bam != NULL && sam_write1(filt_bam, hdr, aln) == -1) {
                 error(params->qerr, "Failed to write to new BAM '%s'.", filt_bam->fn);
@@ -754,7 +758,9 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params) {
       // Clean up depths struct and add remaining positions to results->nucl_shared
 
       purge_and_reset_depths(depths, results->nucl_shared->depths, params->depth_max);
-      purge_and_reset_bedGraph(bedGraph_f, bedGraph, hdr->target_name[i]);
+      if (params->bedGraph) {
+        purge_and_reset_bedGraph(bedGraph_f, bedGraph, hdr->target_name[i]);
+      }
 
     } else {
       uint64_t m, u;
@@ -800,7 +806,8 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params) {
   }
 
   if (bedGraph_max_read_size_warning) {
-    msg("Warning: Found read size(s) exceeding max allowed when --bedGraph-qlen=0, possible issues with bedGraph");
+    msg("Warning: Found read size(s) exceeding max allowed (%d), possible issues with bedGraph",
+      BEDGRAPH_MAX_READ_SIZE);
   }
 
   if (params->v) {

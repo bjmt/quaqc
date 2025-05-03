@@ -125,27 +125,27 @@ void purge_and_reset_bedGraph(gzFile bgfile, void *bedGraph, const char *chr) {
   b->end = -1;
 }
 
-void add_read_to_bedGraph(gzFile bgfile, void *bedGraph, const hts_pos_t qbeg, const hts_pos_t qend, const char *chr) {
+void add_read_to_bedGraph(gzFile bgfile, void *bedGraph, const hts_pos_t qbeg0, const hts_pos_t qbeg, const hts_pos_t qend, const char *chr) {
   depths_t *b = (depths_t *) bedGraph;
   if (b->end == -1) {
-    b->beg = qbeg;
+    b->beg = qbeg0;
     b->end = qend;
   }
-  if (qbeg > b->beg) {
-    for (int i = b->beg; i < qbeg; i++) {
+  if (qbeg0 > b->beg) {
+    for (int i = b->beg; i < qbeg0; i++) {
       if (b->hist[i & (b->size - 1)] != 0) {
         gzprintf(bgfile, "%s\t%d", chr, i);
-        while (i + 1 < qbeg && b->hist[i & (b->size - 1)] == b->hist[(i + 1) & (b->size - 1)]) i++;
+        while (i + 1 < qbeg0 && b->hist[i & (b->size - 1)] == b->hist[(i + 1) & (b->size - 1)]) i++;
         gzprintf(bgfile, "\t%d\t%d\n", i + 1, b->hist[i & (b->size - 1)]);
       }
     }
-    for (int i = b->beg; i < qbeg; i++) {
+    for (int i = b->beg; i < qbeg0; i++) {
       b->hist[i & (b->size - 1)] = 0;
     }
-    b->beg = qbeg;
+    b->beg = qbeg0;
   }
   if (qend > b->end) b->end = qend;
-  for (int i = b->beg; i < qend; i++) {
+  for (int i = qbeg; i < qend; i++) {
     b->hist[i & (b->size - 1)]++;
   }
 }
