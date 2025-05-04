@@ -271,7 +271,7 @@ static void help(void) {
     "     --bedGraph-ext   STR   Filename extension for bedGraphs. [%s]\n"
     "\n"
     "Miscellaneous options:\n"
-    "     --tn5-fwd        INT   Add this value to the start of foward reads. [%d]\n"
+    "     --tn5-fwd        INT   Add this value to the start of forward reads. [%d]\n"
     "     --tn5-rev        INT   Subtract this value from the start of reverse reads. [%d]\n"
     "\n"
     "Program options:\n"
