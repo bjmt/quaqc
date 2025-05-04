@@ -86,6 +86,20 @@ transposition shift:
 quaqc --bedGraph --bedGraph-tn5 --bedGraph-qlen 1 Sample.bam
 ```
 
+### Filtering a single-cell ATAC-seq BAM by cell type
+
+Using a set of barcodes, quaqc can subset a BAM by making use of the `--rg-list` and
+`--keep` options. For example, using the common `CB` SAM flag typically used for storing
+barcodes:
+
+```sh
+quaqc -0 -A --rg-list barcodes.txt --rg-tag CB --keep --keep-ext .MyCellType.bam Sample.bam
+```
+
+The `-0` flag prevents quaqc from creating a QC report, thus making the output BAM
+the only file created by quaqc. The `-A` flag can be used if this BAM has already been
+filtered, and no additional filtering is desired.
+
 ### Fast iteration of the effects of different read quality thresholds
 
 quaqc is fairly performant, but it can still require some patience for decently
