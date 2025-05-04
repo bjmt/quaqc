@@ -28,7 +28,7 @@ data:
 
 ```sh
 ./quaqc -v --output-dir . --peaks test/peak.bed --tss test/tss.bed \
-    --target-list test/target.bed test/reads.bam
+    --bedGraph --target-list test/target.bed test/reads.bam
 cat ./reads.quaqc.txt
 ```
 
@@ -38,7 +38,8 @@ BAM is just a subset of reads contained within a small region of the Arabidopsis
 genome, the `target.bed`
 file restricts quaqc to only consider that region of the genome (and thus adjust
 how it calculates the stats). See a copy of the output
-report [here](./test/reads.quaqc.txt).
+report [here](./test/reads.quaqc.txt). Additionally, the `--bedGraph` option outputs
+a read density bedGraph file of high quality reads.
 
 Note that quaqc can also save the final reads passing all filters to a new BAM
 file via the `-S/--keep` flag. (This will increase the runtime.)
