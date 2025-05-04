@@ -218,7 +218,7 @@ static void help(void) {
     " -b, --blacklist      FILE  Only consider reads outside ranges in a BED file.\n"
     " -r, --rg-names       STR   Only consider reads with these read groups (RG).\n"
     " -R, --rg-list        FILE  Only consider reads with read groups (RG) in a file.\n"
-    "     --rg-tag         STR   Match reads with --rg-list using another tag, such as CB.\n"
+    "     --rg-tag         STR   Match reads with -r/-R using another tag, such as CB.\n"
     "\n"
     "Filter options:\n"
     " -2, --use-secondary        Allow secondary alignments.\n"
