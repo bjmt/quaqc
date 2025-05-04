@@ -1,4 +1,4 @@
-% QUAQC(1) Version 1.3 | quaqc User Manual
+% QUAQC(1) Version 1.3a | quaqc User Manual
 
 # NAME
 
@@ -99,7 +99,7 @@ accomplished using `samtools` in the following manner during alignment:
     Can be gzipped.
 
 **\--rg-tag**=*STR*
-:   Filter reads using a different SAM tag then the read group (RG) tag. This
+:   Filter reads using a different SAM tag than the read group (RG) tag. This
     can be used, for example, to filter single-cell BAMs using the barcode (CB)
     tag. Please note that the SAM spec requires all possible RG groups to be
     encoded in the header, meaning quaqc can check that the provided groups
@@ -344,6 +344,16 @@ accomplished using `samtools` in the following manner during alignment:
 :   As per the `--keep-ext` option, change the default bedGraph filename
     extension. The bedGraph will always be Gzipped, so not including ".gz"
     will still lead to a compressed file.
+
+**\--tn5-fwd**=*INT*
+:   Alter the default value used to shift the 5-prime ends of reads when either
+    `--tss-tn5` or `--bedGraph-tn5` are used. This value is added to the start
+    coordinate of forward strand reads.
+
+**\--tn5-rev**=*INT*
+:   Alter the default value used to shift the 5-prime ends of reads when either
+    `--tss-tn5` or `--bedGraph-tn5` are used. This value is substracted from the
+    end coordinate of reverse strand reads.
 
 **-j** *INT*, **\--threads**=*INT*
 :   Set the number of child threads used to process input BAMs. At minimum,

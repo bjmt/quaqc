@@ -127,7 +127,9 @@ enum opts_enum {
   BEDGRAPH_TN5,
   BEDGRAPH_QLEN,
   BEDGRAPH_DIR,
-  BEDGRAPH_EXT
+  BEDGRAPH_EXT,
+  TN5_FWD,
+  TN5_REV
 };
 
 static const char *opts_short = "m:p:n:t:b:2q:o:t:Sk:K:j:BfhcvJ:0P:T:NDO:AdLi:r:R:V";
@@ -178,6 +180,8 @@ static struct option opts_long[] = {
   { "bedGraph-tn5",  no_argument,       0, BEDGRAPH_TN5  },
   { "bedGraph-dir",  required_argument, 0, BEDGRAPH_DIR  },
   { "bedGraph-ext",  required_argument, 0, BEDGRAPH_EXT  },
+  { "tn5-fwd",       required_argument, 0, TN5_FWD       },
+  { "tn5-rev",       required_argument, 0, TN5_REV       },
   { "omit-gc",       no_argument,       0, OMIT_GC       },
   { "omit-depth",    no_argument,       0, OMIT_DEPTH    },
   { "threads",       required_argument, 0, THREADS       },
@@ -266,6 +270,10 @@ static void help(void) {
     "     --bedGraph-dir   DIR   Directory to output bedGraphs if not that of input.\n"
     "     --bedGraph-ext   STR   Filename extension for bedGraphs. [%s]\n"
     "\n"
+    "Miscellaneous options:\n"
+    "     --tn5-fwd        INT   Add this value to the start of foward reads. [%d]\n"
+    "     --tn5-rev        INT   Subtract this value from the start of reverse reads. [%d]\n"
+    "\n"
     "Program options:\n"
     " -j, --threads        INT   Number of worker threads. Max one per sample. [%d]\n"
     " -i, --title          STR   Assign a title to run.\n"
@@ -279,6 +287,7 @@ static void help(void) {
     , DEFAULT_MAX_DEPTH
     , DEFAULT_TSS_SIZE, DEFAULT_TSS_QLEN, TN5_FOWARD_SHIFT, TN5_REVERSE_SHIFT
     , DEFAULT_OUT_EXT, DEFAULT_BAM_EXT, DEFAULT_BG_QLEN, TN5_FOWARD_SHIFT, TN5_REVERSE_SHIFT, DEFAULT_BG_EXT
+    , TN5_FOWARD_SHIFT, TN5_REVERSE_SHIFT
     , DEFAULT_THREADS
   );
 }
@@ -468,6 +477,8 @@ static params_t *init_params(int argc, char **argv) {
   params->tss_qlen  = DEFAULT_TSS_QLEN;
   params->bg_qlen   = DEFAULT_BG_QLEN;
   params->rg_tag    = DEFAULT_RG_TAG;
+  params->tn5_fwd   = TN5_FOWARD_SHIFT;
+  params->tn5_rev   = TN5_REVERSE_SHIFT;
   params->qerr      = true;
   params->threads   = DEFAULT_THREADS;
   return params;
@@ -1045,6 +1056,18 @@ static int quaqc_main(int argc, char *argv[]) {
         if (strlen(params->bg_ext) < 1) {
           quit("--bedGraph-ext cannot be an empty string.");
         }
+        break;
+      case TN5_FWD:
+        if (params->tn5_fwd != TN5_FOWARD_SHIFT) {
+          quit("--tn5-fwd has already been set.");
+        }
+        params->tn5_fwd = parse_num(optarg);
+        break;
+      case TN5_REV:
+        if (params->tn5_rev != TN5_REVERSE_SHIFT) {
+          quit("--tn5-rev has already been set.");
+        }
+        params->tn5_rev = parse_num(optarg);
         break;
       case OMIT_GC:
         if (params->omit_gc) {

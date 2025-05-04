@@ -523,10 +523,10 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params) {
 
   init_stats_list(results, hdr, params);
 
-  const hts_pos_t tn5_fwd = params->tn5_shift ? TN5_FOWARD_SHIFT : 0;
-  const hts_pos_t tn5_rev = params->tn5_shift ? TN5_REVERSE_SHIFT : 0;
-  const hts_pos_t bg_tn5_fwd = params->bg_tn5 ? TN5_FOWARD_SHIFT : 0;
-  const hts_pos_t bg_tn5_rev = params->bg_tn5 ? TN5_REVERSE_SHIFT : 0;
+  const hts_pos_t tn5_fwd = params->tn5_shift ? params->tn5_fwd : 0;
+  const hts_pos_t tn5_rev = params->tn5_shift ? params->tn5_rev : 0;
+  const hts_pos_t bg_tn5_fwd = params->bg_tn5 ? params->tn5_fwd : 0;
+  const hts_pos_t bg_tn5_rev = params->bg_tn5 ? params->tn5_rev : 0;
   int itr_ret, at, gc, n, nucl_n = 0, pltd_n = 0, mito_n = 0, tss_offset;
   int64_t proc_n = 0;
   hts_pos_t qend, qlen, flen, last_start, last_end, tss_qbeg, tss_qend, bg_qbeg0, bg_qbeg, bg_qend;

@@ -25,7 +25,7 @@
 #include <time.h>
 #include "htslib/hts.h"
 
-#define QUAQC_VERSION  "1.3"
+#define QUAQC_VERSION  "1.3a"
 #define QUAQC_YEAR    "2025"
 
 // Command line & other defaults -------------------------------------------------
@@ -107,7 +107,7 @@ typedef struct params_t {
   char *title, *out_dir, *out_ext, *keep_dir, *keep_ext, *json;
   char *bg_ext, *bg_dir, *rg_tag;
   void *peaks, *tss, *blist, *tlist, *trg;
-  int peaks_n, tss_n, blist_n, tlist_n, trg_n;
+  int peaks_n, tss_n, blist_n, tlist_n, trg_n, tn5_fwd, tn5_rev;
   uint8_t mapq;
   hts_pos_t qlen_min, flen_min, qlen_max, flen_max;
   int threads, depth_max, qhist_max, fhist_max, tss_size, tss_qlen, bg_qlen;

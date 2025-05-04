@@ -228,6 +228,7 @@ int init_json(const params_t *params) {
   fjson_write(fjson, "    \"blacklist_bed_n\": %d,\n", params->blist_n);
   fjson_write(fjson, "    \"read_groups\": %s,\n", strbool(params->trg != NULL));
   fjson_write(fjson, "    \"read_groups_n\": %d,\n", params->trg_n);
+  fjson_write(fjson, "    \"read_groups_tag\": %s,\n", params->rg_tag);
   fjson_write(fjson, "    \"mapq_min\": %d,\n", (int) params->mapq);
   fjson_write(fjson, "    \"alignment_size_min\": %d,\n", (int) params->qlen_min);
   fjson_write(fjson, "    \"alignment_size_max\": %d,\n", (int) params->qlen_max);
@@ -253,6 +254,8 @@ int init_json(const params_t *params) {
   fjson_write(fjson, "    \"bedGraph\": %s,\n", strbool(params->bedGraph));
   fjson_write(fjson, "    \"bedGraph_qlen\": %d,\n", params->bg_qlen);
   fjson_write(fjson, "    \"bedGraph_tn5\": %s,\n", strbool(params->bg_tn5));
+  fjson_write(fjson, "    \"tn5_fwd\": %d,\n", params->tn5_fwd);
+  fjson_write(fjson, "    \"tn5_rev\": %d,\n", params->tn5_rev);
   fjson_write(fjson, "    \"fast_mode\": %s,\n", strbool(params->fast));
   fjson_write(fjson, "    \"low_mem_mode\": %s,\n", strbool(params->low_mem));
   fjson_write(fjson, "    \"lenient_mode\": %s,\n", strbool(params->lenient));
