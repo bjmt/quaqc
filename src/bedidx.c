@@ -2,7 +2,7 @@
 
     Copyright (C) 2011 Broad Institute.
     Copyright (C) 2014, 2017-2019 Genome Research Ltd.
-    Copyright (C) 2024 Benjamin Jean-Marie Tremblay
+    Copyright (C) 2024-2025 Benjamin Jean-Marie Tremblay
 
     Author: Heng Li <lh3@sanger.ac.uk>
 

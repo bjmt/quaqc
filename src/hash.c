@@ -1,6 +1,6 @@
 /*
  *   quaqc: QUick Atac-seq Quality Control
- *   Copyright (C) 2024  Benjamin Jean-Marie Tremblay
+ *   Copyright (C) 2024-2025  Benjamin Jean-Marie Tremblay
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by

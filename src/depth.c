@@ -1,6 +1,6 @@
 /*
  *   quaqc: QUick Atac-seq Quality Control
- *   Copyright (C) 2024  Benjamin Jean-Marie Tremblay
+ *   Copyright (C) 2024-2025  Benjamin Jean-Marie Tremblay
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -114,7 +114,7 @@ void purge_and_reset_bedGraph(gzFile bgfile, void *bedGraph, const char *chr) {
   for (int i = b->beg; i < b->end; i++) {
     if (b->hist[i & (b->size - 1)] != 0) {
       gzprintf(bgfile, "%s\t%d", chr, i);
-      while (i + 1 < b->beg && b->hist[i & (b->size - 1)] == b->hist[(i + 1) & (b->size - 1)]) i++;
+      while (i + 1 < b->end && b->hist[i & (b->size - 1)] == b->hist[(i + 1) & (b->size - 1)]) i++;
       gzprintf(bgfile, "\t%d\t%d\n", i + 1, b->hist[i & (b->size - 1)]);
     }
   }

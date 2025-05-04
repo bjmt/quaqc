@@ -323,7 +323,8 @@ accomplished using `samtools` in the following manner during alignment:
 
 **\--bedGraph-tn5**
 :   Shift the 5-prime alignment coordinates of each read when generating the
-    bedGraph.
+    bedGraph to account for the transposase offset (+4/-5), as per the
+    `--tss-tn5` option.
 
 **\--bedGraph-dir**=*DIR*
 :   As per the `--keep-dir` option, change the output directory of the 

@@ -1,6 +1,6 @@
 /*
  *   quaqc: QUick Atac-seq Quality Control
- *   Copyright (C) 2024  Benjamin Jean-Marie Tremblay
+ *   Copyright (C) 2024-2025  Benjamin Jean-Marie Tremblay
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -148,7 +148,7 @@ gzFile init_bedGraph_f(const char *fn, const params_t *params) {
   gzFile bg = gzopen(bg_fn, "wb");
   if (bg == NULL) {
     int e;
-    warn("Cannot create file '%s': %s", bg_fn, gzerror(bg, &e));
+    error(params->qerr, "Cannot create bedGraph file '%s': %s", bg_fn, gzerror(bg, &e));
     free(bg_fn);
     return NULL;
   }

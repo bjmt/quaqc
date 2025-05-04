@@ -1,6 +1,6 @@
 /*
  *   quaqc: QUick Atac-seq Quality Control
- *   Copyright (C) 2024  Benjamin Jean-Marie Tremblay
+ *   Copyright (C) 2024-2025  Benjamin Jean-Marie Tremblay
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -664,7 +664,7 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params) {
               if (!params->omit_depth) {
                 add_read_to_depths(aln, qend, depths, results->nucl_shared->depths, params->depth_max);
               }
-              if (params->bedGraph) {
+              if (bedGraph_f != NULL) {
                 if (params->bg_qlen == 0) {
                   bg_qbeg = aln->core.pos + bg_tn5_fwd;
                   bg_qbeg0 = bg_qbeg;
@@ -730,7 +730,7 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params) {
       // Clean up depths struct and add remaining positions to results->nucl_shared
 
       purge_and_reset_depths(depths, results->nucl_shared->depths, params->depth_max);
-      if (params->bedGraph) {
+      if (bedGraph_f != NULL) {
         purge_and_reset_bedGraph(bedGraph_f, bedGraph, hdr->target_name[i]);
       }
 
@@ -808,9 +808,9 @@ run_quaqc_end:
   if (filt_bam != NULL) hts_close(filt_bam);
   if (bedGraph != NULL) {
     destroy_depths(bedGraph);
-    if (gzclose(bedGraph_f) != Z_OK) {
+    if (bedGraph_f != NULL && gzclose(bedGraph_f) != Z_OK) {
       int e;
-      warn("Failed to close bedGraph file: %s", gzerror(bedGraph_f, &e));
+      error(params->qerr, "Failed to close bedGraph file: %s", gzerror(bedGraph_f, &e));
     }
   }
 

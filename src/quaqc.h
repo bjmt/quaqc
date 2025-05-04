@@ -3,7 +3,7 @@
 
 /*
  *   quaqc: QUick Atac-seq Quality Control
- *   Copyright (C) 2024  Benjamin Jean-Marie Tremblay
+ *   Copyright (C) 2024-2025  Benjamin Jean-Marie Tremblay
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
 #include <time.h>
 #include "htslib/hts.h"
 
-#define QUAQC_VERSION  "1.2"
+#define QUAQC_VERSION  "1.2a"
 #define QUAQC_YEAR    "2025"
 
 // Command line & other defaults -------------------------------------------------

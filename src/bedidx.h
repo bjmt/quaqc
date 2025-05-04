@@ -1,7 +1,7 @@
 /*  bedidx.h -- BED file indexing header file.
 
     Copyright (C) 2017 Genome Research Ltd.
-    Copyright (C) 2024 Benjamin Jean-Marie Tremblay
+    Copyright (C) 2024-2025 Benjamin Jean-Marie Tremblay
 
     Author: Valeriu Ohan <vo2@sanger.ac.uk>
 

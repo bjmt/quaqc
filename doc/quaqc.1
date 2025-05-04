@@ -378,7 +378,8 @@ set this option to 0.
 .TP
 \f[B]\-\-bedGraph\-tn5\f[R]
 Shift the 5\-prime alignment coordinates of each read when generating
-the bedGraph.
+the bedGraph to account for the transposase offset (+4/\-5), as per the
+\f[CR]\-\-tss\-tn5\f[R] option.
 .TP
 \f[B]\-\-bedGraph\-dir\f[R]=\f[I]DIR\f[R]
 As per the \f[CR]\-\-keep\-dir\f[R] option, change the output directory
