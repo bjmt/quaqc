@@ -1,4 +1,4 @@
-% QUAQC(1) Version 1.2 | quaqc User Manual
+% QUAQC(1) Version 1.3 | quaqc User Manual
 
 # NAME
 
@@ -98,6 +98,15 @@ accomplished using `samtools` in the following manner during alignment:
     not contain any of the target read groups, the run will end with an error.
     Can be gzipped.
 
+**\--rg-tag**=*STR*
+:   Filter reads using a different SAM tag then the read group (RG) tag. This
+    can be used, for example, to filter single-cell BAMs using the barcode (CB)
+    tag. Please note that the SAM spec requires all possible RG groups to be
+    encoded in the header, meaning quaqc can check that the provided groups
+    from `--rg-list` exist in the BAM before starting. No such check is performed
+    when using a different tag, meaning mistakes can lead to quaqc filtering
+    out all reads.
+
 **-2**, **\--use-secondary**
 :   Do not filter out alignments marked with the secondary alignment flag
     for use in the calculation of metrics done after read filtering. Useful
@@ -164,7 +173,8 @@ accomplished using `samtools` in the following manner during alignment:
     when `--use-nomate` is set.
 
 **-A**, **\--use-all**
-:   Do not apply ANY filters to mapped reads.
+:   Do not apply ANY filters to mapped reads. Note that unmapped reads
+    are always ignored, no matter which options are set.
 
 **\--max-depth**=*INT*
 :   The maximum allowed value for the read depth histogram. Depths with

@@ -1,3 +1,11 @@
+CHANGES IN VERSION 1.3 (2025-05-04)
+-----------------------------------
+
+* Added the ability to filter reads using alternate SAM tags instead of
+  read groups (RG) via --rg-tag. 
+
+* Fixed some bugs in the --bedGraph implementation.
+
 CHANGES IN VERSION 1.2 (2025-05-03)
 -----------------------------------
 

@@ -25,7 +25,7 @@
 #include <time.h>
 #include "htslib/hts.h"
 
-#define QUAQC_VERSION  "1.2a"
+#define QUAQC_VERSION  "1.3"
 #define QUAQC_YEAR    "2025"
 
 // Command line & other defaults -------------------------------------------------
@@ -47,6 +47,8 @@
 
 #define DEFAULT_MITO      "chrM,ChrM,Mt,MT,MtDNA,mit,Mito,mitochondria,mitochondrion"
 #define DEFAULT_PLTD      "chrC,ChrC,Pt,PT,Pltd,Chloro,chloroplast"
+
+#define DEFAULT_RG_TAG              "RG"
 
 #define TN5_FOWARD_SHIFT               4
 #define TN5_REVERSE_SHIFT              5
@@ -103,7 +105,7 @@ typedef struct params_t {
   char **argv; int argc, flag_n;
   void *mito, *pltd, *tseqs;
   char *title, *out_dir, *out_ext, *keep_dir, *keep_ext, *json;
-  char *bg_ext, *bg_dir;
+  char *bg_ext, *bg_dir, *rg_tag;
   void *peaks, *tss, *blist, *tlist, *trg;
   int peaks_n, tss_n, blist_n, tlist_n, trg_n;
   uint8_t mapq;

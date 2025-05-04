@@ -93,7 +93,7 @@ static inline bool frag_filter(const bam1_t *aln, const hts_pos_t qlen, const pa
 }
 
 static inline bool check_rg(const bam1_t *aln, const params_t *params) {
-  uint8_t *rg_p = bam_aux_get(aln, "RG");
+  uint8_t *rg_p = bam_aux_get(aln, params->rg_tag);
   if (rg_p == NULL) return false;
   char *rg = bam_aux2Z(rg_p);
   if (rg == NULL) return false;
@@ -180,8 +180,6 @@ static void read_gc(const bam1_t *aln, int *at, int *gc) {
 }
 
 static void add_read_to_tss(int32_t *tss, const int tss_size, int tss_offset, int qlen) {
-  // Note: When using the actual read coords (ie --tss-size 0), spliced
-  // reads are not properly handled.
   if (tss_offset < 0) {
     qlen -= (-1 * tss_offset);
     tss_offset = 0;
@@ -476,7 +474,7 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params) {
     goto run_quaqc_end;
   }
   // Check read groups if necessary.
-  if (params->trg != NULL) {
+  if (params->trg != NULL && strcmp("RG", params->rg_tag) == 0) {
     int rg_n = sam_hdr_count_lines(hdr, "RG");
     if (rg_n < 1) {
       error(params->qerr, "No read group info in header for file '%s'.", bam->fn);

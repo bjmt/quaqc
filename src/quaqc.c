@@ -110,6 +110,7 @@ enum opts_enum {
   MAX_DEPTH,
   MAX_QHIST,
   MAX_FHIST,
+  RG_TAG,
   USE_CHIMERIC,
   OMIT_GC,
   OMIT_DEPTH,
@@ -153,6 +154,7 @@ static struct option opts_long[] = {
   { "max-fhist",     required_argument, 0, MAX_FHIST     },
   { "rg-names",      required_argument, 0, RG_NAMES      },
   { "rg-list",       required_argument, 0, RG_LIST       },
+  { "rg-tag",        required_argument, 0, RG_TAG        },
   { "tss-size",      required_argument, 0, TSS_SIZE      },
   { "tss-qlen",      required_argument, 0, TSS_QLEN      },
   { "tss-tn5",       no_argument,       0, TN5_SHIFT     },
@@ -212,6 +214,7 @@ static void help(void) {
     " -b, --blacklist      FILE  Only consider reads outside ranges in a BED file.\n"
     " -r, --rg-names       STR   Only consider reads with these read groups (RG).\n"
     " -R, --rg-list        FILE  Only consider reads with read groups (RG) in a file.\n"
+    "     --rg-tag         STR   Match reads with --rg-list using another tag, such as CB.\n"
     "\n"
     "Filter options:\n"
     " -2, --use-secondary        Allow secondary alignments.\n"
@@ -420,7 +423,6 @@ static void *read_file_and_hash(const char *fn, int *n, int *dups) {
         str_hash_free_and_destroy(h);
         return NULL;
       }
-      fprintf(stderr, "RG:%s\n", str.s);
       d = str_hash_add(h, strdup(str.s));
       d_n += d == 0;
     }
@@ -465,6 +467,7 @@ static params_t *init_params(int argc, char **argv) {
   params->tss_size  = DEFAULT_TSS_SIZE;
   params->tss_qlen  = DEFAULT_TSS_QLEN;
   params->bg_qlen   = DEFAULT_BG_QLEN;
+  params->rg_tag    = DEFAULT_RG_TAG;
   params->qerr      = true;
   params->threads   = DEFAULT_THREADS;
   return params;
@@ -761,6 +764,11 @@ static int quaqc_main(int argc, char *argv[]) {
         }
         if (d > 0) warn("Found duplicate names in --rg-list.");
         break;
+      case RG_TAG:
+        if (strcmp(params->rg_tag, optarg) == 0) {
+          quit("Read group tag has already been set (--rg-tag)");
+        }
+        params->rg_tag = optarg;
       case USE_SECONDARY:
         if (params->use_2nd) {
           quit("--use-secondary has already been set.");
