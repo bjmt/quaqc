@@ -672,13 +672,13 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params) {
                     bg_qbeg = aln->core.pos + bg_tn5_fwd;
                     bg_qend = bg_qbeg + params->bg_qlen / 2 + 1;
                     bg_qbeg = bg_qbeg - params->bg_qlen / 2;
-                    bg_qbeg0 = bg_qbeg;
                   } else {
                     bg_qend = qend - bg_tn5_rev;
                     bg_qbeg = bg_qend - (params->bg_qlen / 2 + 1);
                     bg_qend = bg_qend + params->bg_qlen / 2;
-                    bg_qbeg0 = min(aln->core.pos, bg_qbeg);
                   }
+                  bg_qbeg0 = aln->core.pos = bg_tn5_fwd;
+                  bg_qbeg0 = bg_qbeg0 - (params->bg_qlen / 2 + 1);
                   if (params->bg_qlen % 2 == 0) {
                     if (is_pos_strand(aln)) {
                       bg_qend--;
