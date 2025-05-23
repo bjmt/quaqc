@@ -717,7 +717,7 @@ int print_results(char *fn, results_t *results, const params_t *params) {
   printWS(WS, fout);
   fprintf(fout, "Time of run end:   %s\n", time_end_str);
   printWS(WS, fout);
-  fprintf(fout, "Time ellapsed:     ");
+  fprintf(fout, "Time elapsed:      ");
   fprint_time(time_diff, fout);
   fputc('\n', fout);
   printWS(WS, fout);
