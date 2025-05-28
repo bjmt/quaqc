@@ -1,3 +1,5 @@
+[![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat)](http://bioconda.github.io/recipes/quaqc/README.html)
+
 # quaqc: *QU*ick *A*TAC-seq *Q*uality *C*ontrol
 
 _Also works with any unspliced DNA-seq experiment! Compatible with plant genomes!!_
@@ -12,6 +14,13 @@ cd quaqc
 make release-full
 make test  # Make sure quaqc produces the expected outputs (optional)
 make install  # Copy quaqc + manual to /usr/local (optional, may require sudo)
+```
+
+Alternatively for conda users, grab it from [Bioconda](https://bioconda.github.io/recipes/quaqc/README.html):
+
+```sh
+# Example environment setup:
+conda create -y --name quaqc -c conda-forge -c bioconda quaqc
 ```
 
 See [INSTALL](./INSTALL) for configuration options.
