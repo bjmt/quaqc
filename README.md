@@ -85,13 +85,13 @@ quaqc --bedGraph --bedGraph-qlen 150 Sample.bam
 ```
 
 In this example, a bedGraph file is created where each read is resized
-to 150 bp, centered around the 5-prime end of each read. This functionality
-can also be used to visualize the exact insertions, adjusting for the +4/-5
-transposition shift:
+to 150 bp, centered around the 5-prime end of each read. (To use the original read sizes without resizing, simply set `--bedGraph-qlen` to 0.) This functionality can also be used to visualize the exact insertions, adjusting for the +4/-5 transposition shift:
 
 ```sh
 quaqc --bedGraph --bedGraph-tn5 --bedGraph-qlen 1 Sample.bam
 ```
+
+The +4/-5 shift can also be adjusted to use custom values via `--tn5-fwd` and `--tn5-rev`.
 
 ### Filtering a single-cell ATAC-seq BAM by cell type
 
@@ -137,7 +137,7 @@ The TSS pileup functionality of quaqc can be used to instead generate motif
 footprints. Note that these are only useful for testing, as no correction
 of base composition is peformed to reduce Tn5 transposase insertion biases. The output
 must be saved in JSON format to recover the footprint data, which can then
-be plotted with an external program.
+be plotted with an external program (such as [`quaqcr`](https://github.com/bjmt/quaqcr)).
 
 In this example code, the `--footprint` preset will adjust the TSS pileup
 to produce single base resolution data of Tn5 transposase insertion
@@ -201,7 +201,7 @@ attempt to create the index.
 As far as I can tell CRAM files work fine as well, as long as the reference
 is available locally. See the notes in the installation instructions
 about compiling quaqc with libcurl if you need to work with CRAMs depending
-on remote references.
+on remote references. The Bioconda version is dynamically linked to the full version of HTSlib, making it fully compatible with any type of CRAM.
 
 ### Long reads
 
