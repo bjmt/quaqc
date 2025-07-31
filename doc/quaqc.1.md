@@ -1,4 +1,4 @@
-% QUAQC(1) Version 1.3a | quaqc User Manual
+% QUAQC(1) Version 1.3e | quaqc User Manual
 
 # NAME
 
