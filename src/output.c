@@ -228,7 +228,7 @@ int init_json(const params_t *params) {
   fjson_write(fjson, "    \"blacklist_bed_n\": %d,\n", params->blist_n);
   fjson_write(fjson, "    \"read_groups\": %s,\n", strbool(params->trg != NULL));
   fjson_write(fjson, "    \"read_groups_n\": %d,\n", params->trg_n);
-  fjson_write(fjson, "    \"read_groups_tag\": %s,\n", params->rg_tag);
+  fjson_write(fjson, "    \"read_groups_tag\": \"%s\",\n", params->rg_tag);
   fjson_write(fjson, "    \"mapq_min\": %d,\n", (int) params->mapq);
   fjson_write(fjson, "    \"alignment_size_min\": %d,\n", (int) params->qlen_min);
   fjson_write(fjson, "    \"alignment_size_max\": %d,\n", (int) params->qlen_max);
