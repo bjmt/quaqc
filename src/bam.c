@@ -269,6 +269,57 @@ static void calc_summary_stats(stats_t *stats, const params_t *params) {
   stats->naive_cov = (double) stats->cov / (double) stats->actual;
 }
 
+static void calc_nucl_shared_stats_depth(const int64_t *arr, const int arr_max, const double arr_avg, int64_t *mem_pct1, int64_t *mem_pct99, int64_t *mem_max, int64_t *mem_min, double *mem_avg, double *mem_sd, const bool use_arr_avg) {
+  int64_t tmp_total = 0, tmp_n = 0, tmp_max, tmp_min = 0;
+  for (int i = 0; i < arr_max + 1; i++) {
+    if (arr[i]) {
+      tmp_min = i;
+      break;
+    }
+  }
+  // Be careful, very easy to run into integer overflow issues with regular ints here.
+  for (int64_t i = 0; i < arr_max + 1; i++) {
+    tmp_total += arr[i] * i;
+    tmp_n += arr[i];
+    if (arr[i]) tmp_max = i;
+  }
+  if (tmp_n == 0) return;
+  int64_t tmp_i1 = tmp_total / 100, tmp_i1n = 0;
+  for (int64_t i = 0; i < arr_max + 1; i++) {
+    tmp_i1n += arr[i] * i;
+    if (tmp_i1n > tmp_i1) {
+      *mem_pct1 = i;
+      break;
+    }
+  }
+  int64_t tmp_i99 = (tmp_total * 99) / 100, tmp_i99n = 0;
+  for (int64_t i = 0; i < arr_max + 1; i++) {
+    tmp_i99n +=  arr[i] * i;
+    if (tmp_i99n > tmp_i99) {
+      *mem_pct99 = i;
+      break;
+    }
+  }
+  *mem_max = tmp_max;
+  *mem_min = tmp_min;
+  double tmp_avg = (double) tmp_total / (double) tmp_n;
+  if (use_arr_avg) {
+    tmp_avg = arr_avg;
+  } else {
+    if (mem_avg != NULL) {
+      *mem_avg = tmp_avg;
+    }
+  }
+  double var = 0, square_sum = 0;
+  for (int64_t i = 0; i < arr_max + 1; i++) {
+    var = (double) i - tmp_avg;
+    var = var * var;
+    square_sum += var * (double) arr[i];
+  }
+  square_sum /= (double) tmp_n;
+  *mem_sd = sqrt(square_sum);
+}
+
 static void calc_nucl_shared_stats_core(const int32_t *arr, const int arr_max, const double arr_avg, int64_t *mem_pct1, int64_t *mem_pct99, int64_t *mem_max, int64_t *mem_min, double *mem_avg, double *mem_sd, const bool use_arr_avg) {
   int64_t tmp_total = 0, tmp_n = 0, tmp_max, tmp_min = 0;
   for (int i = 0; i < arr_max + 1; i++) {
@@ -352,7 +403,7 @@ static void calc_nucl_shared_stats(stats_t *stats, const globals_t *nucl_shared,
     nucl_shared->depths[0] -= (depths_total - stats->actual);
     stats->genom_cov = (double) (stats->actual - nucl_shared->depths[0]) / (double) stats->actual;
     if (stats->genom_cov > 1.0) stats->genom_cov = 1.0;
-    calc_nucl_shared_stats_core(nucl_shared->depths, params->depth_max, 0,
+    calc_nucl_shared_stats_depth(nucl_shared->depths, params->depth_max, 0,
         &(stats->pct1_depth), &(stats->pct99_depth), &(stats->max_depth),
         &(stats->min_depth), &(stats->avg_depth), &(stats->sd_depth), false);
   }

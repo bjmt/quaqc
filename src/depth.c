@@ -30,23 +30,23 @@
 
 typedef struct depths_t {
   hts_pos_t beg, end;
-  int size;
-  int32_t *hist;
+  int64_t size;
+  int64_t *hist;
 } depths_t;
 
 #ifdef DEBUG0
 static void print_depths(void *depths) {
   depths_t *d = (depths_t *) depths;
-  for (int i = 0; i < d->size; i++) {
-    fprintf(stderr, "[%d: %*d]", i, 4, d->hist[i]);
+  for (int64_t i = 0; i < d->size; i++) {
+    fprintf(stderr, "[%d: %*lld]", i, 4, d->hist[i]);
   }
   fputc('\n', stderr);
 }
 #endif
 #ifdef DEBUG0
-static void print_hist(int32_t *hist, int max) {
+static void print_hist(int64_t *hist, int max) {
   for (int i = 0; i < max; i++) {
-    fprintf(stderr, "[%d: %*d]", i, 4, hist[i]);
+    fprintf(stderr, "[%d: %*lld]", i, 4, hist[i]);
   }
   fputc('\n', stderr);
 }
@@ -55,7 +55,7 @@ static void print_hist(int32_t *hist, int max) {
 void *init_depths(void) {
   depths_t *depths = alloc(sizeof(depths_t));
   depths->size = INIT_HIST_SIZE;
-  depths->hist = alloc(depths->size * sizeof(int32_t));
+  depths->hist = alloc(depths->size * sizeof(int64_t));
   depths->end = -1;
   return (void *) depths;
 }
@@ -66,7 +66,7 @@ void *init_bedGraph(const params_t *params) {
   depths->size *= 2;
   depths->size += BEDGRAPH_MAX_READ_SIZE + 3;
   kroundup32(depths->size);
-  depths->hist = alloc(depths->size * sizeof(int32_t));
+  depths->hist = alloc(depths->size * sizeof(int64_t));
   depths->end = -1;
   return (void *) depths;
 }
@@ -79,25 +79,25 @@ void destroy_depths(void *depths) {
   }
 }
 
-static inline void grow_depths(depths_t *d, const int size) {
-  const int prev = d->size;
+static inline void grow_depths(depths_t *d, const int64_t size) {
+  const int64_t prev = d->size;
   d->size = size;
   kroundup32(d->size);
-  int *hist = alloc(d->size * sizeof(int32_t));
+  int64_t *hist = alloc(d->size * sizeof(int64_t));
   if (hist == NULL) quit("Out of memory.");
-  for (int i = 0; i < prev; i++) {
+  for (int64_t i = 0; i < prev; i++) {
     hist[(d->beg + i) & (d->size - 1)] = d->hist[(d->beg + i) & (prev - 1)];
   }
   free(d->hist);
   d->hist = hist;
 }
 
-void purge_and_reset_depths(void *depths, int32_t *hist, const int depths_max) {
+void purge_and_reset_depths(void *depths, int64_t *hist, const int depths_max) {
   depths_t *d = (depths_t *) depths;
 #ifdef DEBUG0
   print_depths(depths);
 #endif
-  for (int j, i = d->beg; i < d->end; i++) {
+  for (int64_t j, i = d->beg; i < d->end; i++) {
     j = i & (d->size - 1);
     hist[min(d->hist[j], depths_max)]++;
     d->hist[j] = 0;
@@ -111,14 +111,14 @@ void purge_and_reset_depths(void *depths, int32_t *hist, const int depths_max) {
 
 void purge_and_reset_bedGraph(gzFile bgfile, void *bedGraph, const char *chr) {
   depths_t *b = (depths_t *) bedGraph;
-  for (int i = b->beg; i < b->end; i++) {
+  for (int64_t i = b->beg; i < b->end; i++) {
     if (b->hist[i & (b->size - 1)] != 0) {
-      gzprintf(bgfile, "%s\t%d", chr, i);
+      gzprintf(bgfile, "%s\t%lld", chr, i);
       while (i + 1 < b->end && b->hist[i & (b->size - 1)] == b->hist[(i + 1) & (b->size - 1)]) i++;
-      gzprintf(bgfile, "\t%d\t%d\n", i + 1, b->hist[i & (b->size - 1)]);
+      gzprintf(bgfile, "\t%lld\t%lld\n", i + 1, b->hist[i & (b->size - 1)]);
     }
   }
-  for (int i = 0; i < b->size; i++) {
+  for (int64_t i = 0; i < b->size; i++) {
     b->hist[i] = 0;
   }
   b->beg = 0;
@@ -133,32 +133,32 @@ void add_read_to_bedGraph(gzFile bgfile, void *bedGraph, const hts_pos_t qbeg0, 
   }
   if (qend - qbeg0 > b->size) grow_depths(b, qend - qbeg0);
   if (qbeg0 > b->beg) {
-    for (int i = b->beg; i < qbeg0; i++) {
+    for (int64_t i = b->beg; i < qbeg0; i++) {
       if (b->hist[i & (b->size - 1)] != 0) {
-        gzprintf(bgfile, "%s\t%d", chr, i);
+        gzprintf(bgfile, "%s\t%lld", chr, i);
         while (i + 1 < qbeg0 && b->hist[i & (b->size - 1)] == b->hist[(i + 1) & (b->size - 1)]) i++;
-        gzprintf(bgfile, "\t%d\t%d\n", i + 1, b->hist[i & (b->size - 1)]);
+        gzprintf(bgfile, "\t%lld\t%lld\n", i + 1, b->hist[i & (b->size - 1)]);
       }
     }
-    for (int i = b->beg; i < qbeg0; i++) {
+    for (int64_t i = b->beg; i < qbeg0; i++) {
       b->hist[i & (b->size - 1)] = 0;
     }
     b->beg = qbeg0;
   }
   if (qend > b->end) b->end = qend;
-  for (int i = qbeg; i < qend; i++) {
+  for (int64_t i = qbeg; i < qend; i++) {
     b->hist[i & (b->size - 1)]++;
   }
 }
 
-void add_read_to_depths(const bam1_t *aln, const hts_pos_t qend, void *depths, int32_t *hist, const int depths_max) {
+void add_read_to_depths(const bam1_t *aln, const hts_pos_t qend, void *depths, int64_t *hist, const int depths_max) {
   const hts_pos_t beg = aln->core.pos, qlen = 1 + qend - aln->core.pos;
   const uint32_t *cigar = bam_get_cigar(aln);
   depths_t *d = (depths_t *) depths;
   if (beg > d->beg) {
     // I think this still works when the gap between reads is greater than the size of the
     // buffer, since it is zeroed as it travels along the ring buffer and loops to just zeros.
-    for (int j, i = d->beg; i < beg; i++) {
+    for (int64_t j, i = d->beg; i < beg; i++) {
       j = i & (d->size - 1);
       hist[min(d->hist[j], depths_max)]++;
       d->hist[j] = 0; 
@@ -177,7 +177,7 @@ void add_read_to_depths(const bam1_t *aln, const hts_pos_t qend, void *depths, i
   for (int k = 0, r = 0, b; k < aln->core.n_cigar; k++) {
     b = bam_cigar_oplen(cigar[k]);
     if (query[bam_cigar_op(cigar[k])]) {
-      for (int i = r; i < r + b; i++) {
+      for (int64_t i = (int64_t) r; i < (int64_t) (r + b); i++) {
         d->hist[(d->beg + i) & (d->size - 1)]++;
       }
     }

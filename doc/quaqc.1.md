@@ -1,4 +1,4 @@
-% QUAQC(1) Version 1.3e | quaqc User Manual
+% QUAQC(1) Version 1.3f | quaqc User Manual
 
 # NAME
 
@@ -181,7 +181,7 @@ accomplished using `samtools` in the following manner during alignment:
     a higher value than this will be counted as this value. The default
     is 100,000. Be aware that this value is used directly during memory
     allocation. To estimate how much memory will be used for the depths
-    histogram, multiply the value by 4 bytes (e.g. the default uses 400 kB).
+    histogram, multiply the value by 8 bytes (e.g. the default uses 800 kB).
     If quaqc detects depth values equal to the set maximum during QC
     report generation, it will add a note warning that some depth values
     may have been truncated (which will result in incorrect stats). The

@@ -297,10 +297,10 @@ int append_json_fail(char *fn) {
 
 #define fjson_fmt_int_if_first(conn, ii) \
   if (array_first) { \
-      fjson_write(conn, " %d", ii); \
+      fjson_write(conn, " %lld", (int64_t) ii); \
       array_first = false; \
     } else { \
-      fjson_write(conn, ", %d", ii); \
+      fjson_write(conn, ", %lld", (int64_t) ii); \
     } \
   }
 

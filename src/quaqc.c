@@ -511,7 +511,7 @@ static globals_t *init_globals(const params_t *params) {
   check_for_large_i32(params->tss_size, "--tss-size");
   globals->tss = alloc(sizeof(int32_t) * params->tss_size);
   check_for_large_i32(params->depth_max, "--max-depth");
-  globals->depths = alloc(sizeof(int32_t) * (params->depth_max + 1));
+  globals->depths = alloc(sizeof(int64_t) * (params->depth_max + 1));
   return globals;
 }
 
@@ -521,7 +521,7 @@ static void reset_globals(globals_t *globals, const params_t *params) {
   memset(globals->read_sizes, 0, sizeof(int32_t) * (params->qhist_max + 1));
   memset(globals->frag_sizes, 0, sizeof(int32_t) * (params->fhist_max + 1));
   memset(globals->tss, 0, sizeof(int32_t) * params->tss_size);
-  memset(globals->depths, 0, sizeof(int32_t) * (params->depth_max + 1));
+  memset(globals->depths, 0, sizeof(int64_t) * (params->depth_max + 1));
 }
 
 static void destroy_globals(globals_t *globals) {
