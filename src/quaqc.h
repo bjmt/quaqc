@@ -25,7 +25,7 @@
 #include <time.h>
 #include "htslib/hts.h"
 
-#define QUAQC_VERSION  "1.3f"
+#define QUAQC_VERSION  "1.3g"
 #define QUAQC_YEAR    "2025"
 
 // Command line & other defaults -------------------------------------------------
@@ -114,7 +114,7 @@ typedef struct params_t {
   bool use_2nd, use_chi, use_nomate, use_dups, use_all;
   bool lenient, strict, nfr, nbr, use_dovetail;
   bool no_se, no_out, save, bedGraph, bg_tn5, tn5_shift, omit_gc, omit_depth;
-  bool fast, qerr, v, vhttps://meme-suite.org/meme/v, footprint, low_mem, chip;
+  bool fast, qerr, v, vv, footprint, low_mem, chip;
 } params_t;
 
 // Use one instance of this struct for all nuclear chromosomes.
