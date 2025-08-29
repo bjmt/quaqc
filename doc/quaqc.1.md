@@ -1,4 +1,4 @@
-% QUAQC(1) Version 1.3g | quaqc User Manual
+% QUAQC(1) Version 1.4 | quaqc User Manual
 
 # NAME
 
@@ -345,15 +345,42 @@ accomplished using `samtools` in the following manner during alignment:
     extension. The bedGraph will always be Gzipped, so not including ".gz"
     will still lead to a compressed file.
 
+**\--bed**
+:   Output a Gzipped BED6 file of the alignments passing all filters within
+    target regions. The name field contains the read name, with an additional
+    "/1" or "/2" appended to the first and second mates of PE reads. Alignments
+    are printed in the same order they are present in the BAM, thus they can
+    be assumed to be coordinate sorted.
+
+**\--bed-ins**
+:   Modify the BED output to instead print out the exact insertion coordinates
+    (i.e. the 5-prime ends of the alignments) in BED3 format. In order to
+    maintain a coordinate sorting, the order of insertion coordinates
+    will not match the original order of alignments in the BAM.
+
+**\--bed-tn5**
+:   Shift the 5-prime alignment coordinates of each read when generating
+    then BED file to acount for the transposase offset (+4/-5), as per the
+    `--tss-tn5` option.
+
+**\--bed-dir**
+:   As per the `--keep-dir` option, change the output directory of the 
+    BED files.
+
+**\--bed-ext**=*STR*
+:   As per the `--keep-ext` option, change the default BED filename
+    extension. The BED files will always be Gzipped, so not including ".gz"
+    will still lead to a compressed file.
+
 **\--tn5-fwd**=*INT*
 :   Alter the default value used to shift the 5-prime ends of reads when either
-    `--tss-tn5` or `--bedGraph-tn5` are used. This value is added to the start
-    coordinate of forward strand reads.
+    `--tss-tn5`, `--bedGraph-tn5`, or `--bed-tn5` are used. This value is added
+    to the start coordinate of forward strand reads.
 
 **\--tn5-rev**=*INT*
 :   Alter the default value used to shift the 5-prime ends of reads when either
-    `--tss-tn5` or `--bedGraph-tn5` are used. This value is substracted from the
-    end coordinate of reverse strand reads.
+    `--tss-tn5`, `--bedGraph-tn5`, or `--bed-tn5` are used. This value is substracted
+    from the end coordinate of reverse strand reads.
 
 **-j** *INT*, **\--threads**=*INT*
 :   Set the number of child threads used to process input BAMs. At minimum,

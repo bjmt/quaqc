@@ -72,6 +72,30 @@ Tremblay, B.J.M. and Qüesta, J.I. (2024). quaqc: efficient and quick ATAC-seq q
 
 ## Additional use cases
 
+### Creating insertion BED files for use by MACS2/3
+
+A common method for calling ATAC-seq peaks is to provide the reads as a
+BED file in order to trick MACS2/3 into using individual reads during pileup
+instead of the fragment coordinates in paired-end data. Using the `--bed`
+option, this can be done using quaqc, generating identical output as
+`bedtools bamtobed`. For example:
+
+```sh
+quaqc -0 --bed Sample.bam
+
+macs3 callpeak [...] \
+    --treatment Sample.bed.gz --format BED \
+    --call-summits --keep-dup all \
+    --shift -75 --extsize 150 \
+    --nomodel --nolambda
+```
+
+However since we only care about the 5-prime ends of each read (i.e. the
+insertion sites) when calling peaks this way, we can also add the `--bed-ins`
+flag to tell quaqc to only output the 5-prime coordinates of the reads with
+no additional BED fields, saving a decent amount of disk space in a way
+which will not affect MACS2/3.
+
 ### Creating bedGraph files centered around the 5-prime ends of reads
 
 Typically read pileups of ATAC-seq data (such as bedGraph files) are made

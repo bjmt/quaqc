@@ -128,6 +128,11 @@ enum opts_enum {
   BEDGRAPH_QLEN,
   BEDGRAPH_DIR,
   BEDGRAPH_EXT,
+  BED,
+  BED_INS,
+  BED_TN5,
+  BED_DIR,
+  BED_EXT,
   TN5_FWD,
   TN5_REV
 };
@@ -180,6 +185,11 @@ static struct option opts_long[] = {
   { "bedGraph-tn5",  no_argument,       0, BEDGRAPH_TN5  },
   { "bedGraph-dir",  required_argument, 0, BEDGRAPH_DIR  },
   { "bedGraph-ext",  required_argument, 0, BEDGRAPH_EXT  },
+  { "bed",           no_argument,       0, BED           },
+  { "bed-ins",       no_argument,       0, BED_INS       },
+  { "bed-tn5",       no_argument,       0, BED_TN5       },
+  { "bed-dir",       required_argument, 0, BED_DIR       },
+  { "bed-ext",       required_argument, 0, BED_EXT       },
   { "tn5-fwd",       required_argument, 0, TN5_FWD       },
   { "tn5-rev",       required_argument, 0, TN5_REV       },
   { "omit-gc",       no_argument,       0, OMIT_GC       },
@@ -254,25 +264,34 @@ static void help(void) {
     "     --footprint            --tss-qlen=1 --tss-size=501 --tss-tn5\n"
     "     --chip                 --tss-qlen=0 --tss-size=5001 (uses --peaks for pileup)\n"
     "\n"
-    "Output options:\n"
+    "Report options:\n"
     " -o, --output-dir     DIR   Directory to save QC report if not that of input.\n"
     " -O, --output-ext     STR   Filename extension for output files. [%s]\n"
     " -0, --no-output            Suppress creation of output QC reports.\n"
     " -J, --json           FILE  Save combined QC as a JSON file. Use '-' for stdout.\n"
+    "\n"
+    "BAM options:\n"
     " -S, --keep                 Save passing nuclear reads in a new BAM file.\n"
     " -k, --keep-dir       DIR   Directory to create new BAM in if not that of input.\n"
     " -K, --keep-ext       STR   Extension of new BAM. [%s]\n"
     "\n"
     "BedGraph options:\n"
     " -B, --bedGraph             Output a gzipped read density bedGraph.\n"
-    "     --bedGraph-qlen  INT   Resize reads (centered on the 5p end). [%d]\n"
+    "     --bedGraph-qlen  INT   Resize reads (centered on the 5-prime end). [%d]\n"
     "     --bedGraph-tn5         Shift 5-prime end coordinates +%d/-%d bases.\n"
     "     --bedGraph-dir   DIR   Directory to output bedGraphs if not that of input.\n"
     "     --bedGraph-ext   STR   Filename extension for bedGraphs. [%s]\n"
     "\n"
-    "Miscellaneous options:\n"
-    "     --tn5-fwd        INT   Add this value to the start of forward reads. [%d]\n"
-    "     --tn5-rev        INT   Subtract this value from the start of reverse reads. [%d]\n"
+    "BED options:\n"
+    "     --bed                  Output a gzipped BED6 file of passing reads.\n"
+    "     --bed-ins              Print 5-prime insertions in BED3 format instead.\n"
+    "     --bed-tn5              Adjust coordinates to account for Tn5 shift (+%d/-%d).\n"
+    "     --bed-dir        DIR   Directory to output BED files if not that of input.\n"
+    "     --bed-ext        STR   Filename extension for BED files. [%s]\n"
+    "\n"
+    "Customize the --tss-tn5, --bedGraph-tn5, --bed-tn5 adjustments:\n"
+    "     --tn5-fwd        INT   Change the global Tn5 shift for forward reads. [%d]\n"
+    "     --tn5-rev        INT   Change the global Tn5 shift for reverse reads. [%d]\n"
     "\n"
     "Program options:\n"
     " -j, --threads        INT   Number of worker threads. Max one per sample. [%d]\n"
@@ -287,6 +306,7 @@ static void help(void) {
     , DEFAULT_MAX_DEPTH
     , DEFAULT_TSS_SIZE, DEFAULT_TSS_QLEN, TN5_FOWARD_SHIFT, TN5_REVERSE_SHIFT
     , DEFAULT_OUT_EXT, DEFAULT_BAM_EXT, DEFAULT_BG_QLEN, TN5_FOWARD_SHIFT, TN5_REVERSE_SHIFT, DEFAULT_BG_EXT
+    , TN5_FOWARD_SHIFT, TN5_REVERSE_SHIFT, DEFAULT_BED_EXT
     , TN5_FOWARD_SHIFT, TN5_REVERSE_SHIFT
     , DEFAULT_THREADS
   );
@@ -1057,6 +1077,42 @@ static int quaqc_main(int argc, char *argv[]) {
           quit("--bedGraph-ext cannot be an empty string.");
         }
         break;
+      case BED:
+        if (params->bed) {
+          quit("--bed has already been set.");
+        }
+        params->bed = true;
+        break;
+      case BED_INS:
+        if (params->bed_ins) {
+          quit("--bed-ins has already been set.");
+        }
+        params->bed_ins = true;
+        break;
+      case BED_TN5:
+        if (params->bed_tn5) {
+          quit("--bed-tn5 has already been set.");
+        }
+        params->bed_tn5 = true;
+        break;
+      case BED_DIR:
+        if (params->bed_dir != NULL) {
+          quit("--bed-dir has already been set.");
+        }
+        params->bed_dir = optarg;
+        if (!check_dir(params->bed_dir)) {
+          quit("Incorrect directory provided to --bed-dir.");
+        }
+        break;
+      case BED_EXT:
+        if (params->bed_ext != NULL) {
+          quit("--bed-ext has already been set.");
+        }
+        params->bed_ext = optarg;
+        if (strlen(params->bed_ext) < 1) {
+          quit("--bed-ext cannot be an empty string.");
+        }
+        break;
       case TN5_FWD:
         if (params->tn5_fwd != TN5_FOWARD_SHIFT) {
           quit("--tn5-fwd has already been set.");
@@ -1257,6 +1313,7 @@ static int quaqc_main(int argc, char *argv[]) {
   if (params->keep_ext == NULL) params->keep_ext = DEFAULT_BAM_EXT;
   if (params->out_ext == NULL) params->out_ext = DEFAULT_OUT_EXT;
   if (params->bg_ext == NULL) params->bg_ext = DEFAULT_BG_EXT;
+  if (params->bed_ext == NULL) params->bed_ext = DEFAULT_BED_EXT;
 
   time_t time_start = time(NULL);
 

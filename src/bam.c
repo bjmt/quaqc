@@ -510,13 +510,20 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params) {
   hts_itr_t *itr = NULL;
   void *depths = NULL;
   void *bedGraph = NULL;
+  void *bed = NULL;
   samFile *filt_bam = NULL;
   depths = init_depths();
   gzFile bedGraph_f = NULL;
+  gzFile bed_f = NULL;
 
   if (params->bedGraph) {
     bedGraph = init_bedGraph(params);
     bedGraph_f = init_bedGraph_f(bam->fn, params);
+  }
+
+  if (params->bed) {
+    bed = params->bed_ins ? init_bed() : NULL;
+    bed_f = init_bed_f(bam->fn, params);
   }
 
   hdr = sam_hdr_read(bam);
@@ -578,6 +585,8 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params) {
   const hts_pos_t tn5_rev = params->tn5_shift ? params->tn5_rev : 0;
   const hts_pos_t bg_tn5_fwd = params->bg_tn5 ? params->tn5_fwd : 0;
   const hts_pos_t bg_tn5_rev = params->bg_tn5 ? params->tn5_rev : 0;
+  const hts_pos_t bed_tn5_fwd = params->bed_tn5 ? params->tn5_fwd : 0;
+  const hts_pos_t bed_tn5_rev = params->bed_tn5 ? params->tn5_rev : 0;
   int itr_ret, at, gc, n, nucl_n = 0, pltd_n = 0, mito_n = 0, tss_offset;
   int64_t proc_n = 0;
   hts_pos_t qend, qlen, flen, last_start, last_end, tss_qbeg, tss_qend, bg_qbeg0, bg_qbeg, bg_qend;
@@ -743,6 +752,17 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params) {
                 bg_qend = min(bg_qend, hdr->target_len[i]);
                 add_read_to_bedGraph(bedGraph_f, bedGraph, bg_qbeg0, bg_qbeg, bg_qend, hdr->target_name[i]);
               }
+              if (bed_f != NULL) {
+                if (params->bed_ins) {
+                  add_insertion_to_bed(bed_f, bed, max(0, aln->core.pos - bed_tn5_fwd), is_pos_strand(aln) ? max(0, min(aln->core.pos + bed_tn5_fwd, hdr->target_len[i])) : max(0, min((qend - 1) - bed_tn5_rev, hdr->target_len[i])), hdr->target_name[i]);
+                } else {
+                  if ((aln->core.flag & BAM_FPAIRED) != 0) {
+                    gzprintf(bed_f, "%s\t%lld\t%lld\t%s/%c\t%d\t%c\n", hdr->target_name[i], aln->core.pos + bed_tn5_fwd, qend - bed_tn5_rev, bam_get_qname(aln), is_frag_r1(aln) ? '1' : '2', aln->core.qual, is_pos_strand(aln) ? '+' : '-');
+                  } else {
+                    gzprintf(bed_f, "%s\t%lld\t%lld\t%s\t%d\t%c\n", hdr->target_name[i], aln->core.pos + bed_tn5_fwd, qend - bed_tn5_rev, bam_get_qname(aln), aln->core.qual, is_pos_strand(aln) ? '+' : '-');
+                  }
+                }
+              }
               if (filt_bam != NULL && sam_write1(filt_bam, hdr, aln) == -1) {
                 error(params->qerr, "Failed to write to new BAM '%s'.", filt_bam->fn);
                 warn("Giving up on creating new BAM for this sample, continuing with QC.");
@@ -781,6 +801,9 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params) {
       purge_and_reset_depths(depths, results->nucl_shared->depths, params->depth_max);
       if (bedGraph_f != NULL) {
         purge_and_reset_bedGraph(bedGraph_f, bedGraph, hdr->target_name[i]);
+      }
+      if (bed != NULL) {
+        purge_and_reset_bed(bed_f, bed, hdr->target_name[i]);
       }
 
     } else {
@@ -861,6 +884,13 @@ run_quaqc_end:
       int e;
       error(params->qerr, "Failed to close bedGraph file: %s", gzerror(bedGraph_f, &e));
     }
+  }
+  if (bed != NULL) {
+    destroy_depths(bedGraph);
+  }
+  if (bed_f != NULL && gzclose(bed_f) != Z_OK) {
+    int e;
+    error(params->qerr, "Failed to close bed file: %s", gzerror(bed_f, &e));
   }
 
   results->time_end = time(NULL);

@@ -156,6 +156,26 @@ gzFile init_bedGraph_f(const char *fn, const params_t *params) {
   return bg;
 }
 
+// --bed ----------------------------------------------------------------------
+
+gzFile init_bed_f(const char *fn, const params_t *params) {
+  char *bed_fn = make_new_fn(fn, params->bed_dir, params->bed_ext, true);
+  if (check_if_matching_fn(fn, bed_fn)) {
+    error(params->qerr, "bed file cannot have an identical path as input '%s'.", fn);
+    free(bed_fn);
+    return NULL;
+  }
+  gzFile bed = gzopen(bed_fn, "wb");
+  if (bed == NULL) {
+    int e;
+    error(params->qerr, "Cannot create bed file '%s': %s", bed_fn, gzerror(bed, &e));
+    free(bed_fn);
+    return NULL;
+  }
+  free(bed_fn);
+  return bed;
+}
+
 // --json ----------------------------------------------------------------------
 
 static bool use_gz = false;

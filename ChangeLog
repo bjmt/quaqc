@@ -1,3 +1,8 @@
+2025-08-29  Benjamin Jean-Marie Tremblay  <benjmtremblay@gmail.com>
+
+* Added --bed & friends
+* Bump quaqc version to 1.4
+
 2025-08-09  Benjamin Jean-Marie Tremblay  <benjmtremblay@gmail.com>
 
 * Changed array values in depths struct from int32_t to int64_t

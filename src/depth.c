@@ -71,6 +71,14 @@ void *init_bedGraph(const params_t *params) {
   return (void *) depths;
 }
 
+void *init_bed(void) {
+  depths_t *depths = alloc(sizeof(depths_t));
+  depths->size = 1024; // TODO: Check for optimal value
+  depths->hist = alloc(depths->size * sizeof(int64_t));
+  depths->end = -1;
+  return (void *) depths;
+}
+
 void destroy_depths(void *depths) {
   if (depths != NULL) {
     depths_t *d = (depths_t *) depths;
@@ -125,6 +133,18 @@ void purge_and_reset_bedGraph(gzFile bgfile, void *bedGraph, const char *chr) {
   b->end = -1;
 }
 
+void purge_and_reset_bed(gzFile bedfile, void *bed, const char *chr) {
+  depths_t *b = (depths_t *) bed;
+  for (int64_t i = b->beg; i < b->end; i++) {
+    while (b->hist[i & (b->size - 1)] != 0) {
+      gzprintf(bedfile, "%s\t%lld\t%lld\n", chr, i, i + 1);
+      b->hist[i & (b->size - 1)]--;
+    }
+  }
+  b->beg = 0;
+  b->end = -1;
+}
+
 void add_read_to_bedGraph(gzFile bgfile, void *bedGraph, const hts_pos_t qbeg0, const hts_pos_t qbeg, const hts_pos_t qend, const char *chr) {
   depths_t *b = (depths_t *) bedGraph;
   if (b->end == -1) {
@@ -149,6 +169,26 @@ void add_read_to_bedGraph(gzFile bgfile, void *bedGraph, const hts_pos_t qbeg0, 
   for (int64_t i = qbeg; i < qend; i++) {
     b->hist[i & (b->size - 1)]++;
   }
+}
+
+void add_insertion_to_bed(gzFile bedfile, void *bed, const hts_pos_t qbeg0, const hts_pos_t insertion, const char *chr) {
+  depths_t *b = (depths_t *) bed;
+  if (b->end == -1) {
+    b->beg = qbeg0;
+    b->end = insertion;
+  }
+  if (insertion - qbeg0 > b->size) grow_depths(b, insertion - qbeg0);
+  if (qbeg0 > b->beg) {
+    for (int64_t i = b->beg; i < qbeg0; i++) {
+      while (b->hist[i & (b->size - 1)] != 0) {
+        gzprintf(bedfile, "%s\t%lld\t%lld\n", chr, i, i + 1);
+        b->hist[i & (b->size - 1)]--;
+      }
+    }
+    b->beg = qbeg0;
+  }
+  if ((insertion+1) > b->end) b->end = insertion + 1;
+  b->hist[insertion & (b->size - 1)]++;
 }
 
 void add_read_to_depths(const bam1_t *aln, const hts_pos_t qend, void *depths, int64_t *hist, const int depths_max) {

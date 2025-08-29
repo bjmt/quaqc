@@ -37,4 +37,6 @@ int append_json_result(char *fn, results_t *results, const params_t *params);
 
 gzFile init_bedGraph_f(const char *fn, const params_t *params);
 
+gzFile init_bed_f(const char *fn, const params_t *params);
+
 #endif

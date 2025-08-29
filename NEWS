@@ -1,3 +1,17 @@
+CHANGES IN VERSION 1.4 (2025-08-29)
+-----------------------------------
+
+* Added BED output (--bed). The behaviour of this output is similar
+  to the default behaviour of `bedtools bamtobed`. Additionally, the
+  BED can contain the Tn5 insertion coordinates instead of the
+  original alignment coordinates by adding the --bed-ins option.
+
+* Fixed typos & formatting errors in output reports
+
+* More --bedGraph bugfixes
+
+* Fix compilation of included zlib library with newer LLVM versions
+
 CHANGES IN VERSION 1.3 (2025-05-04)
 -----------------------------------
 
