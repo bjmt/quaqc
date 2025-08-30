@@ -188,7 +188,7 @@ them if it seems feasible to do so.
 ### A note on the default Tn5 shift values (+4/-5)
 
 It is standard practice to adjust the start coordinates of ATAC-seq
-reads to account for the ~9 bp footprint of the Tn5 transposase by
+fragments to account for the ~9 bp footprint of the Tn5 transposase by
 adding 4 bp to the start and substracting 5 bp from the end (+4/-5).
 However, some articles such as [this one](https://www.biorxiv.org/content/10.1101/2024.12.25.630221v2.full)
 instead suggest +4/-4 might better capture the true Tn5 offset and allow
