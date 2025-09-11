@@ -25,7 +25,7 @@
 #include <time.h>
 #include "htslib/hts.h"
 
-#define QUAQC_VERSION  "1.4"
+#define QUAQC_VERSION  "1.4a"
 #define QUAQC_YEAR    "2025"
 
 // Command line & other defaults -------------------------------------------------

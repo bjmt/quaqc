@@ -1,3 +1,8 @@
+2025-09-11  Benjamin Jean-Marie Tremblay  <benjmtremblay@gmail.com>
+
+* Fixed a bug in BED file handling of strands when handling unsorted files
+* Bump quaqc version to 1.4a
+
 2025-08-29  Benjamin Jean-Marie Tremblay  <benjmtremblay@gmail.com>
 
 * Added --bed & friends

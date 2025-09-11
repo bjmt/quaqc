@@ -52,11 +52,16 @@ DEALINGS IN THE SOFTWARE.  */
 #include "htslib/kseq.h"
 KSTREAM_INIT(gzFile, gzread, 8192)
 
-static inline int lt_pair_pos(hts_pair_pos_t a, hts_pair_pos_t b) {
+typedef struct {
+    hts_pos_t beg, end;
+    char strand;
+} hts_pair_pos_strand_t;
+
+static inline int lt_pair_pos(hts_pair_pos_strand_t a, hts_pair_pos_strand_t b) {
     if (a.beg == b.beg) return a.end < b.end;
     return a.beg < b.beg;
 }
-KSORT_INIT_STATIC(hts_pair_pos_t, hts_pair_pos_t, lt_pair_pos)
+KSORT_INIT_STATIC(hts_pair_pos_strand_t, hts_pair_pos_strand_t, lt_pair_pos)
 
 /*! @typedef
  * @abstract bed_reglist_t - value type of the BED hash table
@@ -69,8 +74,7 @@ KSORT_INIT_STATIC(hts_pair_pos_t, hts_pair_pos_t, lt_pair_pos)
  */
 typedef struct {
     int n, m;
-    hts_pair_pos_t *a;
-    char *s;
+    hts_pair_pos_strand_t *a;
     int *idx;
     int filter;
 } bed_reglist_t;
@@ -111,7 +115,7 @@ void bed_print(void *reg_hash) {
 }
 #endif
 
-static int *bed_index_core(int n, hts_pair_pos_t *a)
+static int *bed_index_core(int n, hts_pair_pos_strand_t *a)
 {
     int i, j, l, *idx, *new_idx;
     l = 0; idx = 0;
@@ -148,7 +152,7 @@ static void bed_index(void *_h)
         if (kh_exist(h, k)) {
             bed_reglist_t *p = &kh_val(h, k);
             if (p->idx) free(p->idx);
-            ks_introsort(hts_pair_pos_t, p->n, p->a);
+            ks_introsort(hts_pair_pos_strand_t, p->n, p->a);
             p->idx = bed_index_core(p->n, p->a);
         }
     }
@@ -196,12 +200,12 @@ void bed_resize(void *_h, const hts_pos_t up, const hts_pos_t down) {
         if (kh_exist(h,k)) {
             if ((p = &kh_val(h,k)) != NULL && p->n > 0) {
                 for (int i=0; i<p->n; i++) {
-                    coord_resize(&(p->a[i].beg), &(p->a[i].end), up, down, p->s[i]);
+                    coord_resize(&(p->a[i].beg), &(p->a[i].end), up, down, p->a[i].strand);
                 }
             }
         }
     }
-    bed_index_without_sort(_h);
+    bed_index(_h);
 }
 
 static int bed_minoff(const bed_reglist_t *p, hts_pos_t beg) {
@@ -308,7 +312,7 @@ int bed_overlap_offset(void *_h, const char *seq, const hts_pos_t beg, const hts
 #if 0
           fprintf(stderr, "0: pbeg = %'lld\tpend = %'lld\n", p->a[i].beg, p->a[i].end);
 #endif
-            return p->s[i] == '-' ? p->a[i].end - end : beg - p->a[i].beg;
+            return p->a[i].strand == '-' ? p->a[i].end - end : beg - p->a[i].beg;
         }
     }
     return INT_MIN;
@@ -403,7 +407,7 @@ void bed_unify(void *reg_hash) {
         p->n = ++new_n;
 
         for (int k = 0; k < p->n; k++) {
-          p->s[k] = '.';
+          p->a[k].strand = '.';
         }
     }
 }
@@ -542,14 +546,11 @@ void *bed_read(const char *fn)
         // Add begin,end to the list
         if (p->n == p->m) {
             p->m = p->m ? p->m<<1 : 4;
-            hts_pair_pos_t *new_a = realloc(p->a, p->m * sizeof(p->a[0]));
+            hts_pair_pos_strand_t *new_a = realloc(p->a, p->m * sizeof(p->a[0]));
             if (NULL == new_a) goto fail;
-            char *new_s = realloc(p->s, p->m * sizeof(char));
-            if (NULL == new_s) goto fail;
             p->a = new_a;
-            p->s = new_s;
         }
-        p->s[p->n] = strand;
+        p->a[p->n].strand = strand;
         p->a[p->n].beg = beg;
         p->a[p->n++].end = end;
     }
