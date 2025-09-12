@@ -331,6 +331,13 @@ int init_json(const params_t *params) {
   fjson_write(fjson, "    \"bedGraph\": %s,\n", strbool(params->bedGraph));
   fjson_write(fjson, "    \"bedGraph_qlen\": %d,\n", params->bg_qlen);
   fjson_write(fjson, "    \"bedGraph_tn5\": %s,\n", strbool(params->bg_tn5));
+  fjson_write(fjson, "    \"bed\": %s,\n", strbool(params->bed));
+  fjson_write(fjson, "    \"bed_ins\": %d,\n", params->bed_ins);
+  fjson_write(fjson, "    \"bed_tn5\": %d,\n", params->bed_tn5);
+  fjson_write(fjson, "    \"quant\": %s,\n", strbool(params->quant_f != NULL));
+  fjson_write(fjson, "    \"quant_ins\": %s,\n", strbool(params->quant_ins));
+  fjson_write(fjson, "    \"quant_tn5\": %s,\n", strbool(params->quant_tn5));
+  fjson_write(fjson, "    \"quant_pn\": %s,\n", strbool(params->quant_pn));
   fjson_write(fjson, "    \"tn5_fwd\": %d,\n", params->tn5_fwd);
   fjson_write(fjson, "    \"tn5_rev\": %d,\n", params->tn5_rev);
   fjson_write(fjson, "    \"fast_mode\": %s,\n", strbool(params->fast));
