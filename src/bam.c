@@ -587,9 +587,12 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params, quant_t
   const hts_pos_t bg_tn5_rev = params->bg_tn5 ? params->tn5_rev : 0;
   const hts_pos_t bed_tn5_fwd = params->bed_tn5 ? params->tn5_fwd : 0;
   const hts_pos_t bed_tn5_rev = params->bed_tn5 ? params->tn5_rev : 0;
+  const hts_pos_t quant_tn5_fwd = params->quant_tn5 ? params->tn5_fwd : 0;
+  const hts_pos_t quant_tn5_rev = params->quant_tn5 ? params->tn5_rev : 0;
   int itr_ret, at, gc, n, nucl_n = 0, pltd_n = 0, mito_n = 0, tss_offset;
-  int64_t proc_n = 0;
+  int64_t proc_n = 0, quant_peak_index;
   hts_pos_t qend, qlen, flen, last_start, last_end, tss_qbeg, tss_qend, bg_qbeg0, bg_qbeg, bg_qend;
+  hts_pos_t quant_beg, quant_end;
   stats_t *stats = results->seqs;
   for (int64_t i = 0; i < hdr->n_targets; i++) {
     itr = sam_itr_querys(bam->idx, hdr, hdr->target_name[i]);
@@ -768,6 +771,28 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params, quant_t
                 warn("Giving up on creating new BAM for this sample, continuing with QC.");
                 hts_close(filt_bam);
                 filt_bam = NULL;
+              }
+              if (quant != NULL) {
+                if (params->quant_ins) {
+                  if (is_pos_strand(aln)) {
+                    quant_beg = max(0, aln->core.pos + quant_tn5_fwd);
+                  } else {
+                    quant_beg = max(0, (qend - 1) - quant_tn5_rev);
+                  }
+                  quant_end = quant_beg + 1;
+                } else {
+                  if (is_pos_strand(aln)) {
+                    quant_beg = max(0, aln->core.pos + quant_tn5_fwd);
+                    quant_end = qend;
+                  } else {
+                    quant_beg = aln->core.pos;
+                    quant_end = max(0, qend - quant_tn5_rev);
+                  }
+                }
+                quant_peak_index = bed_overlap_ret_idx(params->peaks, hdr->target_name[i], quant_beg, quant_end);
+                if (quant_peak_index >= 0) {
+                  quant->counts[file_index][quant_peak_index]++;
+                }
               }
             } // END: if (stats->type == SEQ_NUCL)
 

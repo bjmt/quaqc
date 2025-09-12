@@ -115,7 +115,7 @@ typedef struct params_t {
   bool use_2nd, use_chi, use_nomate, use_dups, use_all;
   bool lenient, strict, nfr, nbr, use_dovetail;
   bool no_se, no_out, save, bedGraph, bg_tn5, tn5_shift, omit_gc, omit_depth;
-  bool bed, bed_ins, bed_tn5, quant, quant_ins, quant_tn5, quant_pn;
+  bool bed, bed_ins, bed_tn5, quant_ins, quant_tn5, quant_pn;
   bool fast, qerr, v, vv, footprint, low_mem, chip;
 } params_t;
 

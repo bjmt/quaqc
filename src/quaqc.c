@@ -770,16 +770,10 @@ static int quaqc_main(int argc, char *argv[]) {
         if (d > 0) warn("Found duplicate names in --plastids.");
         break;
       case PEAKS:
-        if (params->peaks != NULL) {
+        if (peak_bed != NULL) {
           quit("--peaks has already been set.");
         }
         peak_bed = optarg;
-        params->peaks = bed_read(optarg, NULL);
-        if (params->peaks == NULL) {
-          quit("Failed to read --peaks.");
-        }
-        params->peaks_n = bed_n(params->peaks);
-        bed_unify(params->peaks);
         break;
       case TSS:
         if (params->tss != NULL) {
@@ -1174,10 +1168,9 @@ static int quaqc_main(int argc, char *argv[]) {
         }
         break;
       case QUANT:
-        if (params->quant) {
+        if (params->quant_f != NULL) {
           quit("--quant has already been set.");
         }
-        params->quant = true;
         params->quant_f = optarg;
         if (strlen(params->quant_f) < 1) {
           quit("--quant cannot be an empty string.");
@@ -1282,19 +1275,31 @@ static int quaqc_main(int argc, char *argv[]) {
   params->flag_n = optind - 1;
   sample_count = argc - optind;
 
-  if (params->quant) {
+  if (params->quant_f != NULL) {
     if (peak_bed == NULL) {
       quit("--quant requires --peaks to be set.");
     }
     quant = init_quant(sample_count);
     for (int i = 0; i < sample_count; i++) {
-      // TODO: handle --quant-pn
-      quant->file_names[i] = strdup(argv[optind + i]);
+      if (params->quant_pn) {
+        quant->file_names[i] = strdup(basename(argv[optind + i]));
+        if (strlen(quant->file_names[i]) > 3 && strcmp(quant->file_names[i] + (strlen(quant->file_names[i]) - 4), ".bam") == 0) {
+          quant->file_names[i][strlen(quant->file_names[i]) - 4] = 0;
+        }
+      } else {
+        quant->file_names[i] = strdup(argv[optind + i]);
+      }
     }
-    // TODO: This is redundant, since the --peaks BED is now being 
-    //       read twice.
-    params->quant = bed_read(peak_bed, quant);
+    params->peaks = bed_read(peak_bed, quant);
+    params->peaks_n = bed_n(params->peaks);
     alloc_quant_counts(quant);
+  } else if (peak_bed != NULL) {
+    params->peaks = bed_read(peak_bed, NULL);
+    if (params->peaks == NULL) {
+      quit("Failed to read --peaks.");
+    }
+    params->peaks_n = bed_n(params->peaks);
+    bed_unify(params->peaks);
   }
 
   if (params->fhist_max == 0) {
@@ -1458,11 +1463,11 @@ static int quaqc_main(int argc, char *argv[]) {
   }
   free(tind);
 
+  if (params->quant_f != NULL) write_quant_table(params, quant);
+
   if (params->json != NULL && finish_json()) {
     quit("Failed to finish generation of JSON file.");
   }
-
-  if (params->quant) write_quant_table(params, quant);
 
   if (params->v) {
     time_t time_end = time(NULL);

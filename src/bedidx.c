@@ -233,6 +233,20 @@ static int bed_minoff(const bed_reglist_t *p, hts_pos_t beg) {
     return min_off;
 }
 
+static int64_t bed_overlap_ret_idx_core(const bed_reglist_t *p, hts_pos_t beg, hts_pos_t end)
+{
+    int i, min_off;
+    if (p->n == 0) return 0;
+    min_off = bed_minoff(p, beg);
+
+    for (i = min_off; i < p->n; ++i) {
+        if (p->a[i].beg >= end) break; // out of range; no need to proceed
+        if (p->a[i].end > beg && p->a[i].beg < end)
+            return p->a[i].namei; // find the overlap; return
+    }
+    return -1;
+}
+
 static int bed_overlap_core(const bed_reglist_t *p, hts_pos_t beg, hts_pos_t end)
 {
     int i, min_off;
@@ -291,6 +305,16 @@ int bed_n_in_chr(void *_h, const char *chr) {
     if (k == kh_end(h)) return 0;
     bed_reglist_t *p = &kh_val(h, k);
     return p->n;
+}
+
+int64_t bed_overlap_ret_idx(const void *_h, const char *chr, hts_pos_t beg, hts_pos_t end)
+{
+    const reghash_t *h = (const reghash_t*)_h;
+    khint_t k;
+    if (!h) return 0;
+    k = kh_get(reg, h, chr);
+    if (k == kh_end(h)) return 0;
+    return bed_overlap_ret_idx_core(&kh_val(h, k), beg, end);
 }
 
 int bed_overlap(const void *_h, const char *chr, hts_pos_t beg, hts_pos_t end)
