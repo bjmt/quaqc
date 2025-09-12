@@ -1,4 +1,4 @@
-% QUAQC(1) Version 1.4a | quaqc User Manual
+% QUAQC(1) Version 1.5 | quaqc User Manual
 
 # NAME
 
@@ -360,7 +360,7 @@ accomplished using `samtools` in the following manner during alignment:
 
 **\--bed-tn5**
 :   Shift the 5-prime alignment coordinates of each read when generating
-    then BED file to acount for the transposase offset (+4/-5), as per the
+    then BED file to account for the transposase offset (+4/-5), as per the
     `--tss-tn5` option.
 
 **\--bed-dir**
@@ -371,6 +371,34 @@ accomplished using `samtools` in the following manner during alignment:
 :   As per the `--keep-ext` option, change the default BED filename
     extension. The BED files will always be Gzipped, so not including ".gz"
     will still lead to a compressed file.
+
+**\--quant**=*FILE*
+:   Output a TSV file of counts of reads in the provided peaks (`--peaks`) BED
+    file. Ending the filename with ".gz" will cause quaqc to gzip the file.
+    The first column in the file are peak names. If these are lacking from the
+    peaks BED file, or if the name field has the empty placeholder ".", then
+    the peak coordinates in the format "chromosome:start-end" are used instead.
+    After this, the following columns contain the counts for the samples, in
+    the order that they are provided to quaqc. Each count comes from a passing
+    nuclear read which at least partially overlaps a range in the peaks BED.
+
+**\--quant-ins**
+:   Instead of simply counting a read if it partially overlaps anywhere in
+    its range, a read only counts as overlapping if its 5-prime coordinates
+    (the insertion sites) are within a peak range.
+
+**\--quant-tn5**
+:   Shift the 5-prime alignment coordinates of each read to account for
+    the transposase offset (+4/-5), as per the `--tss-tn5` option,
+    before it is used to check for an overlap with a peak range. This option
+    is applied before `--quant-ins`, if that is used.
+
+**\--quant-pn**
+:   By default, the full filename and any directories included in the provided
+    sample paths are printed in the output counts TSV. When this option is set,
+    any directory names in the provided path are removed and if the file ends
+    with ".bam" the extension is stripped, providing a prettier sample name
+    in the output file.
 
 **\--tn5-fwd**=*INT*
 :   Alter the default value used to shift the 5-prime ends of reads when either
