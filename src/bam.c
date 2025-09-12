@@ -592,7 +592,7 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params, quant_t
   int itr_ret, at, gc, n, nucl_n = 0, pltd_n = 0, mito_n = 0, tss_offset;
   int64_t proc_n = 0, quant_peak_index;
   hts_pos_t qend, qlen, flen, last_start, last_end, tss_qbeg, tss_qend, bg_qbeg0, bg_qbeg, bg_qend;
-  hts_pos_t quant_beg, quant_end;
+  hts_pos_t quant_beg, quant_end, bed_qbeg, bed_qend;
   stats_t *stats = results->seqs;
   for (int64_t i = 0; i < hdr->n_targets; i++) {
     itr = sam_itr_querys(bam->idx, hdr, hdr->target_name[i]);
@@ -759,10 +759,17 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params, quant_t
                 if (params->bed_ins) {
                   add_insertion_to_bed(bed_f, bed, max(0, aln->core.pos - bed_tn5_fwd), is_pos_strand(aln) ? max(0, min(aln->core.pos + bed_tn5_fwd, hdr->target_len[i])) : max(0, min((qend - 1) - bed_tn5_rev, hdr->target_len[i])), hdr->target_name[i]);
                 } else {
-                  if ((aln->core.flag & BAM_FPAIRED) != 0) {
-                    gzprintf(bed_f, "%s\t%lld\t%lld\t%s/%c\t%d\t%c\n", hdr->target_name[i], aln->core.pos + bed_tn5_fwd, qend - bed_tn5_rev, bam_get_qname(aln), is_frag_r1(aln) ? '1' : '2', aln->core.qual, is_pos_strand(aln) ? '+' : '-');
+                  bed_qbeg = aln->core.pos;
+                  bed_qend = qend;
+                  if (is_pos_strand(aln)) {
+                    bed_qbeg = max(0, bed_qbeg + bed_tn5_fwd);
                   } else {
-                    gzprintf(bed_f, "%s\t%lld\t%lld\t%s\t%d\t%c\n", hdr->target_name[i], aln->core.pos + bed_tn5_fwd, qend - bed_tn5_rev, bam_get_qname(aln), aln->core.qual, is_pos_strand(aln) ? '+' : '-');
+                    bed_qend = max(0, bed_qend - bed_tn5_rev);
+                  }
+                  if ((aln->core.flag & BAM_FPAIRED) != 0) {
+                    gzprintf(bed_f, "%s\t%lld\t%lld\t%s/%c\t%d\t%c\n", hdr->target_name[i], bed_qbeg, bed_qend, bam_get_qname(aln), is_frag_r1(aln) ? '1' : '2', aln->core.qual, is_pos_strand(aln) ? '+' : '-');
+                  } else {
+                    gzprintf(bed_f, "%s\t%lld\t%lld\t%s\t%d\t%c\n", hdr->target_name[i], bed_qbeg, bed_qend, bam_get_qname(aln), aln->core.qual, is_pos_strand(aln) ? '+' : '-');
                   }
                 }
               }
