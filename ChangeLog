@@ -1,3 +1,8 @@
+2025-09-12  Benjamin Jean-Marie Tremblay  <benjmtremblay@gmail.com>
+
+* Added --quant & friends
+* --bed-tn5 option: now only adjusts 5-prime ends at the fragment level
+
 2025-09-11  Benjamin Jean-Marie Tremblay  <benjmtremblay@gmail.com>
 
 * Fixed a bug in BED file handling of strands when handling unsorted files
