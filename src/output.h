@@ -39,4 +39,6 @@ gzFile init_bedGraph_f(const char *fn, const params_t *params);
 
 gzFile init_bed_f(const char *fn, const params_t *params);
 
+void write_quant_table(const params_t *params, const quant_t *quant);
+
 #endif

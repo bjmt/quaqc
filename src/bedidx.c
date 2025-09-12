@@ -46,6 +46,9 @@ DEALINGS IN THE SOFTWARE.  */
 #include <limits.h>
 #include "zlib.h"
 #include "bedidx.h"
+#include "quaqc.h"
+
+#define BED_NAME_SIZE 1024
 
 #include "htslib/ksort.h"
 
@@ -55,6 +58,7 @@ KSTREAM_INIT(gzFile, gzread, 8192)
 typedef struct {
     hts_pos_t beg, end;
     char strand;
+    int64_t namei;
 } hts_pair_pos_strand_t;
 
 static inline int lt_pair_pos(hts_pair_pos_strand_t a, hts_pair_pos_strand_t b) {
@@ -158,6 +162,7 @@ static void bed_index(void *_h)
     }
 }
 
+/*
 static void bed_index_without_sort(void *_h)
 {
     reghash_t *h = (reghash_t*)_h;
@@ -170,6 +175,7 @@ static void bed_index_without_sort(void *_h)
         }
     }
 }
+*/
 
 static inline void coord_resize(hts_pos_t *s1, hts_pos_t *s2, const hts_pos_t up, const hts_pos_t down, const char s) {
 #if 0
@@ -463,7 +469,7 @@ hts_pos_t bed_total(void *reg_hash, const char *chr, const hts_pos_t size) {
    The VCF specification is at https://github.com/samtools/hts-specs
  */
 
-void *bed_read(const char *fn)
+void *bed_read(const char *fn, quant_t *quant)
 {
     reghash_t *h = kh_init(reg);
     gzFile fp;
@@ -479,9 +485,11 @@ void *bed_read(const char *fn)
     ks = ks_init(fp);
     if (NULL == ks) goto fail;  // In case ks_init ever gets error checking...
     int ks_len;
+    int64_t name_index = 0;
     while ((ks_len = ks_getuntil(ks, KS_SEP_LINE, &str, &dret)) >= 0) { // read a line
         char *ref = str.s, *ref_end;
         char strand;
+        char name[BED_NAME_SIZE];
         uint64_t beg = 0, end = 0;
         int num = 0;
         khint_t k;
@@ -497,9 +505,9 @@ void *bed_read(const char *fn)
         ref_end = ref;   // look for the end of the reference name
         while (*ref_end && !isspace(*ref_end)) ref_end++;
         if ('\0' != *ref_end) {
-            *ref_end = '\0';  // terminate ref and look for start, end
-            num = sscanf(ref_end + 1, "%"SCNu64" %"SCNu64" %*s %*s %c",
-                         &beg, &end, &strand);
+            *ref_end = '\0';  // terminate ref and look for start, end, name, score, strand
+            num = sscanf(ref_end + 1, "%"SCNu64" %"SCNu64" %s %*s %c",
+                         &beg, &end, name, &strand);
         }
         if (1 == num) {  // VCF-style format
             end = beg--; // Counts from 1 instead of 0 for BED files
@@ -524,9 +532,24 @@ void *bed_read(const char *fn)
             errno = 0; // Prevent caller from printing misleading error messages
             goto fail;
         }
-        if (num < 3) strand = '.';
-        /* if (num < 3 || strand == '.') strand = '+'; */
-        /* if (strand == '.') strand = '+'; */
+        if (num < 4) strand = '.';
+        if (quant != NULL && (num < 3 || strcmp(name, ".") == 0)) {
+            int sret = snprintf(name, BED_NAME_SIZE, "%s:%llu-%llu", ref, beg, end);
+            if (sret < 0 || sret > BED_NAME_SIZE) {
+                fprintf(stderr,
+                        "[E::bed_read] Failed to store range name in \"%s\" at line %u\n",
+                        fn, line);
+                errno = 0;
+                goto fail;
+            }
+        }
+
+        if (quant != NULL) {
+            if (quant->peak_n == quant->peak_m) {
+                realloc_quant_names(quant);
+            }
+            quant->peak_names[quant->peak_n++] = strdup(name);
+        }
 
         // Put reg in the hash table if not already there
         k = kh_get(reg, h, ref);
@@ -547,10 +570,14 @@ void *bed_read(const char *fn)
         if (p->n == p->m) {
             p->m = p->m ? p->m<<1 : 4;
             hts_pair_pos_strand_t *new_a = realloc(p->a, p->m * sizeof(p->a[0]));
-            if (NULL == new_a) goto fail;
+            if (NULL == new_a) {
+                fprintf(stderr, "[E::bed_read] Out of memory");
+                goto fail;
+            }
             p->a = new_a;
         }
         p->a[p->n].strand = strand;
+        p->a[p->n].namei = name_index++;
         p->a[p->n].beg = beg;
         p->a[p->n++].end = end;
     }

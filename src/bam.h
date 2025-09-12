@@ -24,6 +24,6 @@
 #include "htslib/sam.h"
 #include "quaqc.h"
 
-void quaqc_run(htsFile *bam, results_t *results, const params_t *params);
+void quaqc_run(htsFile *bam, results_t *results, const params_t *params, quant_t *quant, const int file_index);
 
 #endif

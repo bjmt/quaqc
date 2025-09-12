@@ -176,6 +176,63 @@ gzFile init_bed_f(const char *fn, const params_t *params) {
   return bed;
 }
 
+// --quant ---------------------------------------------------------------------
+
+void write_quant_table(const params_t *params, const quant_t *quant) {
+  bool quant_gz = false;
+  union quantf_t {
+    FILE   *f;
+    gzFile gz;
+  } quantf;
+  if (strlen(params->quant_f) > 2 && strcmp(params->quant_f + (strlen(params->quant_f) - 3), ".gz") == 0) {
+    quant_gz = true;
+  }
+  if (quant_gz) {
+    quantf.gz = gzopen(params->quant_f, "wb");
+  } else {
+    quantf.f = fopen(params->quant_f, "w");
+  }
+  if (quant_gz && quantf.gz == NULL) {
+    int e;
+    quit("Cannot create file '%s': %s", params->quant_f, gzerror(quantf.gz, &e));
+  } else if (!quant_gz && quantf.f == NULL) {
+    quit("Cannot create file '%s': %s", params->quant_f, strerror(errno));
+  }
+  if (quant_gz) {
+    gzputs(quantf.gz, "Peak");
+    for (int64_t i = 0; i < quant->file_n; i++) {
+      gzprintf(quantf.gz, "\t%s", quant->file_names[i]);
+    }
+    gzputc(quantf.gz, '\n');
+    for (int64_t i = 0; i < quant->peak_n; i++) {
+      gzprintf(quantf.gz, "%s", quant->peak_names[i]);
+      for (int64_t j = 0; j < quant->file_n; j++) {
+        gzprintf(quantf.gz, "\t%lld", quant->counts[j][i]);
+      }
+      gzputc(quantf.gz, '\n');
+    }
+  } else {
+    fputs("Peak", quantf.f);
+    for (int64_t i = 0; i < quant->file_n; i++) {
+      fprintf(quantf.f, "\t%s", quant->file_names[i]);
+    }
+    fputc('\n', quantf.f);
+    for (int64_t i = 0; i < quant->peak_n; i++) {
+      fprintf(quantf.f, "%s", quant->peak_names[i]);
+      for (int64_t j = 0; j < quant->file_n; j++) {
+        fprintf(quantf.f, "\t%lld", quant->counts[j][i]);
+      }
+      fputc('\n', quantf.f);
+    }
+  }
+  if (quant_gz && gzclose(quantf.gz) != Z_OK) {
+    int e;
+    warn("Failed to close quantification file: %s", gzerror(quantf.gz, &e));
+  } else if (!quant_gz && fclose(quantf.f) != 0) {
+    warn("Failed to close quantification file: %s", strerror(errno));
+  }
+}
+
 // --json ----------------------------------------------------------------------
 
 static bool use_gz = false;

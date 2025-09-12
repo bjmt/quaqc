@@ -102,6 +102,8 @@ enum opts_enum {
   RG_NAMES      = 'r',
   RG_LIST       = 'R',
   VERSION       = 'V',
+  BED           = 'e',
+  QUANT         = 'Q',
 
   MIN_QLEN      = 1000,
   MIN_FLEN,
@@ -128,16 +130,18 @@ enum opts_enum {
   BEDGRAPH_QLEN,
   BEDGRAPH_DIR,
   BEDGRAPH_EXT,
-  BED,
   BED_INS,
   BED_TN5,
   BED_DIR,
   BED_EXT,
+  QUANT_INS,
+  QUANT_TN5,
+  QUANT_PN,
   TN5_FWD,
   TN5_REV
 };
 
-static const char *opts_short = "m:p:n:t:b:2q:o:t:Sk:K:j:BfhcvJ:0P:T:NDO:AdLi:r:R:V";
+static const char *opts_short = "m:p:n:t:b:2q:o:t:Sk:K:j:BfhcvJ:0P:T:NDO:AdLi:r:R:VeQ";
 
 static struct option opts_long[] = {
   { "mitochondria",  required_argument, 0, MITOCHONDRIA  },
@@ -190,6 +194,10 @@ static struct option opts_long[] = {
   { "bed-tn5",       no_argument,       0, BED_TN5       },
   { "bed-dir",       required_argument, 0, BED_DIR       },
   { "bed-ext",       required_argument, 0, BED_EXT       },
+  { "quant",         required_argument, 0, QUANT         },
+  { "quant-ins",     no_argument,       0, QUANT_INS     },
+  { "quant-tn5",     no_argument,       0, QUANT_TN5     },
+  { "quant-pn",      no_argument,       0, QUANT_PN      },
   { "tn5-fwd",       required_argument, 0, TN5_FWD       },
   { "tn5-rev",       required_argument, 0, TN5_REV       },
   { "omit-gc",       no_argument,       0, OMIT_GC       },
@@ -283,13 +291,19 @@ static void help(void) {
     "     --bedGraph-ext   STR   Filename extension for bedGraphs. [%s]\n"
     "\n"
     "BED options:\n"
-    "     --bed                  Output a gzipped BED6 file of passing reads.\n"
+    " -e, --bed                  Output a gzipped BED6 file of passing reads.\n"
     "     --bed-ins              Print 5-prime insertions in BED3 format instead.\n"
     "     --bed-tn5              Adjust coordinates to account for Tn5 shift (+%d/-%d).\n"
     "     --bed-dir        DIR   Directory to output BED files if not that of input.\n"
     "     --bed-ext        STR   Filename extension for BED files. [%s]\n"
     "\n"
-    "Customize the --tss-tn5, --bedGraph-tn5, --bed-tn5 adjustments:\n"
+    "Quantification options:\n"
+    " -Q, --quant          FILE  Output quantification of reads in non-overlapping peaks.\n"
+    "     --quant-ins            Quantify based on 5-prime insertion coordinates.\n"
+    "     --quant-tn5            Adjust coordinates to account for Tn5 shift (+%d/-%d).\n"
+    "     --quant-pn             Use pretty names instead of full file paths.\n"
+    "\n"
+    "Modify the adjustments for the various --***-tn5 options:\n"
     "     --tn5-fwd        INT   Change the global Tn5 shift for forward reads. [%d]\n"
     "     --tn5-rev        INT   Change the global Tn5 shift for reverse reads. [%d]\n"
     "\n"
@@ -307,6 +321,7 @@ static void help(void) {
     , DEFAULT_TSS_SIZE, DEFAULT_TSS_QLEN, TN5_FOWARD_SHIFT, TN5_REVERSE_SHIFT
     , DEFAULT_OUT_EXT, DEFAULT_BAM_EXT, DEFAULT_BG_QLEN, TN5_FOWARD_SHIFT, TN5_REVERSE_SHIFT, DEFAULT_BG_EXT
     , TN5_FOWARD_SHIFT, TN5_REVERSE_SHIFT, DEFAULT_BED_EXT
+    , TN5_FOWARD_SHIFT, TN5_REVERSE_SHIFT
     , TN5_FOWARD_SHIFT, TN5_REVERSE_SHIFT
     , DEFAULT_THREADS
   );
@@ -520,6 +535,51 @@ static void destroy_params(params_t *params) {
   free(params);
 }
 
+// quant_t ----------------------------------------------------------------------
+
+static quant_t *quant = NULL;
+
+static quant_t *init_quant(const int64_t nfiles) {
+  quant_t *quant = alloc(sizeof(quant_t));
+  quant->file_n = nfiles;
+  quant->file_names = alloc(sizeof(char *) * nfiles);
+  quant->counts = alloc(sizeof(int64_t *) * nfiles);
+  quant->peak_m = DEFAULT_QUANT_INIT_ALLOC;
+  quant->peak_names = alloc(sizeof(char *) * quant->peak_m);
+  return quant;
+}
+
+void realloc_quant_names(quant_t *quant) {
+  quant->peak_m *= 2;
+  char **tmp_peak_names = realloc(quant->peak_names, quant->peak_m * sizeof(char *));
+  if (tmp_peak_names == NULL) {
+    quit("[E::realloc_quant_names] Out of memory (requested %llu B).\n", quant->peak_m * sizeof(char *));
+  }
+  quant->peak_names = tmp_peak_names;
+}
+
+void alloc_quant_counts(quant_t *quant) {
+  for (int64_t i = 0; i < quant->file_n; i++) {
+    quant->counts[i] = alloc(sizeof(int64_t) * quant->peak_n);
+  }
+}
+
+static void destroy_quant(quant_t *quant) {
+  if (quant != NULL) {
+    for (int64_t i = 0; i < quant->peak_n; i++) {
+      free(quant->peak_names[i]);
+    }
+    for (int64_t i = 0; i < quant->file_n; i++) {
+      free(quant->counts[i]);
+      free(quant->file_names[i]);
+    }
+    free(quant->peak_names);
+    free(quant->counts);
+    free(quant->file_names);
+  }
+  free(quant);
+}
+
 // globals_t ----------------------------------------------------------------------
 
 static globals_t *init_globals(const params_t *params) {
@@ -626,7 +686,7 @@ static void *quaqc_thread_handler(void *tind) {
         goto loop_end;
       }
 
-      quaqc_run(bam, results[threads_ind[i]], params);
+      quaqc_run(bam, results[threads_ind[i]], params, quant, i);
 
       if (!results[threads_ind[i]]->success) {
         error(params->qerr, "Failed to run QC on file '%s'.", sample);
@@ -714,7 +774,7 @@ static int quaqc_main(int argc, char *argv[]) {
           quit("--peaks has already been set.");
         }
         peak_bed = optarg;
-        params->peaks = bed_read(optarg);
+        params->peaks = bed_read(optarg, NULL);
         if (params->peaks == NULL) {
           quit("Failed to read --peaks.");
         }
@@ -725,7 +785,7 @@ static int quaqc_main(int argc, char *argv[]) {
         if (params->tss != NULL) {
           quit("--tss has already been set.");
         }
-        params->tss = bed_read(optarg);
+        params->tss = bed_read(optarg, NULL);
         if (params->tss == NULL) {
           quit("Failed to read --tss.");
         }
@@ -747,7 +807,7 @@ static int quaqc_main(int argc, char *argv[]) {
         if (params->tlist != NULL) {
           quit("--target-list has already been set.");
         }
-        params->tlist = bed_read(optarg);
+        params->tlist = bed_read(optarg, NULL);
         if (params->tlist == NULL) {
           quit("Failed to read --target-list.");
         }
@@ -758,7 +818,7 @@ static int quaqc_main(int argc, char *argv[]) {
         if (params->blist != NULL) {
           quit("--blacklist has already been set.");
         }
-        params->blist = bed_read(optarg);
+        params->blist = bed_read(optarg, NULL);
         if (params->blist == NULL) {
           quit("Failed to read --blacklist.");
         }
@@ -1113,6 +1173,34 @@ static int quaqc_main(int argc, char *argv[]) {
           quit("--bed-ext cannot be an empty string.");
         }
         break;
+      case QUANT:
+        if (params->quant) {
+          quit("--quant has already been set.");
+        }
+        params->quant = true;
+        params->quant_f = optarg;
+        if (strlen(params->quant_f) < 1) {
+          quit("--quant cannot be an empty string.");
+        }
+        break;
+      case QUANT_INS:
+        if (params->quant_ins) {
+          quit("--quant-ins has already been set.");
+        }
+        params->quant_ins = true;
+        break;
+      case QUANT_TN5:
+        if (params->quant_tn5) {
+          quit("--quant-tn5 has already been set.");
+        }
+        params->quant_tn5 = true;
+        break;
+      case QUANT_PN:
+        if (params->quant_pn) {
+          quit("--quant-pn has already been set.");
+        }
+        params->quant_pn = true;
+        break;
       case TN5_FWD:
         if (params->tn5_fwd != TN5_FOWARD_SHIFT) {
           quit("--tn5-fwd has already been set.");
@@ -1188,6 +1276,25 @@ static int quaqc_main(int argc, char *argv[]) {
         fputs("Encountered fatal error, exiting. Run quaqc -h for usage.\n", stderr);
         exit(EXIT_FAILURE);
     }
+  }
+
+  if (optind == argc) quit("Missing input BAMs.");
+  params->flag_n = optind - 1;
+  sample_count = argc - optind;
+
+  if (params->quant) {
+    if (peak_bed == NULL) {
+      quit("--quant requires --peaks to be set.");
+    }
+    quant = init_quant(sample_count);
+    for (int i = 0; i < sample_count; i++) {
+      // TODO: handle --quant-pn
+      quant->file_names[i] = strdup(argv[optind + i]);
+    }
+    // TODO: This is redundant, since the --peaks BED is now being 
+    //       read twice.
+    params->quant = bed_read(peak_bed, quant);
+    alloc_quant_counts(quant);
   }
 
   if (params->fhist_max == 0) {
@@ -1266,7 +1373,7 @@ static int quaqc_main(int argc, char *argv[]) {
     if (peak_bed == NULL) {
       quit("--peaks must be set when using --chip.");
     }
-    params->tss = bed_read(peak_bed);
+    params->tss = bed_read(peak_bed, NULL);
     if (params->tss == NULL) {
       quit("Failed to read --peaks.");
     }
@@ -1317,14 +1424,10 @@ static int quaqc_main(int argc, char *argv[]) {
 
   time_t time_start = time(NULL);
 
-  if (optind == argc) quit("Missing input BAMs.");
-  params->flag_n = optind - 1;
-
   if (params->json != NULL && init_json(params)) {
     quit("Failed to create JSON file.");
   }
 
-  sample_count = argc - optind;
   if (params->threads > sample_count) params->threads = sample_count;
   threads = alloc(sizeof(pthread_t) * params->threads);
   threads_ind = alloc(sizeof(int) * sample_count);
@@ -1359,6 +1462,8 @@ static int quaqc_main(int argc, char *argv[]) {
     quit("Failed to finish generation of JSON file.");
   }
 
+  if (params->quant) write_quant_table(params, quant);
+
   if (params->v) {
     time_t time_end = time(NULL);
     fputc('\n', stderr);
@@ -1383,6 +1488,7 @@ static int quaqc_main(int argc, char *argv[]) {
   free(threads);
   free(threads_ind);
   free(argv_ind);
+  destroy_quant(quant);
 
   return EXIT_SUCCESS;
 

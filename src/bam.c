@@ -501,7 +501,7 @@ static stats_t *merge_all_stats_by_type(stats_t *seqs, const int n, enum seq_typ
 
 // quaqc_run ----------------------------------------------------------------------
 
-void quaqc_run(htsFile *bam, results_t *results, const params_t *params) {
+void quaqc_run(htsFile *bam, results_t *results, const params_t *params, quant_t *quant, const int file_index) {
 
   results->time_start = time(NULL);
   time_t time_start = time(NULL);

@@ -36,13 +36,14 @@ DEALINGS IN THE SOFTWARE.  */
 #ifndef BEDIDX_H
 #define BEDIDX_H
 
+#include "quaqc.h"
 #include "htslib/hts.h"
 
 #define LIDX_SHIFT 13
 #define ALL 0
 #define FILTERED 1
 
-void *bed_read(const char *fn);
+void *bed_read(const char *fn, quant_t *quant);
 void bed_destroy(void *_h);
 void bed_unify(void *reg_hash);
 void bed_resize(void *_h, const hts_pos_t up, const hts_pos_t down);

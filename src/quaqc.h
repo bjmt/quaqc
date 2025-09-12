@@ -105,7 +105,7 @@ enum seq_type {
 typedef struct params_t {
   char **argv; int argc, flag_n;
   void *mito, *pltd, *tseqs;
-  char *title, *out_dir, *out_ext, *keep_dir, *keep_ext, *json;
+  char *title, *out_dir, *out_ext, *keep_dir, *keep_ext, *json, *quant_f;
   char *bg_ext, *bg_dir, *rg_tag, *bed_ext, *bed_dir;
   void *peaks, *tss, *blist, *tlist, *trg;
   int peaks_n, tss_n, blist_n, tlist_n, trg_n, tn5_fwd, tn5_rev;
@@ -115,7 +115,7 @@ typedef struct params_t {
   bool use_2nd, use_chi, use_nomate, use_dups, use_all;
   bool lenient, strict, nfr, nbr, use_dovetail;
   bool no_se, no_out, save, bedGraph, bg_tn5, tn5_shift, omit_gc, omit_depth;
-  bool bed, bed_ins, bed_tn5;
+  bool bed, bed_ins, bed_tn5, quant, quant_ins, quant_tn5, quant_pn;
   bool fast, qerr, v, vv, footprint, low_mem, chip;
 } params_t;
 
@@ -173,5 +173,19 @@ typedef struct results_t {
   stats_t *mito;
   time_t time_start, time_end;
 } results_t;
+
+// Quantification (v1.5) -------------------------------------------------------
+
+typedef struct quant_t {
+  int64_t file_n, peak_n, peak_m;
+  char **file_names;
+  char **peak_names;
+  int64_t **counts;
+} quant_t;
+
+#define DEFAULT_QUANT_INIT_ALLOC 1024
+
+void realloc_quant_names(quant_t *quant);
+void alloc_quant_counts(quant_t *quant);
 
 #endif
