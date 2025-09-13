@@ -96,6 +96,26 @@ flag to tell quaqc to only output the 5-prime coordinates of the reads with
 no additional BED fields, saving a decent amount of disk space in a way
 which will not affect MACS2/3.
 
+### Quantifying reads overlapping peaks from a BED file
+
+After finding peaks, the next step is generally to quantify the number of
+reads present within the peaks in each sample. quaqc
+offers the ability to do this via the `--quant` option. For example, in
+a scenario where the current directory contains several BAM files:
+
+```sh
+quaqc -0 --quant counts.tsv --quant-ins --quant-tn5 *.bam
+```
+
+Here, the `--quant` option is used to tell quaqc where to output the counts
+to (in TSV format). A couple of additional flags are set: `--quant-ins` tells
+quaqc to only consider the Tn5 insertion coordinates for each read when
+looking for overlaps instead of the entire read, and `--quant-tn5` will
+tell quaqc to adjust the read coordinates to account for the Tn5
+transposition offset when looking for overlapping peaks. Since all read
+filters are still applied during read counting, this removes the need to
+create a second filtered BAM before quantification.
+
 ### Creating bedGraph files centered around the 5-prime ends of reads
 
 Typically read pileups of ATAC-seq data (such as bedGraph files) are made
@@ -105,7 +125,7 @@ creating a bedGraph file. Both of these steps can be performed simultaneously
 using quaqc:
 
 ```sh
-quaqc --bedGraph --bedGraph-qlen 150 Sample.bam
+quaqc -0 --bedGraph --bedGraph-qlen 150 Sample.bam
 ```
 
 In this example, a bedGraph file is created where each read is resized

@@ -1,3 +1,13 @@
+CHANGES IN VERSION 1.5 (2025-09-12)
+-----------------------------------
+
+* Added read quantification (--quant). This outputs a TSV of read
+  counts, with peaks as rows and samples as columns. The peaks can
+  be provided via --peaks. Quantification can be at the insertion
+  level via --quant-ins.
+
+* Fixed a couple of bugs with --bed options.
+
 CHANGES IN VERSION 1.4 (2025-08-29)
 -----------------------------------
 
