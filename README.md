@@ -104,7 +104,7 @@ offers the ability to do this via the `--quant` option. For example, in
 a scenario where the current directory contains several BAM files:
 
 ```sh
-quaqc -0 --quant counts.tsv --quant-ins --quant-tn5 *.bam
+quaqc -0 --peaks peaks.bed --quant counts.tsv --quant-ins --quant-tn5 *.bam
 ```
 
 Here, the `--quant` option is used to tell quaqc where to output the counts
