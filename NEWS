@@ -1,3 +1,49 @@
+CHANGES IN VERSION 1.6 (2026-05-02)
+-----------------------------------
+
+* Fixed a bug where --rg-tag silently enabled --use-secondary due to a
+  missing break in the option parser.
+
+* Fixed a double-free crash when --bedGraph and --bed/--bed-ins were used
+  together.
+
+* Fixed the secondary alignments percentage in the text report, which was
+  incorrectly computed from single-end read counts.
+
+* Fixed the JSON depth histogram "range" field, which incorrectly reported
+  the fragment histogram maximum instead of the depth histogram maximum.
+
+* Fixed the JSON "addn_stats_are_suspect" flag for fragment sizes, which
+  was inverted (reported suspect when the histogram tail was empty).
+
+* Fixed genomic coverage undercounting when one read is nested inside
+  another (last_end now takes the max of the two endpoints).
+
+* Fixed --bed-ins: the Tn5 forward shift was subtracted from the start
+  coordinate instead of added, placing insertions 8 bp upstream.
+
+* Fixed --bed-ins: the first insertion record was missing from output due
+  to an off-by-one in the initial buffer endpoint.
+
+* Fixed 1st/99th percentile calculations to use count-based CDF (percentile
+  of reads/positions) rather than mass-weighted CDF (percentile of bases).
+  Reported values for qlen, flen, depth, GC, and MAPQ will change.
+
+* Fixed avg_mapq for mitochondrial/plastid chromosomes: MAPQ=255 reads
+  (mapper-reported unavailable) are now excluded from the denominator as
+  well as the numerator.
+
+* Fixed invalid JSON output when filenames, titles, or RG tags contained
+  backslashes or control characters.
+
+* Fixed --save crashing when the output BAM file could not be created.
+
+* Fixed a stack buffer overflow in BED name parsing (very long name fields).
+
+* Fixed CRAM extension stripping in output filenames (.cram was unreachable).
+
+* Fixed TSS pileup range labels in JSON for even --tss-size values.
+
 CHANGES IN VERSION 1.5 (2025-09-12)
 -----------------------------------
 

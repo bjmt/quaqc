@@ -79,13 +79,18 @@ static char *make_new_fn(const char *old_fn, char *new_dir, char *new_ext, const
   if (strip) {
     int bnlen = strlen(base_fn);
     char *ext_lwr = NULL;
-    if (bnlen > 3) {
+    if (bnlen > 4) {
+      ext_lwr = lower(base_fn + bnlen - 5);
+      if (strcmp(ext_lwr, ".cram") == 0) {
+        base_fn[bnlen - 5] = '\0';
+      } else {
+        free(ext_lwr);
+        ext_lwr = NULL;
+      }
+    }
+    if (ext_lwr == NULL && bnlen > 3) {
       ext_lwr = lower(base_fn + bnlen - 4);
       if (strcmp(ext_lwr, ".bam") == 0) base_fn[bnlen - 4] = '\0';
-    } else if (bnlen > 4) {
-      ext_lwr = lower(base_fn + bnlen - 5);
-      if (strcmp(ext_lwr, ".cram") == 0) base_fn[bnlen - 5] = '\0';
-      base_fn[bnlen - 5] = '\0';
     }
     if (ext_lwr != NULL) free(ext_lwr);
   }
@@ -118,6 +123,11 @@ samFile *init_filtered_bam(bam_hdr_t *hdr, const char *fn, const params_t *param
     return NULL;
   }
   samFile *new_bam = sam_open(new_fn, "wb");
+  if (new_bam == NULL) {
+    error(params->qerr, "Cannot create BAM file '%s': %s", new_fn, strerror(errno));
+    free(new_fn);
+    return NULL;
+  }
   char *CMD = paste_strings(params->argv, params->argc);
   if (sam_hdr_add_pg(hdr, "quaqc", "VN", QUAQC_VERSION, "CL", CMD, NULL) == -1) {
     goto init_filtered_bam_fail;
@@ -147,8 +157,7 @@ gzFile init_bedGraph_f(const char *fn, const params_t *params) {
   }
   gzFile bg = gzopen(bg_fn, "wb");
   if (bg == NULL) {
-    int e;
-    error(params->qerr, "Cannot create bedGraph file '%s': %s", bg_fn, gzerror(bg, &e));
+    error(params->qerr, "Cannot create bedGraph file '%s': %s", bg_fn, strerror(errno));
     free(bg_fn);
     return NULL;
   }
@@ -167,8 +176,7 @@ gzFile init_bed_f(const char *fn, const params_t *params) {
   }
   gzFile bed = gzopen(bed_fn, "wb");
   if (bed == NULL) {
-    int e;
-    error(params->qerr, "Cannot create bed file '%s': %s", bed_fn, gzerror(bed, &e));
+    error(params->qerr, "Cannot create bed file '%s': %s", bed_fn, strerror(errno));
     free(bed_fn);
     return NULL;
   }
@@ -193,8 +201,7 @@ void write_quant_table(const params_t *params, const quant_t *quant) {
     quantf.f = fopen(params->quant_f, "w");
   }
   if (quant_gz && quantf.gz == NULL) {
-    int e;
-    quit("Cannot create file '%s': %s", params->quant_f, gzerror(quantf.gz, &e));
+    quit("Cannot create file '%s': %s", params->quant_f, strerror(errno));
   } else if (!quant_gz && quantf.f == NULL) {
     quit("Cannot create file '%s': %s", params->quant_f, strerror(errno));
   }
@@ -207,7 +214,7 @@ void write_quant_table(const params_t *params, const quant_t *quant) {
     for (int64_t i = 0; i < quant->peak_n; i++) {
       gzprintf(quantf.gz, "%s", quant->peak_names[i]);
       for (int64_t j = 0; j < quant->file_n; j++) {
-        gzprintf(quantf.gz, "\t%lld", quant->counts[j][i]);
+        gzprintf(quantf.gz, "\t%"PRId64, quant->counts[j][i]);
       }
       gzputc(quantf.gz, '\n');
     }
@@ -220,7 +227,7 @@ void write_quant_table(const params_t *params, const quant_t *quant) {
     for (int64_t i = 0; i < quant->peak_n; i++) {
       fprintf(quantf.f, "%s", quant->peak_names[i]);
       for (int64_t j = 0; j < quant->file_n; j++) {
-        fprintf(quantf.f, "\t%lld", quant->counts[j][i]);
+        fprintf(quantf.f, "\t%"PRId64, quant->counts[j][i]);
       }
       fputc('\n', quantf.f);
     }
@@ -234,6 +241,21 @@ void write_quant_table(const params_t *params, const quant_t *quant) {
 }
 
 // --json ----------------------------------------------------------------------
+
+// JSON writes are mutex-serialised in quaqc.c, so a single static buffer is safe.
+static const char *json_esc(const char *s) {
+  static char buf[16384];
+  if (s == NULL) { buf[0] = '\0'; return buf; }
+  size_t j = 0;
+  for (size_t i = 0; s[i] && j < sizeof(buf) - 3; i++) {
+    unsigned char c = (unsigned char) s[i];
+    if (c < 0x20) { buf[j++] = '?'; continue; }
+    if (c == '"' || c == '\\') buf[j++] = '\\';
+    buf[j++] = s[i];
+  }
+  buf[j] = '\0';
+  return buf;
+}
 
 static bool use_gz = false;
 static union fjson_t {
@@ -277,8 +299,7 @@ int init_json(const params_t *params) {
     fjson.f = fopen(params->json, "w");
   }
   if (use_gz && fjson.gz == NULL) {
-    int e;
-    warn("Cannot create file '%s': %s", params->json, gzerror(fjson.gz, &e));
+    warn("Cannot create file '%s': %s", params->json, strerror(errno));
     return 1;
   } else if (!use_gz && fjson.f == NULL) {
     warn("Cannot create file '%s': %s", params->json, strerror(errno));
@@ -287,7 +308,7 @@ int init_json(const params_t *params) {
 
   fjson_write(fjson, "{\n");
   fjson_write(fjson, "  \"quaqc_version\": \"" QUAQC_VERSION "\",\n");
-  fjson_write(fjson, "  \"quaqc_run_title\": \"%s\",\n", params->title == NULL ? "" : params->title);
+  fjson_write(fjson, "  \"quaqc_run_title\": \"%s\",\n", json_esc(params->title == NULL ? "" : params->title));
   fjson_write(fjson, "  \"quaqc_args\": \"%s\",\n", CMD);
   fjson_write(fjson, "  \"quaqc_time_start\": \"%s\",\n", time_start_str);
 
@@ -305,7 +326,7 @@ int init_json(const params_t *params) {
   fjson_write(fjson, "    \"blacklist_bed_n\": %d,\n", params->blist_n);
   fjson_write(fjson, "    \"read_groups\": %s,\n", strbool(params->trg != NULL));
   fjson_write(fjson, "    \"read_groups_n\": %d,\n", params->trg_n);
-  fjson_write(fjson, "    \"read_groups_tag\": \"%s\",\n", params->rg_tag);
+  fjson_write(fjson, "    \"read_groups_tag\": \"%s\",\n", json_esc(params->rg_tag));
   fjson_write(fjson, "    \"mapq_min\": %d,\n", (int) params->mapq);
   fjson_write(fjson, "    \"alignment_size_min\": %d,\n", (int) params->qlen_min);
   fjson_write(fjson, "    \"alignment_size_max\": %d,\n", (int) params->qlen_max);
@@ -372,7 +393,7 @@ int append_json_fail(char *fn) {
   } else {
     fjson_write(fjson, ",\n    {\n");
   }
-  fjson_write(fjson, "      \"sample\": \"%s\",\n", fn);
+  fjson_write(fjson, "      \"sample\": \"%s\",\n", json_esc(fn));
   fjson_write(fjson, "      \"status_success\": false,\n");
   fjson_write(fjson, "      \"report\": null\n");
   fjson_write(fjson, "    }");
@@ -381,10 +402,10 @@ int append_json_fail(char *fn) {
 
 #define fjson_fmt_int_if_first(conn, ii) \
   if (array_first) { \
-      fjson_write(conn, " %lld", (int64_t) ii); \
+      fjson_write(conn, " %"PRId64, (int64_t) ii); \
       array_first = false; \
     } else { \
-      fjson_write(conn, ", %lld", (int64_t) ii); \
+      fjson_write(conn, ", %"PRId64, (int64_t) ii); \
     } \
   }
 
@@ -428,7 +449,7 @@ int append_json_result(char *fn, results_t *results, const params_t *params) {
     fjson_write(fjson, ",\n    {\n");
   }
 
-  fjson_write(fjson, "      \"sample\": \"%s\",\n", fn);
+  fjson_write(fjson, "      \"sample\": \"%s\",\n", json_esc(fn));
   fjson_write(fjson, "      \"status_success\": true,\n");
   fjson_write(fjson, "      \"report\": {\n");
   fjson_write(fjson, "        \"time_start\": \"%s\",\n", time_start_str);
@@ -548,7 +569,7 @@ int append_json_result(char *fn, results_t *results, const params_t *params) {
   fjson_write(fjson, "              }\n");
   fjson_write(fjson, "            },\n");
   fjson_write(fjson, "            \"fragment\": {\n");
-  bool warn_flen = params->fhist_max < params->flen_max && !!!results->nucl_shared->frag_sizes[params->fhist_max];
+  bool warn_flen = params->fhist_max < params->flen_max && !!results->nucl_shared->frag_sizes[params->fhist_max];
   fjson_write(fjson, "              \"passing_filters\": %"PRId64",\n", null_get(results->nucl, frags_n));
   fjson_write(fjson, "              \"size_average\": %f,\n", null_get(results->nucl, avg_flen));
   fjson_write(fjson, "              \"addn_stats_are_suspect\": %s,\n", strbool(warn_flen));
@@ -605,7 +626,7 @@ int append_json_result(char *fn, results_t *results, const params_t *params) {
     fjson_write(fjson, "              \"depths_99th_pctile\": %"PRId64",\n", null_get(results->nucl, pct99_depth));
     fjson_write(fjson, "              \"depths_max\": %"PRId64",\n", null_get(results->nucl, max_depth));
     fjson_write(fjson, "              \"depths_histogram\": {\n");
-    fjson_write(fjson, "                \"range\": [ %d, %d ],\n", 0, params->fhist_max);
+    fjson_write(fjson, "                \"range\": [ %d, %d ],\n", 0, params->depth_max);
     fjson_write(fjson, "                \"x\": [");
     fjson_array_x(fjson, results->nucl_shared->depths, 0, params->depth_max);
     fjson_write(fjson, " ],\n");
@@ -655,8 +676,7 @@ int append_json_result(char *fn, results_t *results, const params_t *params) {
     fjson_write(fjson, "              \"tss_enrichment_score\": %f,\n", null_get(results->nucl, tes));
     fjson_write(fjson, "              \"tss_pileup\": {\n");
     int tss_min = params->tss_size / 2;
-    int tss_max = tss_min;
-    if (params->tss_size % 2 == 0) tss_min--;
+    int tss_max = params->tss_size - tss_min - 1;
     fjson_write(fjson, "                \"range\": [ %d, %d ],\n", -(tss_min), tss_max);
     fjson_write(fjson, "                \"x\": [");
     fjson_array_x(fjson, results->nucl_shared->tss, -(tss_min), tss_max);
@@ -716,9 +736,11 @@ int finish_json(void) {
 // QC report ----------------------------------------------------------------------
 
 static void print_centered(char *text, int width, FILE *con) {
-  int tlen = strlen(text) - 1;
-  int pad_left = (width - 1 - tlen) / 2;
-  int pad_right = pad_left + (width - 1 - tlen) % 2;
+  int tlen = (int) strlen(text);
+  int pad = width - tlen;
+  if (pad < 0) pad = 0;
+  int pad_left = pad / 2;
+  int pad_right = pad_left + pad % 2;
   fprintf(con, "%*.*s%s%*.s", pad_left, pad_left, " ", text, pad_right, " ");
 }
 
@@ -964,7 +986,7 @@ int print_results(char *fn, results_t *results, const params_t *params) {
   fprintf(fout, "%s", "\u2502\u2514\u2500");
   fprintf(fout, " Non redundant fraction:     %'14"PRId64" (%'.1f%%)\n", pri_dedup_total, pri_dedup_pct);
   int64_t sec_total = null_get_all(results, sec_n);
-  double sec_pct = calc_pct(se_total, results->r_seen);
+  double sec_pct = calc_pct(sec_total, results->r_seen);
   printWS(WS, fout);
   fprintf(fout, "%s", "\u251C\u2500\u2500");
   fprintf(fout, " Secondary alignments:       %'14"PRId64" (%'.1f%%)\n", sec_total, sec_pct);

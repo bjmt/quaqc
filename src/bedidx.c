@@ -530,7 +530,7 @@ void *bed_read(const char *fn, quant_t *quant)
         while (*ref_end && !isspace(*ref_end)) ref_end++;
         if ('\0' != *ref_end) {
             *ref_end = '\0';  // terminate ref and look for start, end, name, score, strand
-            num = sscanf(ref_end + 1, "%"SCNu64" %"SCNu64" %s %*s %c",
+            num = sscanf(ref_end + 1, "%"SCNu64" %"SCNu64" %1023s %*s %c",
                          &beg, &end, name, &strand);
         }
         if (1 == num) {  // VCF-style format
@@ -556,10 +556,10 @@ void *bed_read(const char *fn, quant_t *quant)
             errno = 0; // Prevent caller from printing misleading error messages
             goto fail;
         }
-        if (num < 4) strand = '.';
+        if (num < 4 || strand == '\r' || strand == '\n') strand = '.';
         if (quant != NULL && (num < 3 || strcmp(name, ".") == 0)) {
             int sret = snprintf(name, BED_NAME_SIZE, "%s:%llu-%llu", ref, beg, end);
-            if (sret < 0 || sret > BED_NAME_SIZE) {
+            if (sret < 0 || sret >= BED_NAME_SIZE) {
                 fprintf(stderr,
                         "[E::bed_read] Failed to store range name in \"%s\" at line %u\n",
                         fn, line);

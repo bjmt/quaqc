@@ -25,8 +25,8 @@
 #include <time.h>
 #include "htslib/hts.h"
 
-#define QUAQC_VERSION  "1.5"
-#define QUAQC_YEAR    "2025"
+#define QUAQC_VERSION  "1.6"
+#define QUAQC_YEAR    "2026"
 
 // Command line & other defaults -------------------------------------------------
 
@@ -51,7 +51,7 @@
 
 #define DEFAULT_RG_TAG              "RG"
 
-#define TN5_FOWARD_SHIFT               4
+#define TN5_FORWARD_SHIFT              4
 #define TN5_REVERSE_SHIFT              5
 
 // Functions, macros ------------------------------------------------------------
@@ -143,7 +143,7 @@ typedef struct stats_t {
   int64_t bl_n;
   // Post-filter reads stats
   int64_t filt_n, rip_n, frags_n, at, gc, n, cov;
-  int64_t qlen_total, flen_total, mapq_total;
+  int64_t qlen_total, flen_total, mapq_total, mapq_n;
   // --- End of what matters for merge_two_stats() ---
   // calc_summary_stats()
   double nrf, gc_pct, avg_flen, avg_qlen, avg_mapq;

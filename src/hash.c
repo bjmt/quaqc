@@ -37,7 +37,7 @@ bool str_ind_exists(void *h, const unsigned int i) {
   return kh_exist((khash_t(str) *) h, i);
 }
 
-void *str_hash_init(char *str_arr[], const int str_n, int *dups) {;
+void *str_hash_init(char *str_arr[], const int str_n, int *dups) {
   khash_t(str) *h = kh_init(str);
   int absent;
   *dups = 0;

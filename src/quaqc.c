@@ -34,6 +34,8 @@
 // - C->T/G->A conversion rates along reads in WGBS, EMS experiments
 //   + Or just any variant really
 
+#include <errno.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -318,11 +320,11 @@ static void help(void) {
     , DEFAULT_MITO, DEFAULT_PLTD
     , DEFAULT_MAPQ, DEFAULT_MIN_QLEN, DEFAULT_MIN_FLEN, DEFAULT_MAX_QLEN, DEFAULT_MAX_FLEN
     , DEFAULT_MAX_DEPTH
-    , DEFAULT_TSS_SIZE, DEFAULT_TSS_QLEN, TN5_FOWARD_SHIFT, TN5_REVERSE_SHIFT
-    , DEFAULT_OUT_EXT, DEFAULT_BAM_EXT, DEFAULT_BG_QLEN, TN5_FOWARD_SHIFT, TN5_REVERSE_SHIFT, DEFAULT_BG_EXT
-    , TN5_FOWARD_SHIFT, TN5_REVERSE_SHIFT, DEFAULT_BED_EXT
-    , TN5_FOWARD_SHIFT, TN5_REVERSE_SHIFT
-    , TN5_FOWARD_SHIFT, TN5_REVERSE_SHIFT
+    , DEFAULT_TSS_SIZE, DEFAULT_TSS_QLEN, TN5_FORWARD_SHIFT, TN5_REVERSE_SHIFT
+    , DEFAULT_OUT_EXT, DEFAULT_BAM_EXT, DEFAULT_BG_QLEN, TN5_FORWARD_SHIFT, TN5_REVERSE_SHIFT, DEFAULT_BG_EXT
+    , TN5_FORWARD_SHIFT, TN5_REVERSE_SHIFT, DEFAULT_BED_EXT
+    , TN5_FORWARD_SHIFT, TN5_REVERSE_SHIFT
+    , TN5_FORWARD_SHIFT, TN5_REVERSE_SHIFT
     , DEFAULT_THREADS
   );
 }
@@ -331,6 +333,7 @@ static void help(void) {
 
 // This allows the use of scientific notation, which atoi cannot handle.
 static int parse_num(const char *str) {
+  errno = 0;
   double num = strtod(str, NULL);
   if (errno == ERANGE || num > (double)INT_MAX) {
     quit("Parameter value '%s' is too large to be parsed as an integer.", str);
@@ -427,6 +430,7 @@ static int str_split(char *str, char **res, const char sep, const int max_size) 
 static void *str_split_and_hash(char *str, int *n, int *dups, const char sep) {
   const char delim[2] = { sep, '\0' };
   *n = 0;
+  *dups = 0;
   if (strlen(str) == 0) return NULL;
   int d, d_n = 0;
   char *rg;
@@ -449,6 +453,7 @@ static void *str_split_and_hash(char *str, int *n, int *dups, const char sep) {
 
 static void *read_file_and_hash(const char *fn, int *n, int *dups) {
   *n = 0;
+  *dups = 0;
   int d, d_n = 0;
   void *h = str_hash_init(NULL, 0, &d);
   gzFile fp = gzopen(fn, "r");
@@ -512,7 +517,7 @@ static params_t *init_params(int argc, char **argv) {
   params->tss_qlen  = DEFAULT_TSS_QLEN;
   params->bg_qlen   = DEFAULT_BG_QLEN;
   params->rg_tag    = DEFAULT_RG_TAG;
-  params->tn5_fwd   = TN5_FOWARD_SHIFT;
+  params->tn5_fwd   = TN5_FORWARD_SHIFT;
   params->tn5_rev   = TN5_REVERSE_SHIFT;
   params->qerr      = true;
   params->threads   = DEFAULT_THREADS;
@@ -854,6 +859,7 @@ static int quaqc_main(int argc, char *argv[]) {
           quit("Read group tag has already been set (--rg-tag)");
         }
         params->rg_tag = optarg;
+        break;
       case USE_SECONDARY:
         if (params->use_2nd) {
           quit("--use-secondary has already been set.");
@@ -1195,7 +1201,7 @@ static int quaqc_main(int argc, char *argv[]) {
         params->quant_pn = true;
         break;
       case TN5_FWD:
-        if (params->tn5_fwd != TN5_FOWARD_SHIFT) {
+        if (params->tn5_fwd != TN5_FORWARD_SHIFT) {
           quit("--tn5-fwd has already been set.");
         }
         params->tn5_fwd = parse_num(optarg);
@@ -1444,12 +1450,12 @@ static int quaqc_main(int argc, char *argv[]) {
 
   check_inputs(argv + optind, sample_count);
 
-  results = alloc(sizeof(results) * params->threads);
+  results = alloc(sizeof(*results) * params->threads);
   for (int i = 0; i < params->threads; i++) {
     results[i] = init_results(params);
   }
 
-  int *tind = alloc(sizeof(int *) * params->threads);
+  int *tind = alloc(sizeof(int) * params->threads);
   for (int i = 0; i < params->threads; i++) {
     tind[i] = i;
     if (pthread_create(&threads[i], NULL, quaqc_thread_handler, &(tind[i]))) {

@@ -1,14 +1,14 @@
-                         quaqc v0.1                         
+                         quaqc v1.5                         
 ════════════════════════════════════════════════════════════
 
   Run title: 
   Input file for this report: reads.bam
 
-  Command arguments used: -P peak.bed -T tss.bed -t target.bed 
+  Command arguments used: --output-ext .quaqc.txt -P peak.bed -T tss.bed -t target.bed 
 
-  Time of run start: 2024-02-16 13:48:05 CET
-  Time of run end:   2024-02-16 13:48:05 CET
-  Time ellapsed:     0 seconds
+  Time of run start: 2026-05-02 15:19:49 BST
+  Time of run end:   2026-05-02 15:19:49 BST
+  Time elapsed:      0 seconds
 
   Target names specified:                    no
   Target BED provided:                       yes
@@ -78,7 +78,7 @@
 
   Alignment size
   ├── Min:                                    26
-  ├── 1st pctile:                             35
+  ├── 1st pctile:                             29
   ├── Average:                               103.471
   ├── SD:                                     46.251
   ├── 99th pctile:                           150
@@ -88,25 +88,25 @@
 
   Fragment size
   ├── Min:                                    26
-  ├── 1st pctile:                             38
+  ├── 1st pctile:                             29
   ├── Average:                               163.575
   ├── SD:                                    145.566
-  ├── 99th pctile:                           776
+  ├── 99th pctile:                           659
   └── Max:                                   915
 
   Genome coverage:                            99.860%
 
   Read depth
   ├── Min:                                     0
-  ├── 1st pctile:                             16
+  ├── 1st pctile:                              6
   ├── Average:                                49.604
   ├── SD:                                     19.606
-  ├── 99th pctile:                           116
+  ├── 99th pctile:                           109
   └── Max:                                   123
 
   Alignment MAPQ
   ├── Min:                                    31
-  ├── 1st pctile:                             38
+  ├── 1st pctile:                             37
   ├── Average:                                41.876
   ├── SD:                                      0.863
   ├── 99th pctile:                            42
@@ -115,7 +115,7 @@
 
   Alignment GC
   ├── Min:                                    18%
-  ├── 1st pctile:                             22%
+  ├── 1st pctile:                             20%
   ├── Average:                                40.274%
   ├── SD:                                      7.214%
   ├── 99th pctile:                            56%

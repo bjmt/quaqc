@@ -175,7 +175,7 @@ void add_insertion_to_bed(gzFile bedfile, void *bed, const hts_pos_t qbeg0, cons
   depths_t *b = (depths_t *) bed;
   if (b->end == -1) {
     b->beg = qbeg0;
-    b->end = insertion;
+    b->end = insertion + 1;
   }
   if (insertion - qbeg0 > b->size) grow_depths(b, insertion - qbeg0);
   if (qbeg0 > b->beg) {

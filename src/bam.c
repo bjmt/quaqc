@@ -195,7 +195,7 @@ static void add_read_to_tss(int32_t *tss, const int tss_size, int tss_offset, in
 
 static void calc_flag_stats(const bam1_t *aln, stats_t *stats) {
   stats->dups_n     += (aln->core.flag & BAM_FDUP) != 0;
-  stats->dups_pri_n += ((aln->core.flag & (BAM_FSECONDARY|BAM_FSUPPLEMENTARY)) == 0) && ((aln->core.flag & BAM_FDUP) != 0);;
+  stats->dups_pri_n += ((aln->core.flag & (BAM_FSECONDARY|BAM_FSUPPLEMENTARY)) == 0) && ((aln->core.flag & BAM_FDUP) != 0);
   stats->se_n       += (aln->core.flag & BAM_FPAIRED) == 0;
   stats->pe_n       += (aln->core.flag & BAM_FPAIRED) != 0;
   stats->pri_n      += (aln->core.flag & (BAM_FSECONDARY|BAM_FSUPPLEMENTARY)) == 0;
@@ -252,7 +252,9 @@ static void calc_summary_stats(stats_t *stats, const params_t *params) {
   }
   if (stats->filt_n > 0) {
     stats->avg_qlen = (double) stats->qlen_total / (double) stats->filt_n;
-    stats->avg_mapq = (double) stats->mapq_total / (double) stats->filt_n;
+  }
+  if (stats->mapq_n > 0) {
+    stats->avg_mapq = (double) stats->mapq_total / (double) stats->mapq_n;
   }
   if (stats->frags_n > 0) {
     stats->avg_flen = (double) stats->flen_total / (double) stats->frags_n;
@@ -284,17 +286,17 @@ static void calc_nucl_shared_stats_depth(const int64_t *arr, const int arr_max, 
     if (arr[i]) tmp_max = i;
   }
   if (tmp_n == 0) return;
-  int64_t tmp_i1 = tmp_total / 100, tmp_i1n = 0;
+  int64_t tmp_i1 = tmp_n / 100, tmp_i1n = 0;
   for (int64_t i = 0; i < arr_max + 1; i++) {
-    tmp_i1n += arr[i] * i;
+    tmp_i1n += arr[i];
     if (tmp_i1n > tmp_i1) {
       *mem_pct1 = i;
       break;
     }
   }
-  int64_t tmp_i99 = (tmp_total * 99) / 100, tmp_i99n = 0;
+  int64_t tmp_i99 = (tmp_n * 99) / 100, tmp_i99n = 0;
   for (int64_t i = 0; i < arr_max + 1; i++) {
-    tmp_i99n +=  arr[i] * i;
+    tmp_i99n += arr[i];
     if (tmp_i99n > tmp_i99) {
       *mem_pct99 = i;
       break;
@@ -335,17 +337,17 @@ static void calc_nucl_shared_stats_core(const int32_t *arr, const int arr_max, c
     if (arr[i]) tmp_max = i;
   }
   if (tmp_n == 0) return;
-  int64_t tmp_i1 = tmp_total / 100, tmp_i1n = 0;
+  int64_t tmp_i1 = tmp_n / 100, tmp_i1n = 0;
   for (int64_t i = 0; i < arr_max + 1; i++) {
-    tmp_i1n += (int64_t) arr[i] * i;
+    tmp_i1n += arr[i];
     if (tmp_i1n > tmp_i1) {
       *mem_pct1 = i;
       break;
     }
   }
-  int64_t tmp_i99 = (tmp_total * 99) / 100, tmp_i99n = 0;
+  int64_t tmp_i99 = (tmp_n * 99) / 100, tmp_i99n = 0;
   for (int64_t i = 0; i < arr_max + 1; i++) {
-    tmp_i99n +=  (int64_t) arr[i] * i;
+    tmp_i99n += arr[i];
     if (tmp_i99n > tmp_i99) {
       *mem_pct99 = i;
       break;
@@ -426,7 +428,7 @@ static void calc_nucl_shared_stats(stats_t *stats, const globals_t *nucl_shared,
 static void merge_two_stats(stats_t *s, const stats_t *s0) {
 #ifndef NO_STAT_SIZE_CHECK  // Since the check is not portable...
 #ifndef STAT_SIZE
-#define STAT_SIZE 552
+#define STAT_SIZE 560
 #endif
 // If this assert triggers, make sure to update this function!!!
   assert(sizeof(stats_t) == STAT_SIZE);
@@ -460,6 +462,7 @@ static void merge_two_stats(stats_t *s, const stats_t *s0) {
   s->qlen_total  += s0->qlen_total;
   s->flen_total  += s0->flen_total;
   s->mapq_total  += s0->mapq_total;
+  s->mapq_n      += s0->mapq_n;
 }
 
 static stats_t *copy_stats(stats_t *stats) {
@@ -663,12 +666,12 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params, quant_t
               last_start = aln->core.pos;
               last_end = qend;
             } else {
-              last_end = qend;
+              last_end = max(last_end, qend);
             }
             flen = llabs(aln->core.isize);
 
             // TODO: this 255 score thing doesn't always apply to all mappers
-            stats->mapq_total += aln->core.qual < 255 ? (int64_t) aln->core.qual : 0;
+            if (aln->core.qual < 255) { stats->mapq_total += aln->core.qual; stats->mapq_n++; }
             stats->qlen_total += qlen;
 
             at = gc = n = 0;
@@ -757,7 +760,7 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params, quant_t
               }
               if (bed_f != NULL) {
                 if (params->bed_ins) {
-                  add_insertion_to_bed(bed_f, bed, max(0, aln->core.pos - bed_tn5_fwd), is_pos_strand(aln) ? max(0, min(aln->core.pos + bed_tn5_fwd, hdr->target_len[i])) : max(0, min((qend - 1) - bed_tn5_rev, hdr->target_len[i])), hdr->target_name[i]);
+                  add_insertion_to_bed(bed_f, bed, max(0, aln->core.pos + bed_tn5_fwd), is_pos_strand(aln) ? max(0, min(aln->core.pos + bed_tn5_fwd, hdr->target_len[i])) : max(0, min((qend - 1) - bed_tn5_rev, hdr->target_len[i])), hdr->target_name[i]);
                 } else {
                   bed_qbeg = aln->core.pos;
                   bed_qend = qend;
@@ -851,6 +854,7 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params, quant_t
 #endif
 
     sam_itr_destroy(itr);
+    itr = NULL;
     stats = stats->next;
 
   } // END: for (int64_t i = 0; i < hdr->n_targets; i++)
@@ -906,6 +910,7 @@ void quaqc_run(htsFile *bam, results_t *results, const params_t *params, quant_t
 
 run_quaqc_end:
 
+  if (itr != NULL) sam_itr_destroy(itr);
   if (depths != NULL) destroy_depths(depths);
   if (hdr != NULL) sam_hdr_destroy(hdr);
   if (aln != NULL) bam_destroy1(aln);
@@ -918,7 +923,7 @@ run_quaqc_end:
     }
   }
   if (bed != NULL) {
-    destroy_depths(bedGraph);
+    destroy_depths(bed);
   }
   if (bed_f != NULL && gzclose(bed_f) != Z_OK) {
     int e;

@@ -70,6 +70,23 @@ in your research:
 
 Tremblay, B.J.M. and Qüesta, J.I. (2024). quaqc: efficient and quick ATAC-seq quality control and filtering. _Bioinformatics_ **40**, btae649. [https://doi.org/10.1093/bioinformatics/btae649](https://doi.org/10.1093/bioinformatics/btae649)
 
+## Testing
+
+Two test suites are included in `test/`.
+
+**Golden output test** (`make test`): runs quaqc on `test/reads.bam` and diffs the
+output against the committed reference report `test/reads.quaqc.txt`. No additional
+dependencies are required beyond quaqc itself. When making intentional changes to
+the output format or statistics, regenerate the reference by replacing
+`reads.quaqc.txt` with the new output.
+
+**Comprehensive test suite** (`bash test/test_suite.sh`): constructs small BAMs
+from scratch and verifies specific behaviours, including regression tests for all
+known bug fixes. Requires:
+
+- `samtools` (for BAM creation and indexing)
+- `python3` (standard library only; for JSON parsing)
+
 ## Additional use cases
 
 ### Creating insertion BED files for use by MACS2/3

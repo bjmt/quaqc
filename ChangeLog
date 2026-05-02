@@ -1,3 +1,46 @@
+2026-05-02  Benjamin Jean-Marie Tremblay  <benjmtremblay@gmail.com>
+
+* quaqc.c: Fix missing break after case RG_TAG (silently enabled --use-secondary)
+* quaqc.c: Add #include <errno.h> and <limits.h>; reset errno before strtod
+* quaqc.c: Fix sizeof(results) -> sizeof(*results); sizeof(int*) -> sizeof(int)
+* quaqc.c: Rename TN5_FOWARD_SHIFT -> TN5_FORWARD_SHIFT
+* quaqc.c: Initialise *dups = 0 before early return in str_split_and_hash /
+  read_file_and_hash
+* bam.c: Fix double-free of bedGraph when both --bedGraph and --bed are used
+  (destroy_depths(bedGraph) -> destroy_depths(bed))
+* bam.c: Fix coverage undercounting for nested reads (last_end = qend ->
+  last_end = max(last_end, qend))
+* bam.c: Fix --bed-ins Tn5 forward shift sign (pos - bed_tn5_fwd -> pos +
+  bed_tn5_fwd)
+* bam.c: Fix itr leak on read errors; add sam_itr_destroy(itr) to cleanup label
+* bam.c: Fix avg_mapq denominator to exclude MAPQ=255 reads; add mapq_n field
+  to stats_t; update STAT_SIZE from 552 to 560; propagate mapq_n in
+  merge_two_stats
+* bam.c: Fix 1st/99th percentile calculations in calc_nucl_shared_stats_depth
+  and calc_nucl_shared_stats_core to use count-based CDF instead of mass-
+  weighted CDF
+* bam.c: Remove duplicate semicolon in calc_flag_stats
+* output.c: Fix secondary alignments percentage (se_total -> sec_total)
+* output.c: Fix JSON depth histogram range field (fhist_max -> depth_max)
+* output.c: Fix inverted warn_flen flag (!!!  -> !!)
+* output.c: Fix gzerror(NULL) calls on failed gzopen; use strerror(errno)
+* output.c: Add NULL check for sam_open in init_filtered_bam
+* output.c: Add json_esc() helper; apply to title, rg_tag, and sample filename
+  to prevent invalid JSON from backslashes or control characters
+* output.c: Fix %lld -> PRId64 in quant TSV and JSON array formatting macros
+* output.c: Fix CRAM extension stripping (else-if branch was unreachable)
+* output.c: Fix TSS pileup JSON range labels for even --tss-size values
+* output.c: Fix print_centered off-by-one (strlen(text)-1 -> strlen(text))
+* depth.c: Fix off-by-one in add_insertion_to_bed (b->end = insertion ->
+  b->end = insertion + 1; first insertion was never written)
+* bedidx.c: Fix sscanf %s -> %1023s to prevent stack buffer overflow on long
+  BED name fields
+* bedidx.c: Fix CRLF strand handling (\r treated as '.' strand)
+* bedidx.c: Fix snprintf truncation check (sret > BED_NAME_SIZE ->
+  sret >= BED_NAME_SIZE)
+* hash.c: Remove stray {; in str_hash_init
+* Bump quaqc version to 1.6
+
 2025-09-12  Benjamin Jean-Marie Tremblay  <benjmtremblay@gmail.com>
 
 * Added --quant & friends
