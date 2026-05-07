@@ -303,8 +303,14 @@ int bed_n_in_chr(void *_h, const char *chr) {
     if (!h) return 0;
     khint_t k = kh_get(reg, h, chr);
     if (k == kh_end(h)) return 0;
-    bed_reglist_t *p = &kh_val(h, k);
-    return p->n;
+    const bed_reglist_t *p = &kh_val(h, k);
+    int n = 0;
+    for (int i = 0; i < p->n; i++) {
+        if (i > 0 && p->a[i].beg == p->a[i-1].beg && p->a[i].end == p->a[i-1].end)
+            continue;
+        n++;
+    }
+    return n;
 }
 
 int64_t bed_overlap_ret_idx(const void *_h, const char *chr, hts_pos_t beg, hts_pos_t end)

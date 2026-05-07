@@ -1,3 +1,12 @@
+UNRELEASED
+----------
+
+* Fixed the "Number of TSSs" percentage in the text report and JSON output
+  sometimes exceeding 100% when TSS windows overlap after expansion.
+  bed_n_in_chr now skips hidden duplicate entries written by
+  bed_remove_overlaps, so the per-chromosome numerator agrees with the
+  already-corrected params->tss_n denominator.
+
 CHANGES IN VERSION 1.6 (2026-05-02)
 -----------------------------------
 

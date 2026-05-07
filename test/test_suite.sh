@@ -420,6 +420,40 @@ test_bed_ins_coordinates() {
   return 1
 }
 
+# --- Regression: TSS percentage > 100% when expanded windows overlap ---
+
+test_tss_pct_overlapping_windows() {
+  local d="$1"
+  {
+    chr_header chr1 2000
+    pe_pair r1 chr1 101 50 201 50 42
+  } | make_bam "$d/t.bam"
+  # Two TSSs 100bp apart: after the default ±1000bp expansion their windows
+  # overlap. Before the fix, bed_n_in_chr returned the raw p->n (2) while
+  # params->tss_n was decremented to 1, printing "Number of TSSs: 2 (200.0%)".
+  printf 'chr1\t500\t501\nchr1\t600\t601\n' > "$d/tss.bed"
+  "$QUAQC" -o "$d" --tss "$d/tss.bed" "$d/t.bam" >/dev/null
+  local pct; pct=$(field_pct "Number of TSSs:" "$d/t.quaqc.txt")
+  assert_eq "overlapping tss pct" "$pct" "100.0"
+}
+
+test_tss_pct_non_overlapping() {
+  local d="$1"
+  {
+    chr_header chr1 5000
+    pe_pair r1 chr1 101 50 201 50 42
+  } | make_bam "$d/t.bam"
+  # Two TSSs 2500bp apart: expanded windows [−500,1501) and [2000,4001) don't
+  # overlap, so both are counted and the percentage remains 100%.
+  printf 'chr1\t500\t501\nchr1\t3000\t3001\n' > "$d/tss.bed"
+  "$QUAQC" -o "$d" --tss "$d/tss.bed" "$d/t.bam" >/dev/null
+  local n pct
+  n=$(field_n   "Number of TSSs:" "$d/t.quaqc.txt")
+  pct=$(field_pct "Number of TSSs:" "$d/t.quaqc.txt")
+  assert_eq "non-overlapping tss count" "$n"   "2" || return 1
+  assert_eq "non-overlapping tss pct"   "$pct" "100.0"
+}
+
 # ---------------------------------------------------------------------------
 # Feature correctness tests
 # ---------------------------------------------------------------------------
@@ -1045,6 +1079,8 @@ for t in \
   nested_read_coverage \
   gzopen_fail_graceful \
   bed_ins_coordinates \
+  tss_pct_overlapping_windows \
+  tss_pct_non_overlapping \
   basic_read_counts \
   mapq_filter \
   mapq_threshold_change \
