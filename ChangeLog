@@ -1,3 +1,11 @@
+2026-05-07  Benjamin Jean-Marie Tremblay  <benjmtremblay@gmail.com>
+
+* bedidx.c: Fix "Number of TSSs" percentage exceeding 100% when TSS windows
+  overlap after expansion (bed_n_in_chr now skips hidden duplicate entries
+  written by bed_remove_overlaps)
+* test/test_suite.sh: Add tss_pct_overlapping_windows and
+  tss_pct_non_overlapping regression tests
+
 2026-05-02  Benjamin Jean-Marie Tremblay  <benjmtremblay@gmail.com>
 
 * quaqc.c: Fix missing break after case RG_TAG (silently enabled --use-secondary)
